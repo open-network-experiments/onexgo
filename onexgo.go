@@ -11126,15 +11126,13 @@ type DataflowAllReduceWorkloadTypeEnum string
 
 //  Enum of Type on DataflowAllReduceWorkload
 var DataflowAllReduceWorkloadType = struct {
-	ALL_TO_ALL DataflowAllReduceWorkloadTypeEnum
-	RING       DataflowAllReduceWorkloadTypeEnum
-	BUTTERFLY  DataflowAllReduceWorkloadTypeEnum
-	PIPELINE   DataflowAllReduceWorkloadTypeEnum
+	RING      DataflowAllReduceWorkloadTypeEnum
+	TREE      DataflowAllReduceWorkloadTypeEnum
+	BUTTERFLY DataflowAllReduceWorkloadTypeEnum
 }{
-	ALL_TO_ALL: DataflowAllReduceWorkloadTypeEnum("all_to_all"),
-	RING:       DataflowAllReduceWorkloadTypeEnum("ring"),
-	BUTTERFLY:  DataflowAllReduceWorkloadTypeEnum("butterfly"),
-	PIPELINE:   DataflowAllReduceWorkloadTypeEnum("pipeline"),
+	RING:      DataflowAllReduceWorkloadTypeEnum("ring"),
+	TREE:      DataflowAllReduceWorkloadTypeEnum("tree"),
+	BUTTERFLY: DataflowAllReduceWorkloadTypeEnum("butterfly"),
 }
 
 func (obj *dataflowAllReduceWorkload) Type() DataflowAllReduceWorkloadTypeEnum {
