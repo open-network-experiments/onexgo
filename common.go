@@ -1,4 +1,4 @@
-package godatamodel
+package onexgo
 
 import (
 	"context"

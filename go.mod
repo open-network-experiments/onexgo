@@ -1,3 +1,3 @@
-module github.com/ajbalogh/open-network-experiments/artifacts/godatamodel
+module github.com/open-network-experiments/onexgo
 
 go 1.16
