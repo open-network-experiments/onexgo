@@ -20,6 +20,8 @@ const _ = grpc.SupportPackageIsVersion7
 type OpenapiClient interface {
 	SetConfig(ctx context.Context, in *SetConfigRequest, opts ...grpc.CallOption) (*SetConfigResponse, error)
 	GetConfig(ctx context.Context, in *GetConfigRequest, opts ...grpc.CallOption) (*GetConfigResponse, error)
+	RunExperiment(ctx context.Context, in *RunExperimentRequest, opts ...grpc.CallOption) (*RunExperimentResponse, error)
+	GetMetrics(ctx context.Context, in *GetMetricsRequest, opts ...grpc.CallOption) (*GetMetricsResponse, error)
 }
 
 type openapiClient struct {
@@ -48,12 +50,32 @@ func (c *openapiClient) GetConfig(ctx context.Context, in *GetConfigRequest, opt
 	return out, nil
 }
 
+func (c *openapiClient) RunExperiment(ctx context.Context, in *RunExperimentRequest, opts ...grpc.CallOption) (*RunExperimentResponse, error) {
+	out := new(RunExperimentResponse)
+	err := c.cc.Invoke(ctx, "/onexdataflowapi.Openapi/RunExperiment", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *openapiClient) GetMetrics(ctx context.Context, in *GetMetricsRequest, opts ...grpc.CallOption) (*GetMetricsResponse, error) {
+	out := new(GetMetricsResponse)
+	err := c.cc.Invoke(ctx, "/onexdataflowapi.Openapi/GetMetrics", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // OpenapiServer is the server API for Openapi service.
 // All implementations must embed UnimplementedOpenapiServer
 // for forward compatibility
 type OpenapiServer interface {
 	SetConfig(context.Context, *SetConfigRequest) (*SetConfigResponse, error)
 	GetConfig(context.Context, *GetConfigRequest) (*GetConfigResponse, error)
+	RunExperiment(context.Context, *RunExperimentRequest) (*RunExperimentResponse, error)
+	GetMetrics(context.Context, *GetMetricsRequest) (*GetMetricsResponse, error)
 	mustEmbedUnimplementedOpenapiServer()
 }
 
@@ -66,6 +88,12 @@ func (UnimplementedOpenapiServer) SetConfig(context.Context, *SetConfigRequest) 
 }
 func (UnimplementedOpenapiServer) GetConfig(context.Context, *GetConfigRequest) (*GetConfigResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetConfig not implemented")
+}
+func (UnimplementedOpenapiServer) RunExperiment(context.Context, *RunExperimentRequest) (*RunExperimentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RunExperiment not implemented")
+}
+func (UnimplementedOpenapiServer) GetMetrics(context.Context, *GetMetricsRequest) (*GetMetricsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMetrics not implemented")
 }
 func (UnimplementedOpenapiServer) mustEmbedUnimplementedOpenapiServer() {}
 
@@ -116,6 +144,42 @@ func _Openapi_GetConfig_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Openapi_RunExperiment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RunExperimentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OpenapiServer).RunExperiment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/onexdataflowapi.Openapi/RunExperiment",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OpenapiServer).RunExperiment(ctx, req.(*RunExperimentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Openapi_GetMetrics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetMetricsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OpenapiServer).GetMetrics(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/onexdataflowapi.Openapi/GetMetrics",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OpenapiServer).GetMetrics(ctx, req.(*GetMetricsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Openapi_ServiceDesc is the grpc.ServiceDesc for Openapi service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -130,6 +194,14 @@ var Openapi_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetConfig",
 			Handler:    _Openapi_GetConfig_Handler,
+		},
+		{
+			MethodName: "RunExperiment",
+			Handler:    _Openapi_RunExperiment_Handler,
+		},
+		{
+			MethodName: "GetMetrics",
+			Handler:    _Openapi_GetMetrics_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

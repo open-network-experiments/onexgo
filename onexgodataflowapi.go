@@ -117,16 +117,32 @@ type OnexgodataflowapiApi interface {
 	// NewGetConfigDetails returns a new instance of GetConfigDetails.
 	// GetConfigDetails is get config request details
 	NewGetConfigDetails() GetConfigDetails
+	// NewExperimentRequest returns a new instance of ExperimentRequest.
+	// ExperimentRequest is experiment request details
+	NewExperimentRequest() ExperimentRequest
+	// NewMetricsRequest returns a new instance of MetricsRequest.
+	// MetricsRequest is metrics request details
+	NewMetricsRequest() MetricsRequest
 	// NewSetConfigResponse returns a new instance of SetConfigResponse.
 	// SetConfigResponse is description is TBD
 	NewSetConfigResponse() SetConfigResponse
 	// NewGetConfigResponse returns a new instance of GetConfigResponse.
 	// GetConfigResponse is description is TBD
 	NewGetConfigResponse() GetConfigResponse
+	// NewRunExperimentResponse returns a new instance of RunExperimentResponse.
+	// RunExperimentResponse is description is TBD
+	NewRunExperimentResponse() RunExperimentResponse
+	// NewGetMetricsResponse returns a new instance of GetMetricsResponse.
+	// GetMetricsResponse is description is TBD
+	NewGetMetricsResponse() GetMetricsResponse
 	// SetConfig sets the ONEx dataflow config
 	SetConfig(config Config) (Config, error)
 	// GetConfig gets the ONEx dataflow config from the server, as currently configured
 	GetConfig(getConfigDetails GetConfigDetails) (Config, error)
+	// RunExperiment runs the currently configured experiment
+	RunExperiment(experimentRequest ExperimentRequest) (WarningDetails, error)
+	// GetMetrics description is TBD
+	GetMetrics(metricsRequest MetricsRequest) (MetricsResponse, error)
 }
 
 func (api *onexgodataflowapiApi) NewConfig() Config {
@@ -137,12 +153,28 @@ func (api *onexgodataflowapiApi) NewGetConfigDetails() GetConfigDetails {
 	return NewGetConfigDetails()
 }
 
+func (api *onexgodataflowapiApi) NewExperimentRequest() ExperimentRequest {
+	return NewExperimentRequest()
+}
+
+func (api *onexgodataflowapiApi) NewMetricsRequest() MetricsRequest {
+	return NewMetricsRequest()
+}
+
 func (api *onexgodataflowapiApi) NewSetConfigResponse() SetConfigResponse {
 	return NewSetConfigResponse()
 }
 
 func (api *onexgodataflowapiApi) NewGetConfigResponse() GetConfigResponse {
 	return NewGetConfigResponse()
+}
+
+func (api *onexgodataflowapiApi) NewRunExperimentResponse() RunExperimentResponse {
+	return NewRunExperimentResponse()
+}
+
+func (api *onexgodataflowapiApi) NewGetMetricsResponse() GetMetricsResponse {
+	return NewGetMetricsResponse()
 }
 
 func (api *onexgodataflowapiApi) SetConfig(config Config) (Config, error) {
@@ -215,6 +247,76 @@ func (api *onexgodataflowapiApi) GetConfig(getConfigDetails GetConfigDetails) (C
 	return nil, fmt.Errorf("response of 200, 400, 500 has not been implemented")
 }
 
+func (api *onexgodataflowapiApi) RunExperiment(experimentRequest ExperimentRequest) (WarningDetails, error) {
+
+	err := experimentRequest.Validate()
+	if err != nil {
+		return nil, err
+	}
+
+	if api.hasHttpTransport() {
+		return api.httpRunExperiment(experimentRequest)
+	}
+
+	if err := api.grpcConnect(); err != nil {
+		return nil, err
+	}
+	request := onexdataflowapi.RunExperimentRequest{ExperimentRequest: experimentRequest.Msg()}
+	ctx, cancelFunc := context.WithTimeout(context.Background(), api.grpc.requestTimeout)
+	defer cancelFunc()
+	resp, err := api.grpcClient.RunExperiment(ctx, &request)
+	if err != nil {
+		return nil, err
+	}
+	if resp.GetStatusCode_200() != nil {
+		return NewWarningDetails().SetMsg(resp.GetStatusCode_200()), nil
+	}
+	if resp.GetStatusCode_400() != nil {
+		data, _ := yaml.Marshal(resp.GetStatusCode_400())
+		return nil, fmt.Errorf(string(data))
+	}
+	if resp.GetStatusCode_500() != nil {
+		data, _ := yaml.Marshal(resp.GetStatusCode_500())
+		return nil, fmt.Errorf(string(data))
+	}
+	return nil, fmt.Errorf("response of 200, 400, 500 has not been implemented")
+}
+
+func (api *onexgodataflowapiApi) GetMetrics(metricsRequest MetricsRequest) (MetricsResponse, error) {
+
+	err := metricsRequest.Validate()
+	if err != nil {
+		return nil, err
+	}
+
+	if api.hasHttpTransport() {
+		return api.httpGetMetrics(metricsRequest)
+	}
+
+	if err := api.grpcConnect(); err != nil {
+		return nil, err
+	}
+	request := onexdataflowapi.GetMetricsRequest{MetricsRequest: metricsRequest.Msg()}
+	ctx, cancelFunc := context.WithTimeout(context.Background(), api.grpc.requestTimeout)
+	defer cancelFunc()
+	resp, err := api.grpcClient.GetMetrics(ctx, &request)
+	if err != nil {
+		return nil, err
+	}
+	if resp.GetStatusCode_200() != nil {
+		return NewMetricsResponse().SetMsg(resp.GetStatusCode_200()), nil
+	}
+	if resp.GetStatusCode_400() != nil {
+		data, _ := yaml.Marshal(resp.GetStatusCode_400())
+		return nil, fmt.Errorf(string(data))
+	}
+	if resp.GetStatusCode_500() != nil {
+		data, _ := yaml.Marshal(resp.GetStatusCode_500())
+		return nil, fmt.Errorf(string(data))
+	}
+	return nil, fmt.Errorf("response of 200, 400, 500 has not been implemented")
+}
+
 func (api *onexgodataflowapiApi) httpSetConfig(config Config) (Config, error) {
 	configJson, err := config.ToJson()
 	if err != nil {
@@ -266,6 +368,74 @@ func (api *onexgodataflowapiApi) httpGetConfig(getConfigDetails GetConfigDetails
 	}
 	if resp.StatusCode == 200 {
 		obj := api.NewGetConfigResponse().StatusCode200()
+		if err := obj.FromJson(string(bodyBytes)); err != nil {
+			return nil, err
+		}
+		if err != nil {
+			return nil, err
+		}
+		return obj, nil
+	}
+	if resp.StatusCode == 400 {
+		return nil, fmt.Errorf(string(bodyBytes))
+	}
+	if resp.StatusCode == 500 {
+		return nil, fmt.Errorf(string(bodyBytes))
+	}
+	return nil, fmt.Errorf("response not implemented")
+}
+
+func (api *onexgodataflowapiApi) httpRunExperiment(experimentRequest ExperimentRequest) (WarningDetails, error) {
+	experimentRequestJson, err := experimentRequest.ToJson()
+	if err != nil {
+		return nil, err
+	}
+	resp, err := api.httpSendRecv("control/experiment", experimentRequestJson, "POST")
+
+	if err != nil {
+		return nil, err
+	}
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode == 200 {
+		obj := api.NewRunExperimentResponse().StatusCode200()
+		if err := obj.FromJson(string(bodyBytes)); err != nil {
+			return nil, err
+		}
+		if err != nil {
+			return nil, err
+		}
+		return obj, nil
+	}
+	if resp.StatusCode == 400 {
+		return nil, fmt.Errorf(string(bodyBytes))
+	}
+	if resp.StatusCode == 500 {
+		return nil, fmt.Errorf(string(bodyBytes))
+	}
+	return nil, fmt.Errorf("response not implemented")
+}
+
+func (api *onexgodataflowapiApi) httpGetMetrics(metricsRequest MetricsRequest) (MetricsResponse, error) {
+	metricsRequestJson, err := metricsRequest.ToJson()
+	if err != nil {
+		return nil, err
+	}
+	resp, err := api.httpSendRecv("results/metrics", metricsRequestJson, "POST")
+
+	if err != nil {
+		return nil, err
+	}
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode == 200 {
+		obj := api.NewGetMetricsResponse().StatusCode200()
 		if err := obj.FromJson(string(bodyBytes)); err != nil {
 			return nil, err
 		}
@@ -780,6 +950,356 @@ func (obj *getConfigDetails) validateObj(set_default bool) {
 }
 
 func (obj *getConfigDetails) setDefault() {
+
+}
+
+// ***** ExperimentRequest *****
+type experimentRequest struct {
+	obj *onexdataflowapi.ExperimentRequest
+}
+
+func NewExperimentRequest() ExperimentRequest {
+	obj := experimentRequest{obj: &onexdataflowapi.ExperimentRequest{}}
+	obj.setDefault()
+	return &obj
+}
+
+func (obj *experimentRequest) Msg() *onexdataflowapi.ExperimentRequest {
+	return obj.obj
+}
+
+func (obj *experimentRequest) SetMsg(msg *onexdataflowapi.ExperimentRequest) ExperimentRequest {
+
+	proto.Merge(obj.obj, msg)
+	return obj
+}
+
+func (obj *experimentRequest) ToPbText() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	protoMarshal, err := proto.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(protoMarshal), nil
+}
+
+func (obj *experimentRequest) FromPbText(value string) error {
+	retObj := proto.Unmarshal([]byte(value), obj.Msg())
+	if retObj != nil {
+		return retObj
+	}
+
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return retObj
+}
+
+func (obj *experimentRequest) ToYaml() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	data, err = yaml.JSONToYAML(data)
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *experimentRequest) FromYaml(value string) error {
+	if value == "" {
+		value = "{}"
+	}
+	data, err := yaml.YAMLToJSON([]byte(value))
+	if err != nil {
+		return err
+	}
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	uError := opts.Unmarshal([]byte(data), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return nil
+}
+
+func (obj *experimentRequest) ToJson() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+		Indent:          "  ",
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *experimentRequest) FromJson(value string) error {
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	if value == "" {
+		value = "{}"
+	}
+	uError := opts.Unmarshal([]byte(value), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+
+	err := obj.validateFromText()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (obj *experimentRequest) validateFromText() error {
+	obj.validateObj(true)
+	return validationResult()
+}
+
+func (obj *experimentRequest) Validate() error {
+	obj.validateObj(false)
+	return validationResult()
+}
+
+// ExperimentRequest is experiment request details
+type ExperimentRequest interface {
+	Msg() *onexdataflowapi.ExperimentRequest
+	SetMsg(*onexdataflowapi.ExperimentRequest) ExperimentRequest
+	// ToPbText marshals ExperimentRequest to protobuf text
+	ToPbText() (string, error)
+	// ToYaml marshals ExperimentRequest to YAML text
+	ToYaml() (string, error)
+	// ToJson marshals ExperimentRequest to JSON text
+	ToJson() (string, error)
+	// FromPbText unmarshals ExperimentRequest from protobuf text
+	FromPbText(value string) error
+	// FromYaml unmarshals ExperimentRequest from YAML text
+	FromYaml(value string) error
+	// FromJson unmarshals ExperimentRequest from JSON text
+	FromJson(value string) error
+	// Validate validates ExperimentRequest
+	Validate() error
+	validateFromText() error
+	validateObj(set_default bool)
+	setDefault()
+}
+
+func (obj *experimentRequest) validateObj(set_default bool) {
+	if set_default {
+		obj.setDefault()
+	}
+
+}
+
+func (obj *experimentRequest) setDefault() {
+
+}
+
+// ***** MetricsRequest *****
+type metricsRequest struct {
+	obj *onexdataflowapi.MetricsRequest
+}
+
+func NewMetricsRequest() MetricsRequest {
+	obj := metricsRequest{obj: &onexdataflowapi.MetricsRequest{}}
+	obj.setDefault()
+	return &obj
+}
+
+func (obj *metricsRequest) Msg() *onexdataflowapi.MetricsRequest {
+	return obj.obj
+}
+
+func (obj *metricsRequest) SetMsg(msg *onexdataflowapi.MetricsRequest) MetricsRequest {
+
+	proto.Merge(obj.obj, msg)
+	return obj
+}
+
+func (obj *metricsRequest) ToPbText() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	protoMarshal, err := proto.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(protoMarshal), nil
+}
+
+func (obj *metricsRequest) FromPbText(value string) error {
+	retObj := proto.Unmarshal([]byte(value), obj.Msg())
+	if retObj != nil {
+		return retObj
+	}
+
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return retObj
+}
+
+func (obj *metricsRequest) ToYaml() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	data, err = yaml.JSONToYAML(data)
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *metricsRequest) FromYaml(value string) error {
+	if value == "" {
+		value = "{}"
+	}
+	data, err := yaml.YAMLToJSON([]byte(value))
+	if err != nil {
+		return err
+	}
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	uError := opts.Unmarshal([]byte(data), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return nil
+}
+
+func (obj *metricsRequest) ToJson() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+		Indent:          "  ",
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *metricsRequest) FromJson(value string) error {
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	if value == "" {
+		value = "{}"
+	}
+	uError := opts.Unmarshal([]byte(value), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+
+	err := obj.validateFromText()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (obj *metricsRequest) validateFromText() error {
+	obj.validateObj(true)
+	return validationResult()
+}
+
+func (obj *metricsRequest) Validate() error {
+	obj.validateObj(false)
+	return validationResult()
+}
+
+// MetricsRequest is metrics request details
+type MetricsRequest interface {
+	Msg() *onexdataflowapi.MetricsRequest
+	SetMsg(*onexdataflowapi.MetricsRequest) MetricsRequest
+	// ToPbText marshals MetricsRequest to protobuf text
+	ToPbText() (string, error)
+	// ToYaml marshals MetricsRequest to YAML text
+	ToYaml() (string, error)
+	// ToJson marshals MetricsRequest to JSON text
+	ToJson() (string, error)
+	// FromPbText unmarshals MetricsRequest from protobuf text
+	FromPbText(value string) error
+	// FromYaml unmarshals MetricsRequest from YAML text
+	FromYaml(value string) error
+	// FromJson unmarshals MetricsRequest from JSON text
+	FromJson(value string) error
+	// Validate validates MetricsRequest
+	Validate() error
+	validateFromText() error
+	validateObj(set_default bool)
+	setDefault()
+}
+
+func (obj *metricsRequest) validateObj(set_default bool) {
+	if set_default {
+		obj.setDefault()
+	}
+
+}
+
+func (obj *metricsRequest) setDefault() {
 
 }
 
@@ -1390,6 +1910,616 @@ func (obj *getConfigResponse) validateObj(set_default bool) {
 }
 
 func (obj *getConfigResponse) setDefault() {
+
+}
+
+// ***** RunExperimentResponse *****
+type runExperimentResponse struct {
+	obj                  *onexdataflowapi.RunExperimentResponse
+	statusCode_400Holder ErrorDetails
+	statusCode_500Holder ErrorDetails
+	statusCode_200Holder WarningDetails
+}
+
+func NewRunExperimentResponse() RunExperimentResponse {
+	obj := runExperimentResponse{obj: &onexdataflowapi.RunExperimentResponse{}}
+	obj.setDefault()
+	return &obj
+}
+
+func (obj *runExperimentResponse) Msg() *onexdataflowapi.RunExperimentResponse {
+	return obj.obj
+}
+
+func (obj *runExperimentResponse) SetMsg(msg *onexdataflowapi.RunExperimentResponse) RunExperimentResponse {
+	obj.setNil()
+	proto.Merge(obj.obj, msg)
+	return obj
+}
+
+func (obj *runExperimentResponse) ToPbText() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	protoMarshal, err := proto.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(protoMarshal), nil
+}
+
+func (obj *runExperimentResponse) FromPbText(value string) error {
+	retObj := proto.Unmarshal([]byte(value), obj.Msg())
+	if retObj != nil {
+		return retObj
+	}
+	obj.setNil()
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return retObj
+}
+
+func (obj *runExperimentResponse) ToYaml() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	data, err = yaml.JSONToYAML(data)
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *runExperimentResponse) FromYaml(value string) error {
+	if value == "" {
+		value = "{}"
+	}
+	data, err := yaml.YAMLToJSON([]byte(value))
+	if err != nil {
+		return err
+	}
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	uError := opts.Unmarshal([]byte(data), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+	obj.setNil()
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return nil
+}
+
+func (obj *runExperimentResponse) ToJson() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+		Indent:          "  ",
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *runExperimentResponse) FromJson(value string) error {
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	if value == "" {
+		value = "{}"
+	}
+	uError := opts.Unmarshal([]byte(value), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+	obj.setNil()
+	err := obj.validateFromText()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (obj *runExperimentResponse) validateFromText() error {
+	obj.validateObj(true)
+	return validationResult()
+}
+
+func (obj *runExperimentResponse) Validate() error {
+	obj.validateObj(false)
+	return validationResult()
+}
+
+func (obj *runExperimentResponse) setNil() {
+	obj.statusCode_400Holder = nil
+	obj.statusCode_500Holder = nil
+	obj.statusCode_200Holder = nil
+}
+
+// RunExperimentResponse is description is TBD
+type RunExperimentResponse interface {
+	Msg() *onexdataflowapi.RunExperimentResponse
+	SetMsg(*onexdataflowapi.RunExperimentResponse) RunExperimentResponse
+	// ToPbText marshals RunExperimentResponse to protobuf text
+	ToPbText() (string, error)
+	// ToYaml marshals RunExperimentResponse to YAML text
+	ToYaml() (string, error)
+	// ToJson marshals RunExperimentResponse to JSON text
+	ToJson() (string, error)
+	// FromPbText unmarshals RunExperimentResponse from protobuf text
+	FromPbText(value string) error
+	// FromYaml unmarshals RunExperimentResponse from YAML text
+	FromYaml(value string) error
+	// FromJson unmarshals RunExperimentResponse from JSON text
+	FromJson(value string) error
+	// Validate validates RunExperimentResponse
+	Validate() error
+	validateFromText() error
+	validateObj(set_default bool)
+	setDefault()
+	// StatusCode400 returns ErrorDetails, set in RunExperimentResponse.
+	// ErrorDetails is description is TBD
+	StatusCode400() ErrorDetails
+	// SetStatusCode400 assigns ErrorDetails provided by user to RunExperimentResponse.
+	// ErrorDetails is description is TBD
+	SetStatusCode400(value ErrorDetails) RunExperimentResponse
+	// HasStatusCode400 checks if StatusCode400 has been set in RunExperimentResponse
+	HasStatusCode400() bool
+	// StatusCode500 returns ErrorDetails, set in RunExperimentResponse.
+	// ErrorDetails is description is TBD
+	StatusCode500() ErrorDetails
+	// SetStatusCode500 assigns ErrorDetails provided by user to RunExperimentResponse.
+	// ErrorDetails is description is TBD
+	SetStatusCode500(value ErrorDetails) RunExperimentResponse
+	// HasStatusCode500 checks if StatusCode500 has been set in RunExperimentResponse
+	HasStatusCode500() bool
+	// StatusCode200 returns WarningDetails, set in RunExperimentResponse.
+	// WarningDetails is description is TBD
+	StatusCode200() WarningDetails
+	// SetStatusCode200 assigns WarningDetails provided by user to RunExperimentResponse.
+	// WarningDetails is description is TBD
+	SetStatusCode200(value WarningDetails) RunExperimentResponse
+	// HasStatusCode200 checks if StatusCode200 has been set in RunExperimentResponse
+	HasStatusCode200() bool
+	setNil()
+}
+
+// StatusCode400 returns a ErrorDetails
+// description is TBD
+func (obj *runExperimentResponse) StatusCode400() ErrorDetails {
+	if obj.obj.StatusCode_400 == nil {
+		obj.obj.StatusCode_400 = NewErrorDetails().Msg()
+	}
+	if obj.statusCode_400Holder == nil {
+		obj.statusCode_400Holder = &errorDetails{obj: obj.obj.StatusCode_400}
+	}
+	return obj.statusCode_400Holder
+}
+
+// StatusCode400 returns a ErrorDetails
+// description is TBD
+func (obj *runExperimentResponse) HasStatusCode400() bool {
+	return obj.obj.StatusCode_400 != nil
+}
+
+// SetStatusCode400 sets the ErrorDetails value in the RunExperimentResponse object
+// description is TBD
+func (obj *runExperimentResponse) SetStatusCode400(value ErrorDetails) RunExperimentResponse {
+
+	obj.statusCode_400Holder = nil
+	obj.obj.StatusCode_400 = value.Msg()
+
+	return obj
+}
+
+// StatusCode500 returns a ErrorDetails
+// description is TBD
+func (obj *runExperimentResponse) StatusCode500() ErrorDetails {
+	if obj.obj.StatusCode_500 == nil {
+		obj.obj.StatusCode_500 = NewErrorDetails().Msg()
+	}
+	if obj.statusCode_500Holder == nil {
+		obj.statusCode_500Holder = &errorDetails{obj: obj.obj.StatusCode_500}
+	}
+	return obj.statusCode_500Holder
+}
+
+// StatusCode500 returns a ErrorDetails
+// description is TBD
+func (obj *runExperimentResponse) HasStatusCode500() bool {
+	return obj.obj.StatusCode_500 != nil
+}
+
+// SetStatusCode500 sets the ErrorDetails value in the RunExperimentResponse object
+// description is TBD
+func (obj *runExperimentResponse) SetStatusCode500(value ErrorDetails) RunExperimentResponse {
+
+	obj.statusCode_500Holder = nil
+	obj.obj.StatusCode_500 = value.Msg()
+
+	return obj
+}
+
+// StatusCode200 returns a WarningDetails
+// description is TBD
+func (obj *runExperimentResponse) StatusCode200() WarningDetails {
+	if obj.obj.StatusCode_200 == nil {
+		obj.obj.StatusCode_200 = NewWarningDetails().Msg()
+	}
+	if obj.statusCode_200Holder == nil {
+		obj.statusCode_200Holder = &warningDetails{obj: obj.obj.StatusCode_200}
+	}
+	return obj.statusCode_200Holder
+}
+
+// StatusCode200 returns a WarningDetails
+// description is TBD
+func (obj *runExperimentResponse) HasStatusCode200() bool {
+	return obj.obj.StatusCode_200 != nil
+}
+
+// SetStatusCode200 sets the WarningDetails value in the RunExperimentResponse object
+// description is TBD
+func (obj *runExperimentResponse) SetStatusCode200(value WarningDetails) RunExperimentResponse {
+
+	obj.statusCode_200Holder = nil
+	obj.obj.StatusCode_200 = value.Msg()
+
+	return obj
+}
+
+func (obj *runExperimentResponse) validateObj(set_default bool) {
+	if set_default {
+		obj.setDefault()
+	}
+
+	if obj.obj.StatusCode_400 != nil {
+		obj.StatusCode400().validateObj(set_default)
+	}
+
+	if obj.obj.StatusCode_500 != nil {
+		obj.StatusCode500().validateObj(set_default)
+	}
+
+	if obj.obj.StatusCode_200 != nil {
+		obj.StatusCode200().validateObj(set_default)
+	}
+
+}
+
+func (obj *runExperimentResponse) setDefault() {
+
+}
+
+// ***** GetMetricsResponse *****
+type getMetricsResponse struct {
+	obj                  *onexdataflowapi.GetMetricsResponse
+	statusCode_200Holder MetricsResponse
+	statusCode_400Holder ErrorDetails
+	statusCode_500Holder ErrorDetails
+}
+
+func NewGetMetricsResponse() GetMetricsResponse {
+	obj := getMetricsResponse{obj: &onexdataflowapi.GetMetricsResponse{}}
+	obj.setDefault()
+	return &obj
+}
+
+func (obj *getMetricsResponse) Msg() *onexdataflowapi.GetMetricsResponse {
+	return obj.obj
+}
+
+func (obj *getMetricsResponse) SetMsg(msg *onexdataflowapi.GetMetricsResponse) GetMetricsResponse {
+	obj.setNil()
+	proto.Merge(obj.obj, msg)
+	return obj
+}
+
+func (obj *getMetricsResponse) ToPbText() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	protoMarshal, err := proto.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(protoMarshal), nil
+}
+
+func (obj *getMetricsResponse) FromPbText(value string) error {
+	retObj := proto.Unmarshal([]byte(value), obj.Msg())
+	if retObj != nil {
+		return retObj
+	}
+	obj.setNil()
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return retObj
+}
+
+func (obj *getMetricsResponse) ToYaml() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	data, err = yaml.JSONToYAML(data)
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *getMetricsResponse) FromYaml(value string) error {
+	if value == "" {
+		value = "{}"
+	}
+	data, err := yaml.YAMLToJSON([]byte(value))
+	if err != nil {
+		return err
+	}
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	uError := opts.Unmarshal([]byte(data), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+	obj.setNil()
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return nil
+}
+
+func (obj *getMetricsResponse) ToJson() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+		Indent:          "  ",
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *getMetricsResponse) FromJson(value string) error {
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	if value == "" {
+		value = "{}"
+	}
+	uError := opts.Unmarshal([]byte(value), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+	obj.setNil()
+	err := obj.validateFromText()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (obj *getMetricsResponse) validateFromText() error {
+	obj.validateObj(true)
+	return validationResult()
+}
+
+func (obj *getMetricsResponse) Validate() error {
+	obj.validateObj(false)
+	return validationResult()
+}
+
+func (obj *getMetricsResponse) setNil() {
+	obj.statusCode_200Holder = nil
+	obj.statusCode_400Holder = nil
+	obj.statusCode_500Holder = nil
+}
+
+// GetMetricsResponse is description is TBD
+type GetMetricsResponse interface {
+	Msg() *onexdataflowapi.GetMetricsResponse
+	SetMsg(*onexdataflowapi.GetMetricsResponse) GetMetricsResponse
+	// ToPbText marshals GetMetricsResponse to protobuf text
+	ToPbText() (string, error)
+	// ToYaml marshals GetMetricsResponse to YAML text
+	ToYaml() (string, error)
+	// ToJson marshals GetMetricsResponse to JSON text
+	ToJson() (string, error)
+	// FromPbText unmarshals GetMetricsResponse from protobuf text
+	FromPbText(value string) error
+	// FromYaml unmarshals GetMetricsResponse from YAML text
+	FromYaml(value string) error
+	// FromJson unmarshals GetMetricsResponse from JSON text
+	FromJson(value string) error
+	// Validate validates GetMetricsResponse
+	Validate() error
+	validateFromText() error
+	validateObj(set_default bool)
+	setDefault()
+	// StatusCode200 returns MetricsResponse, set in GetMetricsResponse.
+	// MetricsResponse is metrics response details
+	StatusCode200() MetricsResponse
+	// SetStatusCode200 assigns MetricsResponse provided by user to GetMetricsResponse.
+	// MetricsResponse is metrics response details
+	SetStatusCode200(value MetricsResponse) GetMetricsResponse
+	// HasStatusCode200 checks if StatusCode200 has been set in GetMetricsResponse
+	HasStatusCode200() bool
+	// StatusCode400 returns ErrorDetails, set in GetMetricsResponse.
+	// ErrorDetails is description is TBD
+	StatusCode400() ErrorDetails
+	// SetStatusCode400 assigns ErrorDetails provided by user to GetMetricsResponse.
+	// ErrorDetails is description is TBD
+	SetStatusCode400(value ErrorDetails) GetMetricsResponse
+	// HasStatusCode400 checks if StatusCode400 has been set in GetMetricsResponse
+	HasStatusCode400() bool
+	// StatusCode500 returns ErrorDetails, set in GetMetricsResponse.
+	// ErrorDetails is description is TBD
+	StatusCode500() ErrorDetails
+	// SetStatusCode500 assigns ErrorDetails provided by user to GetMetricsResponse.
+	// ErrorDetails is description is TBD
+	SetStatusCode500(value ErrorDetails) GetMetricsResponse
+	// HasStatusCode500 checks if StatusCode500 has been set in GetMetricsResponse
+	HasStatusCode500() bool
+	setNil()
+}
+
+// StatusCode200 returns a MetricsResponse
+// description is TBD
+func (obj *getMetricsResponse) StatusCode200() MetricsResponse {
+	if obj.obj.StatusCode_200 == nil {
+		obj.obj.StatusCode_200 = NewMetricsResponse().Msg()
+	}
+	if obj.statusCode_200Holder == nil {
+		obj.statusCode_200Holder = &metricsResponse{obj: obj.obj.StatusCode_200}
+	}
+	return obj.statusCode_200Holder
+}
+
+// StatusCode200 returns a MetricsResponse
+// description is TBD
+func (obj *getMetricsResponse) HasStatusCode200() bool {
+	return obj.obj.StatusCode_200 != nil
+}
+
+// SetStatusCode200 sets the MetricsResponse value in the GetMetricsResponse object
+// description is TBD
+func (obj *getMetricsResponse) SetStatusCode200(value MetricsResponse) GetMetricsResponse {
+
+	obj.statusCode_200Holder = nil
+	obj.obj.StatusCode_200 = value.Msg()
+
+	return obj
+}
+
+// StatusCode400 returns a ErrorDetails
+// description is TBD
+func (obj *getMetricsResponse) StatusCode400() ErrorDetails {
+	if obj.obj.StatusCode_400 == nil {
+		obj.obj.StatusCode_400 = NewErrorDetails().Msg()
+	}
+	if obj.statusCode_400Holder == nil {
+		obj.statusCode_400Holder = &errorDetails{obj: obj.obj.StatusCode_400}
+	}
+	return obj.statusCode_400Holder
+}
+
+// StatusCode400 returns a ErrorDetails
+// description is TBD
+func (obj *getMetricsResponse) HasStatusCode400() bool {
+	return obj.obj.StatusCode_400 != nil
+}
+
+// SetStatusCode400 sets the ErrorDetails value in the GetMetricsResponse object
+// description is TBD
+func (obj *getMetricsResponse) SetStatusCode400(value ErrorDetails) GetMetricsResponse {
+
+	obj.statusCode_400Holder = nil
+	obj.obj.StatusCode_400 = value.Msg()
+
+	return obj
+}
+
+// StatusCode500 returns a ErrorDetails
+// description is TBD
+func (obj *getMetricsResponse) StatusCode500() ErrorDetails {
+	if obj.obj.StatusCode_500 == nil {
+		obj.obj.StatusCode_500 = NewErrorDetails().Msg()
+	}
+	if obj.statusCode_500Holder == nil {
+		obj.statusCode_500Holder = &errorDetails{obj: obj.obj.StatusCode_500}
+	}
+	return obj.statusCode_500Holder
+}
+
+// StatusCode500 returns a ErrorDetails
+// description is TBD
+func (obj *getMetricsResponse) HasStatusCode500() bool {
+	return obj.obj.StatusCode_500 != nil
+}
+
+// SetStatusCode500 sets the ErrorDetails value in the GetMetricsResponse object
+// description is TBD
+func (obj *getMetricsResponse) SetStatusCode500(value ErrorDetails) GetMetricsResponse {
+
+	obj.statusCode_500Holder = nil
+	obj.obj.StatusCode_500 = value.Msg()
+
+	return obj
+}
+
+func (obj *getMetricsResponse) validateObj(set_default bool) {
+	if set_default {
+		obj.setDefault()
+	}
+
+	if obj.obj.StatusCode_200 != nil {
+		obj.StatusCode200().validateObj(set_default)
+	}
+
+	if obj.obj.StatusCode_400 != nil {
+		obj.StatusCode400().validateObj(set_default)
+	}
+
+	if obj.obj.StatusCode_500 != nil {
+		obj.StatusCode500().validateObj(set_default)
+	}
+
+}
+
+func (obj *getMetricsResponse) setDefault() {
 
 }
 
@@ -2334,6 +3464,517 @@ func (obj *errorDetails) validateObj(set_default bool) {
 }
 
 func (obj *errorDetails) setDefault() {
+
+}
+
+// ***** WarningDetails *****
+type warningDetails struct {
+	obj *onexdataflowapi.WarningDetails
+}
+
+func NewWarningDetails() WarningDetails {
+	obj := warningDetails{obj: &onexdataflowapi.WarningDetails{}}
+	obj.setDefault()
+	return &obj
+}
+
+func (obj *warningDetails) Msg() *onexdataflowapi.WarningDetails {
+	return obj.obj
+}
+
+func (obj *warningDetails) SetMsg(msg *onexdataflowapi.WarningDetails) WarningDetails {
+
+	proto.Merge(obj.obj, msg)
+	return obj
+}
+
+func (obj *warningDetails) ToPbText() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	protoMarshal, err := proto.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(protoMarshal), nil
+}
+
+func (obj *warningDetails) FromPbText(value string) error {
+	retObj := proto.Unmarshal([]byte(value), obj.Msg())
+	if retObj != nil {
+		return retObj
+	}
+
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return retObj
+}
+
+func (obj *warningDetails) ToYaml() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	data, err = yaml.JSONToYAML(data)
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *warningDetails) FromYaml(value string) error {
+	if value == "" {
+		value = "{}"
+	}
+	data, err := yaml.YAMLToJSON([]byte(value))
+	if err != nil {
+		return err
+	}
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	uError := opts.Unmarshal([]byte(data), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return nil
+}
+
+func (obj *warningDetails) ToJson() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+		Indent:          "  ",
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *warningDetails) FromJson(value string) error {
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	if value == "" {
+		value = "{}"
+	}
+	uError := opts.Unmarshal([]byte(value), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+
+	err := obj.validateFromText()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (obj *warningDetails) validateFromText() error {
+	obj.validateObj(true)
+	return validationResult()
+}
+
+func (obj *warningDetails) Validate() error {
+	obj.validateObj(false)
+	return validationResult()
+}
+
+// WarningDetails is description is TBD
+type WarningDetails interface {
+	Msg() *onexdataflowapi.WarningDetails
+	SetMsg(*onexdataflowapi.WarningDetails) WarningDetails
+	// ToPbText marshals WarningDetails to protobuf text
+	ToPbText() (string, error)
+	// ToYaml marshals WarningDetails to YAML text
+	ToYaml() (string, error)
+	// ToJson marshals WarningDetails to JSON text
+	ToJson() (string, error)
+	// FromPbText unmarshals WarningDetails from protobuf text
+	FromPbText(value string) error
+	// FromYaml unmarshals WarningDetails from YAML text
+	FromYaml(value string) error
+	// FromJson unmarshals WarningDetails from JSON text
+	FromJson(value string) error
+	// Validate validates WarningDetails
+	Validate() error
+	validateFromText() error
+	validateObj(set_default bool)
+	setDefault()
+	// Warnings returns []string, set in WarningDetails.
+	Warnings() []string
+	// SetWarnings assigns []string provided by user to WarningDetails
+	SetWarnings(value []string) WarningDetails
+}
+
+// Warnings returns a []string
+// description is TBD
+func (obj *warningDetails) Warnings() []string {
+	if obj.obj.Warnings == nil {
+		obj.obj.Warnings = make([]string, 0)
+	}
+	return obj.obj.Warnings
+}
+
+// SetWarnings sets the []string value in the WarningDetails object
+// description is TBD
+func (obj *warningDetails) SetWarnings(value []string) WarningDetails {
+
+	if obj.obj.Warnings == nil {
+		obj.obj.Warnings = make([]string, 0)
+	}
+	obj.obj.Warnings = value
+
+	return obj
+}
+
+func (obj *warningDetails) validateObj(set_default bool) {
+	if set_default {
+		obj.setDefault()
+	}
+
+}
+
+func (obj *warningDetails) setDefault() {
+
+}
+
+// ***** MetricsResponse *****
+type metricsResponse struct {
+	obj               *onexdataflowapi.MetricsResponse
+	flowResultsHolder MetricsResponseMetricsResponseFlowResultIter
+}
+
+func NewMetricsResponse() MetricsResponse {
+	obj := metricsResponse{obj: &onexdataflowapi.MetricsResponse{}}
+	obj.setDefault()
+	return &obj
+}
+
+func (obj *metricsResponse) Msg() *onexdataflowapi.MetricsResponse {
+	return obj.obj
+}
+
+func (obj *metricsResponse) SetMsg(msg *onexdataflowapi.MetricsResponse) MetricsResponse {
+	obj.setNil()
+	proto.Merge(obj.obj, msg)
+	return obj
+}
+
+func (obj *metricsResponse) ToPbText() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	protoMarshal, err := proto.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(protoMarshal), nil
+}
+
+func (obj *metricsResponse) FromPbText(value string) error {
+	retObj := proto.Unmarshal([]byte(value), obj.Msg())
+	if retObj != nil {
+		return retObj
+	}
+	obj.setNil()
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return retObj
+}
+
+func (obj *metricsResponse) ToYaml() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	data, err = yaml.JSONToYAML(data)
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *metricsResponse) FromYaml(value string) error {
+	if value == "" {
+		value = "{}"
+	}
+	data, err := yaml.YAMLToJSON([]byte(value))
+	if err != nil {
+		return err
+	}
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	uError := opts.Unmarshal([]byte(data), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+	obj.setNil()
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return nil
+}
+
+func (obj *metricsResponse) ToJson() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+		Indent:          "  ",
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *metricsResponse) FromJson(value string) error {
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	if value == "" {
+		value = "{}"
+	}
+	uError := opts.Unmarshal([]byte(value), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+	obj.setNil()
+	err := obj.validateFromText()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (obj *metricsResponse) validateFromText() error {
+	obj.validateObj(true)
+	return validationResult()
+}
+
+func (obj *metricsResponse) Validate() error {
+	obj.validateObj(false)
+	return validationResult()
+}
+
+func (obj *metricsResponse) setNil() {
+	obj.flowResultsHolder = nil
+}
+
+// MetricsResponse is metrics response details
+type MetricsResponse interface {
+	Msg() *onexdataflowapi.MetricsResponse
+	SetMsg(*onexdataflowapi.MetricsResponse) MetricsResponse
+	// ToPbText marshals MetricsResponse to protobuf text
+	ToPbText() (string, error)
+	// ToYaml marshals MetricsResponse to YAML text
+	ToYaml() (string, error)
+	// ToJson marshals MetricsResponse to JSON text
+	ToJson() (string, error)
+	// FromPbText unmarshals MetricsResponse from protobuf text
+	FromPbText(value string) error
+	// FromYaml unmarshals MetricsResponse from YAML text
+	FromYaml(value string) error
+	// FromJson unmarshals MetricsResponse from JSON text
+	FromJson(value string) error
+	// Validate validates MetricsResponse
+	Validate() error
+	validateFromText() error
+	validateObj(set_default bool)
+	setDefault()
+	// Jct returns float32, set in MetricsResponse.
+	Jct() float32
+	// SetJct assigns float32 provided by user to MetricsResponse
+	SetJct(value float32) MetricsResponse
+	// HasJct checks if Jct has been set in MetricsResponse
+	HasJct() bool
+	// FlowResults returns MetricsResponseMetricsResponseFlowResultIter, set in MetricsResponse
+	FlowResults() MetricsResponseMetricsResponseFlowResultIter
+	setNil()
+}
+
+// Jct returns a float32
+// job completion time
+func (obj *metricsResponse) Jct() float32 {
+
+	return *obj.obj.Jct
+
+}
+
+// Jct returns a float32
+// job completion time
+func (obj *metricsResponse) HasJct() bool {
+	return obj.obj.Jct != nil
+}
+
+// SetJct sets the float32 value in the MetricsResponse object
+// job completion time
+func (obj *metricsResponse) SetJct(value float32) MetricsResponse {
+
+	obj.obj.Jct = &value
+	return obj
+}
+
+// FlowResults returns a []MetricsResponseFlowResult
+// description is TBD
+func (obj *metricsResponse) FlowResults() MetricsResponseMetricsResponseFlowResultIter {
+	if len(obj.obj.FlowResults) == 0 {
+		obj.obj.FlowResults = []*onexdataflowapi.MetricsResponseFlowResult{}
+	}
+	if obj.flowResultsHolder == nil {
+		obj.flowResultsHolder = newMetricsResponseMetricsResponseFlowResultIter().setMsg(obj)
+	}
+	return obj.flowResultsHolder
+}
+
+type metricsResponseMetricsResponseFlowResultIter struct {
+	obj                            *metricsResponse
+	metricsResponseFlowResultSlice []MetricsResponseFlowResult
+}
+
+func newMetricsResponseMetricsResponseFlowResultIter() MetricsResponseMetricsResponseFlowResultIter {
+	return &metricsResponseMetricsResponseFlowResultIter{}
+}
+
+type MetricsResponseMetricsResponseFlowResultIter interface {
+	setMsg(*metricsResponse) MetricsResponseMetricsResponseFlowResultIter
+	Items() []MetricsResponseFlowResult
+	Add() MetricsResponseFlowResult
+	Append(items ...MetricsResponseFlowResult) MetricsResponseMetricsResponseFlowResultIter
+	Set(index int, newObj MetricsResponseFlowResult) MetricsResponseMetricsResponseFlowResultIter
+	Clear() MetricsResponseMetricsResponseFlowResultIter
+	clearHolderSlice() MetricsResponseMetricsResponseFlowResultIter
+	appendHolderSlice(item MetricsResponseFlowResult) MetricsResponseMetricsResponseFlowResultIter
+}
+
+func (obj *metricsResponseMetricsResponseFlowResultIter) setMsg(msg *metricsResponse) MetricsResponseMetricsResponseFlowResultIter {
+	obj.clearHolderSlice()
+	for _, val := range msg.obj.FlowResults {
+		obj.appendHolderSlice(&metricsResponseFlowResult{obj: val})
+	}
+	obj.obj = msg
+	return obj
+}
+
+func (obj *metricsResponseMetricsResponseFlowResultIter) Items() []MetricsResponseFlowResult {
+	return obj.metricsResponseFlowResultSlice
+}
+
+func (obj *metricsResponseMetricsResponseFlowResultIter) Add() MetricsResponseFlowResult {
+	newObj := &onexdataflowapi.MetricsResponseFlowResult{}
+	obj.obj.obj.FlowResults = append(obj.obj.obj.FlowResults, newObj)
+	newLibObj := &metricsResponseFlowResult{obj: newObj}
+	newLibObj.setDefault()
+	obj.metricsResponseFlowResultSlice = append(obj.metricsResponseFlowResultSlice, newLibObj)
+	return newLibObj
+}
+
+func (obj *metricsResponseMetricsResponseFlowResultIter) Append(items ...MetricsResponseFlowResult) MetricsResponseMetricsResponseFlowResultIter {
+	for _, item := range items {
+		newObj := item.Msg()
+		obj.obj.obj.FlowResults = append(obj.obj.obj.FlowResults, newObj)
+		obj.metricsResponseFlowResultSlice = append(obj.metricsResponseFlowResultSlice, item)
+	}
+	return obj
+}
+
+func (obj *metricsResponseMetricsResponseFlowResultIter) Set(index int, newObj MetricsResponseFlowResult) MetricsResponseMetricsResponseFlowResultIter {
+	obj.obj.obj.FlowResults[index] = newObj.Msg()
+	obj.metricsResponseFlowResultSlice[index] = newObj
+	return obj
+}
+func (obj *metricsResponseMetricsResponseFlowResultIter) Clear() MetricsResponseMetricsResponseFlowResultIter {
+	if len(obj.obj.obj.FlowResults) > 0 {
+		obj.obj.obj.FlowResults = []*onexdataflowapi.MetricsResponseFlowResult{}
+		obj.metricsResponseFlowResultSlice = []MetricsResponseFlowResult{}
+	}
+	return obj
+}
+func (obj *metricsResponseMetricsResponseFlowResultIter) clearHolderSlice() MetricsResponseMetricsResponseFlowResultIter {
+	if len(obj.metricsResponseFlowResultSlice) > 0 {
+		obj.metricsResponseFlowResultSlice = []MetricsResponseFlowResult{}
+	}
+	return obj
+}
+func (obj *metricsResponseMetricsResponseFlowResultIter) appendHolderSlice(item MetricsResponseFlowResult) MetricsResponseMetricsResponseFlowResultIter {
+	obj.metricsResponseFlowResultSlice = append(obj.metricsResponseFlowResultSlice, item)
+	return obj
+}
+
+func (obj *metricsResponse) validateObj(set_default bool) {
+	if set_default {
+		obj.setDefault()
+	}
+
+	if obj.obj.FlowResults != nil {
+
+		if set_default {
+			obj.FlowResults().clearHolderSlice()
+			for _, item := range obj.obj.FlowResults {
+				obj.FlowResults().appendHolderSlice(&metricsResponseFlowResult{obj: item})
+			}
+		}
+		for _, item := range obj.FlowResults().Items() {
+			item.validateObj(set_default)
+		}
+
+	}
+
+}
+
+func (obj *metricsResponse) setDefault() {
 
 }
 
@@ -3549,6 +5190,367 @@ func (obj *dataflowFlowProfile) validateObj(set_default bool) {
 }
 
 func (obj *dataflowFlowProfile) setDefault() {
+
+}
+
+// ***** MetricsResponseFlowResult *****
+type metricsResponseFlowResult struct {
+	obj           *onexdataflowapi.MetricsResponseFlowResult
+	tcpInfoHolder MetricsResponseFlowResultTcpInfo
+}
+
+func NewMetricsResponseFlowResult() MetricsResponseFlowResult {
+	obj := metricsResponseFlowResult{obj: &onexdataflowapi.MetricsResponseFlowResult{}}
+	obj.setDefault()
+	return &obj
+}
+
+func (obj *metricsResponseFlowResult) Msg() *onexdataflowapi.MetricsResponseFlowResult {
+	return obj.obj
+}
+
+func (obj *metricsResponseFlowResult) SetMsg(msg *onexdataflowapi.MetricsResponseFlowResult) MetricsResponseFlowResult {
+	obj.setNil()
+	proto.Merge(obj.obj, msg)
+	return obj
+}
+
+func (obj *metricsResponseFlowResult) ToPbText() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	protoMarshal, err := proto.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(protoMarshal), nil
+}
+
+func (obj *metricsResponseFlowResult) FromPbText(value string) error {
+	retObj := proto.Unmarshal([]byte(value), obj.Msg())
+	if retObj != nil {
+		return retObj
+	}
+	obj.setNil()
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return retObj
+}
+
+func (obj *metricsResponseFlowResult) ToYaml() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	data, err = yaml.JSONToYAML(data)
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *metricsResponseFlowResult) FromYaml(value string) error {
+	if value == "" {
+		value = "{}"
+	}
+	data, err := yaml.YAMLToJSON([]byte(value))
+	if err != nil {
+		return err
+	}
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	uError := opts.Unmarshal([]byte(data), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+	obj.setNil()
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return nil
+}
+
+func (obj *metricsResponseFlowResult) ToJson() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+		Indent:          "  ",
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *metricsResponseFlowResult) FromJson(value string) error {
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	if value == "" {
+		value = "{}"
+	}
+	uError := opts.Unmarshal([]byte(value), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+	obj.setNil()
+	err := obj.validateFromText()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (obj *metricsResponseFlowResult) validateFromText() error {
+	obj.validateObj(true)
+	return validationResult()
+}
+
+func (obj *metricsResponseFlowResult) Validate() error {
+	obj.validateObj(false)
+	return validationResult()
+}
+
+func (obj *metricsResponseFlowResult) setNil() {
+	obj.tcpInfoHolder = nil
+}
+
+// MetricsResponseFlowResult is result for a single data flow
+type MetricsResponseFlowResult interface {
+	Msg() *onexdataflowapi.MetricsResponseFlowResult
+	SetMsg(*onexdataflowapi.MetricsResponseFlowResult) MetricsResponseFlowResult
+	// ToPbText marshals MetricsResponseFlowResult to protobuf text
+	ToPbText() (string, error)
+	// ToYaml marshals MetricsResponseFlowResult to YAML text
+	ToYaml() (string, error)
+	// ToJson marshals MetricsResponseFlowResult to JSON text
+	ToJson() (string, error)
+	// FromPbText unmarshals MetricsResponseFlowResult from protobuf text
+	FromPbText(value string) error
+	// FromYaml unmarshals MetricsResponseFlowResult from YAML text
+	FromYaml(value string) error
+	// FromJson unmarshals MetricsResponseFlowResult from JSON text
+	FromJson(value string) error
+	// Validate validates MetricsResponseFlowResult
+	Validate() error
+	validateFromText() error
+	validateObj(set_default bool)
+	setDefault()
+	// WorkloadName returns string, set in MetricsResponseFlowResult.
+	WorkloadName() string
+	// SetWorkloadName assigns string provided by user to MetricsResponseFlowResult
+	SetWorkloadName(value string) MetricsResponseFlowResult
+	// HasWorkloadName checks if WorkloadName has been set in MetricsResponseFlowResult
+	HasWorkloadName() bool
+	// FlowNumber returns int32, set in MetricsResponseFlowResult.
+	FlowNumber() int32
+	// SetFlowNumber assigns int32 provided by user to MetricsResponseFlowResult
+	SetFlowNumber(value int32) MetricsResponseFlowResult
+	// HasFlowNumber checks if FlowNumber has been set in MetricsResponseFlowResult
+	HasFlowNumber() bool
+	// FromHostName returns string, set in MetricsResponseFlowResult.
+	FromHostName() string
+	// SetFromHostName assigns string provided by user to MetricsResponseFlowResult
+	SetFromHostName(value string) MetricsResponseFlowResult
+	// HasFromHostName checks if FromHostName has been set in MetricsResponseFlowResult
+	HasFromHostName() bool
+	// ToHostName returns string, set in MetricsResponseFlowResult.
+	ToHostName() string
+	// SetToHostName assigns string provided by user to MetricsResponseFlowResult
+	SetToHostName(value string) MetricsResponseFlowResult
+	// HasToHostName checks if ToHostName has been set in MetricsResponseFlowResult
+	HasToHostName() bool
+	// Fct returns float32, set in MetricsResponseFlowResult.
+	Fct() float32
+	// SetFct assigns float32 provided by user to MetricsResponseFlowResult
+	SetFct(value float32) MetricsResponseFlowResult
+	// HasFct checks if Fct has been set in MetricsResponseFlowResult
+	HasFct() bool
+	// TcpInfo returns MetricsResponseFlowResultTcpInfo, set in MetricsResponseFlowResult.
+	// MetricsResponseFlowResultTcpInfo is tCP information for this flow
+	TcpInfo() MetricsResponseFlowResultTcpInfo
+	// SetTcpInfo assigns MetricsResponseFlowResultTcpInfo provided by user to MetricsResponseFlowResult.
+	// MetricsResponseFlowResultTcpInfo is tCP information for this flow
+	SetTcpInfo(value MetricsResponseFlowResultTcpInfo) MetricsResponseFlowResult
+	// HasTcpInfo checks if TcpInfo has been set in MetricsResponseFlowResult
+	HasTcpInfo() bool
+	setNil()
+}
+
+// WorkloadName returns a string
+// description is TBD
+func (obj *metricsResponseFlowResult) WorkloadName() string {
+
+	return *obj.obj.WorkloadName
+
+}
+
+// WorkloadName returns a string
+// description is TBD
+func (obj *metricsResponseFlowResult) HasWorkloadName() bool {
+	return obj.obj.WorkloadName != nil
+}
+
+// SetWorkloadName sets the string value in the MetricsResponseFlowResult object
+// description is TBD
+func (obj *metricsResponseFlowResult) SetWorkloadName(value string) MetricsResponseFlowResult {
+
+	obj.obj.WorkloadName = &value
+	return obj
+}
+
+// FlowNumber returns a int32
+// description is TBD
+func (obj *metricsResponseFlowResult) FlowNumber() int32 {
+
+	return *obj.obj.FlowNumber
+
+}
+
+// FlowNumber returns a int32
+// description is TBD
+func (obj *metricsResponseFlowResult) HasFlowNumber() bool {
+	return obj.obj.FlowNumber != nil
+}
+
+// SetFlowNumber sets the int32 value in the MetricsResponseFlowResult object
+// description is TBD
+func (obj *metricsResponseFlowResult) SetFlowNumber(value int32) MetricsResponseFlowResult {
+
+	obj.obj.FlowNumber = &value
+	return obj
+}
+
+// FromHostName returns a string
+// description is TBD
+func (obj *metricsResponseFlowResult) FromHostName() string {
+
+	return *obj.obj.FromHostName
+
+}
+
+// FromHostName returns a string
+// description is TBD
+func (obj *metricsResponseFlowResult) HasFromHostName() bool {
+	return obj.obj.FromHostName != nil
+}
+
+// SetFromHostName sets the string value in the MetricsResponseFlowResult object
+// description is TBD
+func (obj *metricsResponseFlowResult) SetFromHostName(value string) MetricsResponseFlowResult {
+
+	obj.obj.FromHostName = &value
+	return obj
+}
+
+// ToHostName returns a string
+// description is TBD
+func (obj *metricsResponseFlowResult) ToHostName() string {
+
+	return *obj.obj.ToHostName
+
+}
+
+// ToHostName returns a string
+// description is TBD
+func (obj *metricsResponseFlowResult) HasToHostName() bool {
+	return obj.obj.ToHostName != nil
+}
+
+// SetToHostName sets the string value in the MetricsResponseFlowResult object
+// description is TBD
+func (obj *metricsResponseFlowResult) SetToHostName(value string) MetricsResponseFlowResult {
+
+	obj.obj.ToHostName = &value
+	return obj
+}
+
+// Fct returns a float32
+// flow completion time
+func (obj *metricsResponseFlowResult) Fct() float32 {
+
+	return *obj.obj.Fct
+
+}
+
+// Fct returns a float32
+// flow completion time
+func (obj *metricsResponseFlowResult) HasFct() bool {
+	return obj.obj.Fct != nil
+}
+
+// SetFct sets the float32 value in the MetricsResponseFlowResult object
+// flow completion time
+func (obj *metricsResponseFlowResult) SetFct(value float32) MetricsResponseFlowResult {
+
+	obj.obj.Fct = &value
+	return obj
+}
+
+// TcpInfo returns a MetricsResponseFlowResultTcpInfo
+// description is TBD
+func (obj *metricsResponseFlowResult) TcpInfo() MetricsResponseFlowResultTcpInfo {
+	if obj.obj.TcpInfo == nil {
+		obj.obj.TcpInfo = NewMetricsResponseFlowResultTcpInfo().Msg()
+	}
+	if obj.tcpInfoHolder == nil {
+		obj.tcpInfoHolder = &metricsResponseFlowResultTcpInfo{obj: obj.obj.TcpInfo}
+	}
+	return obj.tcpInfoHolder
+}
+
+// TcpInfo returns a MetricsResponseFlowResultTcpInfo
+// description is TBD
+func (obj *metricsResponseFlowResult) HasTcpInfo() bool {
+	return obj.obj.TcpInfo != nil
+}
+
+// SetTcpInfo sets the MetricsResponseFlowResultTcpInfo value in the MetricsResponseFlowResult object
+// description is TBD
+func (obj *metricsResponseFlowResult) SetTcpInfo(value MetricsResponseFlowResultTcpInfo) MetricsResponseFlowResult {
+
+	obj.tcpInfoHolder = nil
+	obj.obj.TcpInfo = value.Msg()
+
+	return obj
+}
+
+func (obj *metricsResponseFlowResult) validateObj(set_default bool) {
+	if set_default {
+		obj.setDefault()
+	}
+
+	if obj.obj.TcpInfo != nil {
+		obj.TcpInfo().validateObj(set_default)
+	}
+
+}
+
+func (obj *metricsResponseFlowResult) setDefault() {
 
 }
 
@@ -5963,6 +7965,265 @@ func (obj *dataflowFlowProfileUdp) validateObj(set_default bool) {
 }
 
 func (obj *dataflowFlowProfileUdp) setDefault() {
+
+}
+
+// ***** MetricsResponseFlowResultTcpInfo *****
+type metricsResponseFlowResultTcpInfo struct {
+	obj *onexdataflowapi.MetricsResponseFlowResultTcpInfo
+}
+
+func NewMetricsResponseFlowResultTcpInfo() MetricsResponseFlowResultTcpInfo {
+	obj := metricsResponseFlowResultTcpInfo{obj: &onexdataflowapi.MetricsResponseFlowResultTcpInfo{}}
+	obj.setDefault()
+	return &obj
+}
+
+func (obj *metricsResponseFlowResultTcpInfo) Msg() *onexdataflowapi.MetricsResponseFlowResultTcpInfo {
+	return obj.obj
+}
+
+func (obj *metricsResponseFlowResultTcpInfo) SetMsg(msg *onexdataflowapi.MetricsResponseFlowResultTcpInfo) MetricsResponseFlowResultTcpInfo {
+
+	proto.Merge(obj.obj, msg)
+	return obj
+}
+
+func (obj *metricsResponseFlowResultTcpInfo) ToPbText() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	protoMarshal, err := proto.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(protoMarshal), nil
+}
+
+func (obj *metricsResponseFlowResultTcpInfo) FromPbText(value string) error {
+	retObj := proto.Unmarshal([]byte(value), obj.Msg())
+	if retObj != nil {
+		return retObj
+	}
+
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return retObj
+}
+
+func (obj *metricsResponseFlowResultTcpInfo) ToYaml() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	data, err = yaml.JSONToYAML(data)
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *metricsResponseFlowResultTcpInfo) FromYaml(value string) error {
+	if value == "" {
+		value = "{}"
+	}
+	data, err := yaml.YAMLToJSON([]byte(value))
+	if err != nil {
+		return err
+	}
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	uError := opts.Unmarshal([]byte(data), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return nil
+}
+
+func (obj *metricsResponseFlowResultTcpInfo) ToJson() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+		Indent:          "  ",
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *metricsResponseFlowResultTcpInfo) FromJson(value string) error {
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	if value == "" {
+		value = "{}"
+	}
+	uError := opts.Unmarshal([]byte(value), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+
+	err := obj.validateFromText()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (obj *metricsResponseFlowResultTcpInfo) validateFromText() error {
+	obj.validateObj(true)
+	return validationResult()
+}
+
+func (obj *metricsResponseFlowResultTcpInfo) Validate() error {
+	obj.validateObj(false)
+	return validationResult()
+}
+
+// MetricsResponseFlowResultTcpInfo is tCP information for this flow
+type MetricsResponseFlowResultTcpInfo interface {
+	Msg() *onexdataflowapi.MetricsResponseFlowResultTcpInfo
+	SetMsg(*onexdataflowapi.MetricsResponseFlowResultTcpInfo) MetricsResponseFlowResultTcpInfo
+	// ToPbText marshals MetricsResponseFlowResultTcpInfo to protobuf text
+	ToPbText() (string, error)
+	// ToYaml marshals MetricsResponseFlowResultTcpInfo to YAML text
+	ToYaml() (string, error)
+	// ToJson marshals MetricsResponseFlowResultTcpInfo to JSON text
+	ToJson() (string, error)
+	// FromPbText unmarshals MetricsResponseFlowResultTcpInfo from protobuf text
+	FromPbText(value string) error
+	// FromYaml unmarshals MetricsResponseFlowResultTcpInfo from YAML text
+	FromYaml(value string) error
+	// FromJson unmarshals MetricsResponseFlowResultTcpInfo from JSON text
+	FromJson(value string) error
+	// Validate validates MetricsResponseFlowResultTcpInfo
+	Validate() error
+	validateFromText() error
+	validateObj(set_default bool)
+	setDefault()
+	// Rtt returns float32, set in MetricsResponseFlowResultTcpInfo.
+	Rtt() float32
+	// SetRtt assigns float32 provided by user to MetricsResponseFlowResultTcpInfo
+	SetRtt(value float32) MetricsResponseFlowResultTcpInfo
+	// HasRtt checks if Rtt has been set in MetricsResponseFlowResultTcpInfo
+	HasRtt() bool
+	// RttVariance returns float32, set in MetricsResponseFlowResultTcpInfo.
+	RttVariance() float32
+	// SetRttVariance assigns float32 provided by user to MetricsResponseFlowResultTcpInfo
+	SetRttVariance(value float32) MetricsResponseFlowResultTcpInfo
+	// HasRttVariance checks if RttVariance has been set in MetricsResponseFlowResultTcpInfo
+	HasRttVariance() bool
+	// Retransmissions returns float32, set in MetricsResponseFlowResultTcpInfo.
+	Retransmissions() float32
+	// SetRetransmissions assigns float32 provided by user to MetricsResponseFlowResultTcpInfo
+	SetRetransmissions(value float32) MetricsResponseFlowResultTcpInfo
+	// HasRetransmissions checks if Retransmissions has been set in MetricsResponseFlowResultTcpInfo
+	HasRetransmissions() bool
+}
+
+// Rtt returns a float32
+// round trip time in microseconds
+func (obj *metricsResponseFlowResultTcpInfo) Rtt() float32 {
+
+	return *obj.obj.Rtt
+
+}
+
+// Rtt returns a float32
+// round trip time in microseconds
+func (obj *metricsResponseFlowResultTcpInfo) HasRtt() bool {
+	return obj.obj.Rtt != nil
+}
+
+// SetRtt sets the float32 value in the MetricsResponseFlowResultTcpInfo object
+// round trip time in microseconds
+func (obj *metricsResponseFlowResultTcpInfo) SetRtt(value float32) MetricsResponseFlowResultTcpInfo {
+
+	obj.obj.Rtt = &value
+	return obj
+}
+
+// RttVariance returns a float32
+// round trip time variance in microseconds, larger values indicate less stable performance
+func (obj *metricsResponseFlowResultTcpInfo) RttVariance() float32 {
+
+	return *obj.obj.RttVariance
+
+}
+
+// RttVariance returns a float32
+// round trip time variance in microseconds, larger values indicate less stable performance
+func (obj *metricsResponseFlowResultTcpInfo) HasRttVariance() bool {
+	return obj.obj.RttVariance != nil
+}
+
+// SetRttVariance sets the float32 value in the MetricsResponseFlowResultTcpInfo object
+// round trip time variance in microseconds, larger values indicate less stable performance
+func (obj *metricsResponseFlowResultTcpInfo) SetRttVariance(value float32) MetricsResponseFlowResultTcpInfo {
+
+	obj.obj.RttVariance = &value
+	return obj
+}
+
+// Retransmissions returns a float32
+// total number of TCP retransmissions
+func (obj *metricsResponseFlowResultTcpInfo) Retransmissions() float32 {
+
+	return *obj.obj.Retransmissions
+
+}
+
+// Retransmissions returns a float32
+// total number of TCP retransmissions
+func (obj *metricsResponseFlowResultTcpInfo) HasRetransmissions() bool {
+	return obj.obj.Retransmissions != nil
+}
+
+// SetRetransmissions sets the float32 value in the MetricsResponseFlowResultTcpInfo object
+// total number of TCP retransmissions
+func (obj *metricsResponseFlowResultTcpInfo) SetRetransmissions(value float32) MetricsResponseFlowResultTcpInfo {
+
+	obj.obj.Retransmissions = &value
+	return obj
+}
+
+func (obj *metricsResponseFlowResultTcpInfo) validateObj(set_default bool) {
+	if set_default {
+		obj.setDefault()
+	}
+
+}
+
+func (obj *metricsResponseFlowResultTcpInfo) setDefault() {
 
 }
 
