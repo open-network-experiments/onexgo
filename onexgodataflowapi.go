@@ -3846,7 +3846,7 @@ type MetricsResponse interface {
 }
 
 // Jct returns a float32
-// job completion time
+// job completion time in micro seconds
 func (obj *metricsResponse) Jct() float32 {
 
 	return *obj.obj.Jct
@@ -3854,13 +3854,13 @@ func (obj *metricsResponse) Jct() float32 {
 }
 
 // Jct returns a float32
-// job completion time
+// job completion time in micro seconds
 func (obj *metricsResponse) HasJct() bool {
 	return obj.obj.Jct != nil
 }
 
 // SetJct sets the float32 value in the MetricsResponse object
-// job completion time
+// job completion time in micro seconds
 func (obj *metricsResponse) SetJct(value float32) MetricsResponse {
 
 	obj.obj.Jct = &value
@@ -5490,7 +5490,7 @@ func (obj *metricsResponseFlowResult) SetToHostName(value string) MetricsRespons
 }
 
 // Fct returns a float32
-// flow completion time
+// flow completion time in micro seconds
 func (obj *metricsResponseFlowResult) Fct() float32 {
 
 	return *obj.obj.Fct
@@ -5498,13 +5498,13 @@ func (obj *metricsResponseFlowResult) Fct() float32 {
 }
 
 // Fct returns a float32
-// flow completion time
+// flow completion time in micro seconds
 func (obj *metricsResponseFlowResult) HasFct() bool {
 	return obj.obj.Fct != nil
 }
 
 // SetFct sets the float32 value in the MetricsResponseFlowResult object
-// flow completion time
+// flow completion time in micro seconds
 func (obj *metricsResponseFlowResult) SetFct(value float32) MetricsResponseFlowResult {
 
 	obj.obj.Fct = &value
