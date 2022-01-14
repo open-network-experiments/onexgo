@@ -16,6 +16,7 @@ import (
 	"github.com/ghodss/yaml"
 	onexdataflowapi "github.com/open-network-experiments/onexgodataflowapi/onexdataflowapi"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -31,7 +32,7 @@ func (api *onexgodataflowapiApi) grpcConnect() error {
 	if api.grpcClient == nil {
 		ctx, cancelFunc := context.WithTimeout(context.Background(), api.grpc.dialTimeout)
 		defer cancelFunc()
-		conn, err := grpc.DialContext(ctx, api.grpc.location, grpc.WithInsecure())
+		conn, err := grpc.DialContext(ctx, api.grpc.location, grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			return err
 		}
@@ -596,6 +597,14 @@ func (obj *config) Validate() error {
 	return validationResult()
 }
 
+func (obj *config) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
 func (obj *config) setNil() {
 	obj.hostsHolder = nil
 	obj.dataflowHolder = nil
@@ -619,6 +628,8 @@ type Config interface {
 	FromJson(value string) error
 	// Validate validates Config
 	Validate() error
+	// A stringer function
+	String() string
 	validateFromText() error
 	validateObj(set_default bool)
 	setDefault()
@@ -919,6 +930,14 @@ func (obj *getConfigDetails) Validate() error {
 	return validationResult()
 }
 
+func (obj *getConfigDetails) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
 // GetConfigDetails is get config request details
 type GetConfigDetails interface {
 	Msg() *onexdataflowapi.GetConfigDetails
@@ -937,6 +956,8 @@ type GetConfigDetails interface {
 	FromJson(value string) error
 	// Validate validates GetConfigDetails
 	Validate() error
+	// A stringer function
+	String() string
 	validateFromText() error
 	validateObj(set_default bool)
 	setDefault()
@@ -1094,6 +1115,14 @@ func (obj *experimentRequest) Validate() error {
 	return validationResult()
 }
 
+func (obj *experimentRequest) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
 // ExperimentRequest is experiment request details
 type ExperimentRequest interface {
 	Msg() *onexdataflowapi.ExperimentRequest
@@ -1112,6 +1141,8 @@ type ExperimentRequest interface {
 	FromJson(value string) error
 	// Validate validates ExperimentRequest
 	Validate() error
+	// A stringer function
+	String() string
 	validateFromText() error
 	validateObj(set_default bool)
 	setDefault()
@@ -1269,6 +1300,14 @@ func (obj *metricsRequest) Validate() error {
 	return validationResult()
 }
 
+func (obj *metricsRequest) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
 // MetricsRequest is metrics request details
 type MetricsRequest interface {
 	Msg() *onexdataflowapi.MetricsRequest
@@ -1287,6 +1326,8 @@ type MetricsRequest interface {
 	FromJson(value string) error
 	// Validate validates MetricsRequest
 	Validate() error
+	// A stringer function
+	String() string
 	validateFromText() error
 	validateObj(set_default bool)
 	setDefault()
@@ -1447,6 +1488,14 @@ func (obj *setConfigResponse) Validate() error {
 	return validationResult()
 }
 
+func (obj *setConfigResponse) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
 func (obj *setConfigResponse) setNil() {
 	obj.statusCode_200Holder = nil
 	obj.statusCode_400Holder = nil
@@ -1471,6 +1520,8 @@ type SetConfigResponse interface {
 	FromJson(value string) error
 	// Validate validates SetConfigResponse
 	Validate() error
+	// A stringer function
+	String() string
 	validateFromText() error
 	validateObj(set_default bool)
 	setDefault()
@@ -1752,6 +1803,14 @@ func (obj *getConfigResponse) Validate() error {
 	return validationResult()
 }
 
+func (obj *getConfigResponse) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
 func (obj *getConfigResponse) setNil() {
 	obj.statusCode_200Holder = nil
 	obj.statusCode_400Holder = nil
@@ -1776,6 +1835,8 @@ type GetConfigResponse interface {
 	FromJson(value string) error
 	// Validate validates GetConfigResponse
 	Validate() error
+	// A stringer function
+	String() string
 	validateFromText() error
 	validateObj(set_default bool)
 	setDefault()
@@ -2057,6 +2118,14 @@ func (obj *runExperimentResponse) Validate() error {
 	return validationResult()
 }
 
+func (obj *runExperimentResponse) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
 func (obj *runExperimentResponse) setNil() {
 	obj.statusCode_400Holder = nil
 	obj.statusCode_500Holder = nil
@@ -2081,6 +2150,8 @@ type RunExperimentResponse interface {
 	FromJson(value string) error
 	// Validate validates RunExperimentResponse
 	Validate() error
+	// A stringer function
+	String() string
 	validateFromText() error
 	validateObj(set_default bool)
 	setDefault()
@@ -2362,6 +2433,14 @@ func (obj *getMetricsResponse) Validate() error {
 	return validationResult()
 }
 
+func (obj *getMetricsResponse) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
 func (obj *getMetricsResponse) setNil() {
 	obj.statusCode_200Holder = nil
 	obj.statusCode_400Holder = nil
@@ -2386,6 +2465,8 @@ type GetMetricsResponse interface {
 	FromJson(value string) error
 	// Validate validates GetMetricsResponse
 	Validate() error
+	// A stringer function
+	String() string
 	validateFromText() error
 	validateObj(set_default bool)
 	setDefault()
@@ -2664,6 +2745,14 @@ func (obj *host) Validate() error {
 	return validationResult()
 }
 
+func (obj *host) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
 // Host is description is TBD
 type Host interface {
 	Msg() *onexdataflowapi.Host
@@ -2682,6 +2771,8 @@ type Host interface {
 	FromJson(value string) error
 	// Validate validates Host
 	Validate() error
+	// A stringer function
+	String() string
 	validateFromText() error
 	validateObj(set_default bool)
 	setDefault()
@@ -2920,6 +3011,14 @@ func (obj *dataflow) Validate() error {
 	return validationResult()
 }
 
+func (obj *dataflow) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
 func (obj *dataflow) setNil() {
 	obj.hostManagementHolder = nil
 	obj.workloadHolder = nil
@@ -2944,6 +3043,8 @@ type Dataflow interface {
 	FromJson(value string) error
 	// Validate validates Dataflow
 	Validate() error
+	// A stringer function
+	String() string
 	validateFromText() error
 	validateObj(set_default bool)
 	setDefault()
@@ -3408,6 +3509,14 @@ func (obj *errorDetails) Validate() error {
 	return validationResult()
 }
 
+func (obj *errorDetails) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
 // ErrorDetails is description is TBD
 type ErrorDetails interface {
 	Msg() *onexdataflowapi.ErrorDetails
@@ -3426,6 +3535,8 @@ type ErrorDetails interface {
 	FromJson(value string) error
 	// Validate validates ErrorDetails
 	Validate() error
+	// A stringer function
+	String() string
 	validateFromText() error
 	validateObj(set_default bool)
 	setDefault()
@@ -3608,6 +3719,14 @@ func (obj *warningDetails) Validate() error {
 	return validationResult()
 }
 
+func (obj *warningDetails) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
 // WarningDetails is description is TBD
 type WarningDetails interface {
 	Msg() *onexdataflowapi.WarningDetails
@@ -3626,6 +3745,8 @@ type WarningDetails interface {
 	FromJson(value string) error
 	// Validate validates WarningDetails
 	Validate() error
+	// A stringer function
+	String() string
 	validateFromText() error
 	validateObj(set_default bool)
 	setDefault()
@@ -3809,6 +3930,14 @@ func (obj *metricsResponse) Validate() error {
 	return validationResult()
 }
 
+func (obj *metricsResponse) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
 func (obj *metricsResponse) setNil() {
 	obj.flowResultsHolder = nil
 }
@@ -3831,6 +3960,8 @@ type MetricsResponse interface {
 	FromJson(value string) error
 	// Validate validates MetricsResponse
 	Validate() error
+	// A stringer function
+	String() string
 	validateFromText() error
 	validateObj(set_default bool)
 	setDefault()
@@ -4119,6 +4250,14 @@ func (obj *dataflowHostManagement) Validate() error {
 	return validationResult()
 }
 
+func (obj *dataflowHostManagement) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
 // DataflowHostManagement is auxillary host information needed to run dataflow experiments
 type DataflowHostManagement interface {
 	Msg() *onexdataflowapi.DataflowHostManagement
@@ -4137,6 +4276,8 @@ type DataflowHostManagement interface {
 	FromJson(value string) error
 	// Validate validates DataflowHostManagement
 	Validate() error
+	// A stringer function
+	String() string
 	validateFromText() error
 	validateObj(set_default bool)
 	setDefault()
@@ -4379,6 +4520,14 @@ func (obj *dataflowWorkloadItem) Validate() error {
 	return validationResult()
 }
 
+func (obj *dataflowWorkloadItem) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
 func (obj *dataflowWorkloadItem) setNil() {
 	obj.scatterHolder = nil
 	obj.gatherHolder = nil
@@ -4406,6 +4555,8 @@ type DataflowWorkloadItem interface {
 	FromJson(value string) error
 	// Validate validates DataflowWorkloadItem
 	Validate() error
+	// A stringer function
+	String() string
 	validateFromText() error
 	validateObj(set_default bool)
 	setDefault()
@@ -4911,6 +5062,14 @@ func (obj *dataflowFlowProfile) Validate() error {
 	return validationResult()
 }
 
+func (obj *dataflowFlowProfile) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
 func (obj *dataflowFlowProfile) setNil() {
 	obj.ethernetHolder = nil
 	obj.tcpHolder = nil
@@ -4935,6 +5094,8 @@ type DataflowFlowProfile interface {
 	FromJson(value string) error
 	// Validate validates DataflowFlowProfile
 	Validate() error
+	// A stringer function
+	String() string
 	validateFromText() error
 	validateObj(set_default bool)
 	setDefault()
@@ -5335,6 +5496,14 @@ func (obj *metricsResponseFlowResult) Validate() error {
 	return validationResult()
 }
 
+func (obj *metricsResponseFlowResult) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
 func (obj *metricsResponseFlowResult) setNil() {
 	obj.tcpInfoHolder = nil
 }
@@ -5357,6 +5526,8 @@ type MetricsResponseFlowResult interface {
 	FromJson(value string) error
 	// Validate validates MetricsResponseFlowResult
 	Validate() error
+	// A stringer function
+	String() string
 	validateFromText() error
 	validateObj(set_default bool)
 	setDefault()
@@ -5390,6 +5561,30 @@ type MetricsResponseFlowResult interface {
 	SetFct(value float32) MetricsResponseFlowResult
 	// HasFct checks if Fct has been set in MetricsResponseFlowResult
 	HasFct() bool
+	// FirstTimestamp returns int32, set in MetricsResponseFlowResult.
+	FirstTimestamp() int32
+	// SetFirstTimestamp assigns int32 provided by user to MetricsResponseFlowResult
+	SetFirstTimestamp(value int32) MetricsResponseFlowResult
+	// HasFirstTimestamp checks if FirstTimestamp has been set in MetricsResponseFlowResult
+	HasFirstTimestamp() bool
+	// LastTimestamp returns int32, set in MetricsResponseFlowResult.
+	LastTimestamp() int32
+	// SetLastTimestamp assigns int32 provided by user to MetricsResponseFlowResult
+	SetLastTimestamp(value int32) MetricsResponseFlowResult
+	// HasLastTimestamp checks if LastTimestamp has been set in MetricsResponseFlowResult
+	HasLastTimestamp() bool
+	// BytesTx returns int32, set in MetricsResponseFlowResult.
+	BytesTx() int32
+	// SetBytesTx assigns int32 provided by user to MetricsResponseFlowResult
+	SetBytesTx(value int32) MetricsResponseFlowResult
+	// HasBytesTx checks if BytesTx has been set in MetricsResponseFlowResult
+	HasBytesTx() bool
+	// BytesRx returns int32, set in MetricsResponseFlowResult.
+	BytesRx() int32
+	// SetBytesRx assigns int32 provided by user to MetricsResponseFlowResult
+	SetBytesRx(value int32) MetricsResponseFlowResult
+	// HasBytesRx checks if BytesRx has been set in MetricsResponseFlowResult
+	HasBytesRx() bool
 	// TcpInfo returns MetricsResponseFlowResultTcpInfo, set in MetricsResponseFlowResult.
 	// MetricsResponseFlowResultTcpInfo is tCP information for this flow
 	TcpInfo() MetricsResponseFlowResultTcpInfo
@@ -5508,6 +5703,94 @@ func (obj *metricsResponseFlowResult) HasFct() bool {
 func (obj *metricsResponseFlowResult) SetFct(value float32) MetricsResponseFlowResult {
 
 	obj.obj.Fct = &value
+	return obj
+}
+
+// FirstTimestamp returns a int32
+// first timestamp in micro seconds
+func (obj *metricsResponseFlowResult) FirstTimestamp() int32 {
+
+	return *obj.obj.FirstTimestamp
+
+}
+
+// FirstTimestamp returns a int32
+// first timestamp in micro seconds
+func (obj *metricsResponseFlowResult) HasFirstTimestamp() bool {
+	return obj.obj.FirstTimestamp != nil
+}
+
+// SetFirstTimestamp sets the int32 value in the MetricsResponseFlowResult object
+// first timestamp in micro seconds
+func (obj *metricsResponseFlowResult) SetFirstTimestamp(value int32) MetricsResponseFlowResult {
+
+	obj.obj.FirstTimestamp = &value
+	return obj
+}
+
+// LastTimestamp returns a int32
+// last timestamp in micro seconds
+func (obj *metricsResponseFlowResult) LastTimestamp() int32 {
+
+	return *obj.obj.LastTimestamp
+
+}
+
+// LastTimestamp returns a int32
+// last timestamp in micro seconds
+func (obj *metricsResponseFlowResult) HasLastTimestamp() bool {
+	return obj.obj.LastTimestamp != nil
+}
+
+// SetLastTimestamp sets the int32 value in the MetricsResponseFlowResult object
+// last timestamp in micro seconds
+func (obj *metricsResponseFlowResult) SetLastTimestamp(value int32) MetricsResponseFlowResult {
+
+	obj.obj.LastTimestamp = &value
+	return obj
+}
+
+// BytesTx returns a int32
+// bytes transmitted from src to dst
+func (obj *metricsResponseFlowResult) BytesTx() int32 {
+
+	return *obj.obj.BytesTx
+
+}
+
+// BytesTx returns a int32
+// bytes transmitted from src to dst
+func (obj *metricsResponseFlowResult) HasBytesTx() bool {
+	return obj.obj.BytesTx != nil
+}
+
+// SetBytesTx sets the int32 value in the MetricsResponseFlowResult object
+// bytes transmitted from src to dst
+func (obj *metricsResponseFlowResult) SetBytesTx(value int32) MetricsResponseFlowResult {
+
+	obj.obj.BytesTx = &value
+	return obj
+}
+
+// BytesRx returns a int32
+// bytes received by src from dst
+func (obj *metricsResponseFlowResult) BytesRx() int32 {
+
+	return *obj.obj.BytesRx
+
+}
+
+// BytesRx returns a int32
+// bytes received by src from dst
+func (obj *metricsResponseFlowResult) HasBytesRx() bool {
+	return obj.obj.BytesRx != nil
+}
+
+// SetBytesRx sets the int32 value in the MetricsResponseFlowResult object
+// bytes received by src from dst
+func (obj *metricsResponseFlowResult) SetBytesRx(value int32) MetricsResponseFlowResult {
+
+	obj.obj.BytesRx = &value
 	return obj
 }
 
@@ -5695,6 +5978,14 @@ func (obj *dataflowScatterWorkload) Validate() error {
 	return validationResult()
 }
 
+func (obj *dataflowScatterWorkload) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
 // DataflowScatterWorkload is description is TBD
 type DataflowScatterWorkload interface {
 	Msg() *onexdataflowapi.DataflowScatterWorkload
@@ -5713,6 +6004,8 @@ type DataflowScatterWorkload interface {
 	FromJson(value string) error
 	// Validate validates DataflowScatterWorkload
 	Validate() error
+	// A stringer function
+	String() string
 	validateFromText() error
 	validateObj(set_default bool)
 	setDefault()
@@ -5948,6 +6241,14 @@ func (obj *dataflowGatherWorkload) Validate() error {
 	return validationResult()
 }
 
+func (obj *dataflowGatherWorkload) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
 // DataflowGatherWorkload is description is TBD
 type DataflowGatherWorkload interface {
 	Msg() *onexdataflowapi.DataflowGatherWorkload
@@ -5966,6 +6267,8 @@ type DataflowGatherWorkload interface {
 	FromJson(value string) error
 	// Validate validates DataflowGatherWorkload
 	Validate() error
+	// A stringer function
+	String() string
 	validateFromText() error
 	validateObj(set_default bool)
 	setDefault()
@@ -6202,6 +6505,14 @@ func (obj *dataflowLoopWorkload) Validate() error {
 	return validationResult()
 }
 
+func (obj *dataflowLoopWorkload) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
 func (obj *dataflowLoopWorkload) setNil() {
 	obj.childrenHolder = nil
 }
@@ -6224,6 +6535,8 @@ type DataflowLoopWorkload interface {
 	FromJson(value string) error
 	// Validate validates DataflowLoopWorkload
 	Validate() error
+	// A stringer function
+	String() string
 	validateFromText() error
 	validateObj(set_default bool)
 	setDefault()
@@ -6513,6 +6826,14 @@ func (obj *dataflowComputeWorkload) Validate() error {
 	return validationResult()
 }
 
+func (obj *dataflowComputeWorkload) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
 func (obj *dataflowComputeWorkload) setNil() {
 	obj.simulatedHolder = nil
 }
@@ -6535,6 +6856,8 @@ type DataflowComputeWorkload interface {
 	FromJson(value string) error
 	// Validate validates DataflowComputeWorkload
 	Validate() error
+	// A stringer function
+	String() string
 	validateFromText() error
 	validateObj(set_default bool)
 	setDefault()
@@ -6802,6 +7125,14 @@ func (obj *dataflowAllReduceWorkload) Validate() error {
 	return validationResult()
 }
 
+func (obj *dataflowAllReduceWorkload) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
 // DataflowAllReduceWorkload is description is TBD
 type DataflowAllReduceWorkload interface {
 	Msg() *onexdataflowapi.DataflowAllReduceWorkload
@@ -6820,6 +7151,8 @@ type DataflowAllReduceWorkload interface {
 	FromJson(value string) error
 	// Validate validates DataflowAllReduceWorkload
 	Validate() error
+	// A stringer function
+	String() string
 	validateFromText() error
 	validateObj(set_default bool)
 	setDefault()
@@ -7076,6 +7409,14 @@ func (obj *dataflowBroadcastWorkload) Validate() error {
 	return validationResult()
 }
 
+func (obj *dataflowBroadcastWorkload) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
 // DataflowBroadcastWorkload is description is TBD
 type DataflowBroadcastWorkload interface {
 	Msg() *onexdataflowapi.DataflowBroadcastWorkload
@@ -7094,6 +7435,8 @@ type DataflowBroadcastWorkload interface {
 	FromJson(value string) error
 	// Validate validates DataflowBroadcastWorkload
 	Validate() error
+	// A stringer function
+	String() string
 	validateFromText() error
 	validateObj(set_default bool)
 	setDefault()
@@ -7329,6 +7672,14 @@ func (obj *dataflowFlowProfileEthernet) Validate() error {
 	return validationResult()
 }
 
+func (obj *dataflowFlowProfileEthernet) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
 // DataflowFlowProfileEthernet is description is TBD
 type DataflowFlowProfileEthernet interface {
 	Msg() *onexdataflowapi.DataflowFlowProfileEthernet
@@ -7347,6 +7698,8 @@ type DataflowFlowProfileEthernet interface {
 	FromJson(value string) error
 	// Validate validates DataflowFlowProfileEthernet
 	Validate() error
+	// A stringer function
+	String() string
 	validateFromText() error
 	validateObj(set_default bool)
 	setDefault()
@@ -7537,6 +7890,14 @@ func (obj *dataflowFlowProfileTcp) Validate() error {
 	return validationResult()
 }
 
+func (obj *dataflowFlowProfileTcp) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
 func (obj *dataflowFlowProfileTcp) setNil() {
 	obj.destinationPortHolder = nil
 	obj.sourcePortHolder = nil
@@ -7560,6 +7921,8 @@ type DataflowFlowProfileTcp interface {
 	FromJson(value string) error
 	// Validate validates DataflowFlowProfileTcp
 	Validate() error
+	// A stringer function
+	String() string
 	validateFromText() error
 	validateObj(set_default bool)
 	setDefault()
@@ -7934,6 +8297,14 @@ func (obj *dataflowFlowProfileUdp) Validate() error {
 	return validationResult()
 }
 
+func (obj *dataflowFlowProfileUdp) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
 // DataflowFlowProfileUdp is description is TBD
 type DataflowFlowProfileUdp interface {
 	Msg() *onexdataflowapi.DataflowFlowProfileUdp
@@ -7952,6 +8323,8 @@ type DataflowFlowProfileUdp interface {
 	FromJson(value string) error
 	// Validate validates DataflowFlowProfileUdp
 	Validate() error
+	// A stringer function
+	String() string
 	validateFromText() error
 	validateObj(set_default bool)
 	setDefault()
@@ -8109,6 +8482,14 @@ func (obj *metricsResponseFlowResultTcpInfo) Validate() error {
 	return validationResult()
 }
 
+func (obj *metricsResponseFlowResultTcpInfo) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
 // MetricsResponseFlowResultTcpInfo is tCP information for this flow
 type MetricsResponseFlowResultTcpInfo interface {
 	Msg() *onexdataflowapi.MetricsResponseFlowResultTcpInfo
@@ -8127,6 +8508,8 @@ type MetricsResponseFlowResultTcpInfo interface {
 	FromJson(value string) error
 	// Validate validates MetricsResponseFlowResultTcpInfo
 	Validate() error
+	// A stringer function
+	String() string
 	validateFromText() error
 	validateObj(set_default bool)
 	setDefault()
@@ -8368,6 +8751,14 @@ func (obj *dataflowSimulatedComputeWorkload) Validate() error {
 	return validationResult()
 }
 
+func (obj *dataflowSimulatedComputeWorkload) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
 // DataflowSimulatedComputeWorkload is description is TBD
 type DataflowSimulatedComputeWorkload interface {
 	Msg() *onexdataflowapi.DataflowSimulatedComputeWorkload
@@ -8386,6 +8777,8 @@ type DataflowSimulatedComputeWorkload interface {
 	FromJson(value string) error
 	// Validate validates DataflowSimulatedComputeWorkload
 	Validate() error
+	// A stringer function
+	String() string
 	validateFromText() error
 	validateObj(set_default bool)
 	setDefault()
@@ -8573,6 +8966,14 @@ func (obj *l4PortRange) Validate() error {
 	return validationResult()
 }
 
+func (obj *l4PortRange) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
 func (obj *l4PortRange) setNil() {
 	obj.singleValueHolder = nil
 	obj.rangeHolder = nil
@@ -8596,6 +8997,8 @@ type L4PortRange interface {
 	FromJson(value string) error
 	// Validate validates L4PortRange
 	Validate() error
+	// A stringer function
+	String() string
 	validateFromText() error
 	validateObj(set_default bool)
 	setDefault()
@@ -8886,6 +9289,14 @@ func (obj *l4PortRangeSingleValue) Validate() error {
 	return validationResult()
 }
 
+func (obj *l4PortRangeSingleValue) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
 // L4PortRangeSingleValue is description is TBD
 type L4PortRangeSingleValue interface {
 	Msg() *onexdataflowapi.L4PortRangeSingleValue
@@ -8904,6 +9315,8 @@ type L4PortRangeSingleValue interface {
 	FromJson(value string) error
 	// Validate validates L4PortRangeSingleValue
 	Validate() error
+	// A stringer function
+	String() string
 	validateFromText() error
 	validateObj(set_default bool)
 	setDefault()
@@ -9092,6 +9505,14 @@ func (obj *l4PortRangeRange) Validate() error {
 	return validationResult()
 }
 
+func (obj *l4PortRangeRange) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
 // L4PortRangeRange is description is TBD
 type L4PortRangeRange interface {
 	Msg() *onexdataflowapi.L4PortRangeRange
@@ -9110,6 +9531,8 @@ type L4PortRangeRange interface {
 	FromJson(value string) error
 	// Validate validates L4PortRangeRange
 	Validate() error
+	// A stringer function
+	String() string
 	validateFromText() error
 	validateObj(set_default bool)
 	setDefault()
