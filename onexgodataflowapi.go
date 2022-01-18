@@ -3965,10 +3965,10 @@ type MetricsResponse interface {
 	validateFromText() error
 	validateObj(set_default bool)
 	setDefault()
-	// Jct returns float32, set in MetricsResponse.
-	Jct() float32
-	// SetJct assigns float32 provided by user to MetricsResponse
-	SetJct(value float32) MetricsResponse
+	// Jct returns int64, set in MetricsResponse.
+	Jct() int64
+	// SetJct assigns int64 provided by user to MetricsResponse
+	SetJct(value int64) MetricsResponse
 	// HasJct checks if Jct has been set in MetricsResponse
 	HasJct() bool
 	// FlowResults returns MetricsResponseMetricsResponseFlowResultIter, set in MetricsResponse
@@ -3976,23 +3976,23 @@ type MetricsResponse interface {
 	setNil()
 }
 
-// Jct returns a float32
+// Jct returns a int64
 // job completion time in micro seconds
-func (obj *metricsResponse) Jct() float32 {
+func (obj *metricsResponse) Jct() int64 {
 
 	return *obj.obj.Jct
 
 }
 
-// Jct returns a float32
+// Jct returns a int64
 // job completion time in micro seconds
 func (obj *metricsResponse) HasJct() bool {
 	return obj.obj.Jct != nil
 }
 
-// SetJct sets the float32 value in the MetricsResponse object
+// SetJct sets the int64 value in the MetricsResponse object
 // job completion time in micro seconds
-func (obj *metricsResponse) SetJct(value float32) MetricsResponse {
+func (obj *metricsResponse) SetJct(value int64) MetricsResponse {
 
 	obj.obj.Jct = &value
 	return obj
@@ -5537,10 +5537,10 @@ type MetricsResponseFlowResult interface {
 	SetWorkloadName(value string) MetricsResponseFlowResult
 	// HasWorkloadName checks if WorkloadName has been set in MetricsResponseFlowResult
 	HasWorkloadName() bool
-	// FlowNumber returns int32, set in MetricsResponseFlowResult.
-	FlowNumber() int32
-	// SetFlowNumber assigns int32 provided by user to MetricsResponseFlowResult
-	SetFlowNumber(value int32) MetricsResponseFlowResult
+	// FlowNumber returns int64, set in MetricsResponseFlowResult.
+	FlowNumber() int64
+	// SetFlowNumber assigns int64 provided by user to MetricsResponseFlowResult
+	SetFlowNumber(value int64) MetricsResponseFlowResult
 	// HasFlowNumber checks if FlowNumber has been set in MetricsResponseFlowResult
 	HasFlowNumber() bool
 	// FromHostName returns string, set in MetricsResponseFlowResult.
@@ -5555,34 +5555,34 @@ type MetricsResponseFlowResult interface {
 	SetToHostName(value string) MetricsResponseFlowResult
 	// HasToHostName checks if ToHostName has been set in MetricsResponseFlowResult
 	HasToHostName() bool
-	// Fct returns float32, set in MetricsResponseFlowResult.
-	Fct() float32
-	// SetFct assigns float32 provided by user to MetricsResponseFlowResult
-	SetFct(value float32) MetricsResponseFlowResult
+	// Fct returns int64, set in MetricsResponseFlowResult.
+	Fct() int64
+	// SetFct assigns int64 provided by user to MetricsResponseFlowResult
+	SetFct(value int64) MetricsResponseFlowResult
 	// HasFct checks if Fct has been set in MetricsResponseFlowResult
 	HasFct() bool
-	// FirstTimestamp returns int32, set in MetricsResponseFlowResult.
-	FirstTimestamp() int32
-	// SetFirstTimestamp assigns int32 provided by user to MetricsResponseFlowResult
-	SetFirstTimestamp(value int32) MetricsResponseFlowResult
+	// FirstTimestamp returns int64, set in MetricsResponseFlowResult.
+	FirstTimestamp() int64
+	// SetFirstTimestamp assigns int64 provided by user to MetricsResponseFlowResult
+	SetFirstTimestamp(value int64) MetricsResponseFlowResult
 	// HasFirstTimestamp checks if FirstTimestamp has been set in MetricsResponseFlowResult
 	HasFirstTimestamp() bool
-	// LastTimestamp returns int32, set in MetricsResponseFlowResult.
-	LastTimestamp() int32
-	// SetLastTimestamp assigns int32 provided by user to MetricsResponseFlowResult
-	SetLastTimestamp(value int32) MetricsResponseFlowResult
+	// LastTimestamp returns int64, set in MetricsResponseFlowResult.
+	LastTimestamp() int64
+	// SetLastTimestamp assigns int64 provided by user to MetricsResponseFlowResult
+	SetLastTimestamp(value int64) MetricsResponseFlowResult
 	// HasLastTimestamp checks if LastTimestamp has been set in MetricsResponseFlowResult
 	HasLastTimestamp() bool
-	// BytesTx returns int32, set in MetricsResponseFlowResult.
-	BytesTx() int32
-	// SetBytesTx assigns int32 provided by user to MetricsResponseFlowResult
-	SetBytesTx(value int32) MetricsResponseFlowResult
+	// BytesTx returns int64, set in MetricsResponseFlowResult.
+	BytesTx() int64
+	// SetBytesTx assigns int64 provided by user to MetricsResponseFlowResult
+	SetBytesTx(value int64) MetricsResponseFlowResult
 	// HasBytesTx checks if BytesTx has been set in MetricsResponseFlowResult
 	HasBytesTx() bool
-	// BytesRx returns int32, set in MetricsResponseFlowResult.
-	BytesRx() int32
-	// SetBytesRx assigns int32 provided by user to MetricsResponseFlowResult
-	SetBytesRx(value int32) MetricsResponseFlowResult
+	// BytesRx returns int64, set in MetricsResponseFlowResult.
+	BytesRx() int64
+	// SetBytesRx assigns int64 provided by user to MetricsResponseFlowResult
+	SetBytesRx(value int64) MetricsResponseFlowResult
 	// HasBytesRx checks if BytesRx has been set in MetricsResponseFlowResult
 	HasBytesRx() bool
 	// TcpInfo returns MetricsResponseFlowResultTcpInfo, set in MetricsResponseFlowResult.
@@ -5618,23 +5618,23 @@ func (obj *metricsResponseFlowResult) SetWorkloadName(value string) MetricsRespo
 	return obj
 }
 
-// FlowNumber returns a int32
+// FlowNumber returns a int64
 // description is TBD
-func (obj *metricsResponseFlowResult) FlowNumber() int32 {
+func (obj *metricsResponseFlowResult) FlowNumber() int64 {
 
 	return *obj.obj.FlowNumber
 
 }
 
-// FlowNumber returns a int32
+// FlowNumber returns a int64
 // description is TBD
 func (obj *metricsResponseFlowResult) HasFlowNumber() bool {
 	return obj.obj.FlowNumber != nil
 }
 
-// SetFlowNumber sets the int32 value in the MetricsResponseFlowResult object
+// SetFlowNumber sets the int64 value in the MetricsResponseFlowResult object
 // description is TBD
-func (obj *metricsResponseFlowResult) SetFlowNumber(value int32) MetricsResponseFlowResult {
+func (obj *metricsResponseFlowResult) SetFlowNumber(value int64) MetricsResponseFlowResult {
 
 	obj.obj.FlowNumber = &value
 	return obj
@@ -5684,111 +5684,111 @@ func (obj *metricsResponseFlowResult) SetToHostName(value string) MetricsRespons
 	return obj
 }
 
-// Fct returns a float32
+// Fct returns a int64
 // flow completion time in micro seconds
-func (obj *metricsResponseFlowResult) Fct() float32 {
+func (obj *metricsResponseFlowResult) Fct() int64 {
 
 	return *obj.obj.Fct
 
 }
 
-// Fct returns a float32
+// Fct returns a int64
 // flow completion time in micro seconds
 func (obj *metricsResponseFlowResult) HasFct() bool {
 	return obj.obj.Fct != nil
 }
 
-// SetFct sets the float32 value in the MetricsResponseFlowResult object
+// SetFct sets the int64 value in the MetricsResponseFlowResult object
 // flow completion time in micro seconds
-func (obj *metricsResponseFlowResult) SetFct(value float32) MetricsResponseFlowResult {
+func (obj *metricsResponseFlowResult) SetFct(value int64) MetricsResponseFlowResult {
 
 	obj.obj.Fct = &value
 	return obj
 }
 
-// FirstTimestamp returns a int32
+// FirstTimestamp returns a int64
 // first timestamp in micro seconds
-func (obj *metricsResponseFlowResult) FirstTimestamp() int32 {
+func (obj *metricsResponseFlowResult) FirstTimestamp() int64 {
 
 	return *obj.obj.FirstTimestamp
 
 }
 
-// FirstTimestamp returns a int32
+// FirstTimestamp returns a int64
 // first timestamp in micro seconds
 func (obj *metricsResponseFlowResult) HasFirstTimestamp() bool {
 	return obj.obj.FirstTimestamp != nil
 }
 
-// SetFirstTimestamp sets the int32 value in the MetricsResponseFlowResult object
+// SetFirstTimestamp sets the int64 value in the MetricsResponseFlowResult object
 // first timestamp in micro seconds
-func (obj *metricsResponseFlowResult) SetFirstTimestamp(value int32) MetricsResponseFlowResult {
+func (obj *metricsResponseFlowResult) SetFirstTimestamp(value int64) MetricsResponseFlowResult {
 
 	obj.obj.FirstTimestamp = &value
 	return obj
 }
 
-// LastTimestamp returns a int32
+// LastTimestamp returns a int64
 // last timestamp in micro seconds
-func (obj *metricsResponseFlowResult) LastTimestamp() int32 {
+func (obj *metricsResponseFlowResult) LastTimestamp() int64 {
 
 	return *obj.obj.LastTimestamp
 
 }
 
-// LastTimestamp returns a int32
+// LastTimestamp returns a int64
 // last timestamp in micro seconds
 func (obj *metricsResponseFlowResult) HasLastTimestamp() bool {
 	return obj.obj.LastTimestamp != nil
 }
 
-// SetLastTimestamp sets the int32 value in the MetricsResponseFlowResult object
+// SetLastTimestamp sets the int64 value in the MetricsResponseFlowResult object
 // last timestamp in micro seconds
-func (obj *metricsResponseFlowResult) SetLastTimestamp(value int32) MetricsResponseFlowResult {
+func (obj *metricsResponseFlowResult) SetLastTimestamp(value int64) MetricsResponseFlowResult {
 
 	obj.obj.LastTimestamp = &value
 	return obj
 }
 
-// BytesTx returns a int32
+// BytesTx returns a int64
 // bytes transmitted from src to dst
-func (obj *metricsResponseFlowResult) BytesTx() int32 {
+func (obj *metricsResponseFlowResult) BytesTx() int64 {
 
 	return *obj.obj.BytesTx
 
 }
 
-// BytesTx returns a int32
+// BytesTx returns a int64
 // bytes transmitted from src to dst
 func (obj *metricsResponseFlowResult) HasBytesTx() bool {
 	return obj.obj.BytesTx != nil
 }
 
-// SetBytesTx sets the int32 value in the MetricsResponseFlowResult object
+// SetBytesTx sets the int64 value in the MetricsResponseFlowResult object
 // bytes transmitted from src to dst
-func (obj *metricsResponseFlowResult) SetBytesTx(value int32) MetricsResponseFlowResult {
+func (obj *metricsResponseFlowResult) SetBytesTx(value int64) MetricsResponseFlowResult {
 
 	obj.obj.BytesTx = &value
 	return obj
 }
 
-// BytesRx returns a int32
+// BytesRx returns a int64
 // bytes received by src from dst
-func (obj *metricsResponseFlowResult) BytesRx() int32 {
+func (obj *metricsResponseFlowResult) BytesRx() int64 {
 
 	return *obj.obj.BytesRx
 
 }
 
-// BytesRx returns a int32
+// BytesRx returns a int64
 // bytes received by src from dst
 func (obj *metricsResponseFlowResult) HasBytesRx() bool {
 	return obj.obj.BytesRx != nil
 }
 
-// SetBytesRx sets the int32 value in the MetricsResponseFlowResult object
+// SetBytesRx sets the int64 value in the MetricsResponseFlowResult object
 // bytes received by src from dst
-func (obj *metricsResponseFlowResult) SetBytesRx(value int32) MetricsResponseFlowResult {
+func (obj *metricsResponseFlowResult) SetBytesRx(value int64) MetricsResponseFlowResult {
 
 	obj.obj.BytesRx = &value
 	return obj
@@ -8513,87 +8513,87 @@ type MetricsResponseFlowResultTcpInfo interface {
 	validateFromText() error
 	validateObj(set_default bool)
 	setDefault()
-	// Rtt returns float32, set in MetricsResponseFlowResultTcpInfo.
-	Rtt() float32
-	// SetRtt assigns float32 provided by user to MetricsResponseFlowResultTcpInfo
-	SetRtt(value float32) MetricsResponseFlowResultTcpInfo
+	// Rtt returns int64, set in MetricsResponseFlowResultTcpInfo.
+	Rtt() int64
+	// SetRtt assigns int64 provided by user to MetricsResponseFlowResultTcpInfo
+	SetRtt(value int64) MetricsResponseFlowResultTcpInfo
 	// HasRtt checks if Rtt has been set in MetricsResponseFlowResultTcpInfo
 	HasRtt() bool
-	// RttVariance returns float32, set in MetricsResponseFlowResultTcpInfo.
-	RttVariance() float32
-	// SetRttVariance assigns float32 provided by user to MetricsResponseFlowResultTcpInfo
-	SetRttVariance(value float32) MetricsResponseFlowResultTcpInfo
+	// RttVariance returns int64, set in MetricsResponseFlowResultTcpInfo.
+	RttVariance() int64
+	// SetRttVariance assigns int64 provided by user to MetricsResponseFlowResultTcpInfo
+	SetRttVariance(value int64) MetricsResponseFlowResultTcpInfo
 	// HasRttVariance checks if RttVariance has been set in MetricsResponseFlowResultTcpInfo
 	HasRttVariance() bool
-	// Retransmissions returns float32, set in MetricsResponseFlowResultTcpInfo.
-	Retransmissions() float32
-	// SetRetransmissions assigns float32 provided by user to MetricsResponseFlowResultTcpInfo
-	SetRetransmissions(value float32) MetricsResponseFlowResultTcpInfo
+	// Retransmissions returns int64, set in MetricsResponseFlowResultTcpInfo.
+	Retransmissions() int64
+	// SetRetransmissions assigns int64 provided by user to MetricsResponseFlowResultTcpInfo
+	SetRetransmissions(value int64) MetricsResponseFlowResultTcpInfo
 	// HasRetransmissions checks if Retransmissions has been set in MetricsResponseFlowResultTcpInfo
 	HasRetransmissions() bool
 }
 
-// Rtt returns a float32
+// Rtt returns a int64
 // round trip time in microseconds
-func (obj *metricsResponseFlowResultTcpInfo) Rtt() float32 {
+func (obj *metricsResponseFlowResultTcpInfo) Rtt() int64 {
 
 	return *obj.obj.Rtt
 
 }
 
-// Rtt returns a float32
+// Rtt returns a int64
 // round trip time in microseconds
 func (obj *metricsResponseFlowResultTcpInfo) HasRtt() bool {
 	return obj.obj.Rtt != nil
 }
 
-// SetRtt sets the float32 value in the MetricsResponseFlowResultTcpInfo object
+// SetRtt sets the int64 value in the MetricsResponseFlowResultTcpInfo object
 // round trip time in microseconds
-func (obj *metricsResponseFlowResultTcpInfo) SetRtt(value float32) MetricsResponseFlowResultTcpInfo {
+func (obj *metricsResponseFlowResultTcpInfo) SetRtt(value int64) MetricsResponseFlowResultTcpInfo {
 
 	obj.obj.Rtt = &value
 	return obj
 }
 
-// RttVariance returns a float32
+// RttVariance returns a int64
 // round trip time variance in microseconds, larger values indicate less stable performance
-func (obj *metricsResponseFlowResultTcpInfo) RttVariance() float32 {
+func (obj *metricsResponseFlowResultTcpInfo) RttVariance() int64 {
 
 	return *obj.obj.RttVariance
 
 }
 
-// RttVariance returns a float32
+// RttVariance returns a int64
 // round trip time variance in microseconds, larger values indicate less stable performance
 func (obj *metricsResponseFlowResultTcpInfo) HasRttVariance() bool {
 	return obj.obj.RttVariance != nil
 }
 
-// SetRttVariance sets the float32 value in the MetricsResponseFlowResultTcpInfo object
+// SetRttVariance sets the int64 value in the MetricsResponseFlowResultTcpInfo object
 // round trip time variance in microseconds, larger values indicate less stable performance
-func (obj *metricsResponseFlowResultTcpInfo) SetRttVariance(value float32) MetricsResponseFlowResultTcpInfo {
+func (obj *metricsResponseFlowResultTcpInfo) SetRttVariance(value int64) MetricsResponseFlowResultTcpInfo {
 
 	obj.obj.RttVariance = &value
 	return obj
 }
 
-// Retransmissions returns a float32
+// Retransmissions returns a int64
 // total number of TCP retransmissions
-func (obj *metricsResponseFlowResultTcpInfo) Retransmissions() float32 {
+func (obj *metricsResponseFlowResultTcpInfo) Retransmissions() int64 {
 
 	return *obj.obj.Retransmissions
 
 }
 
-// Retransmissions returns a float32
+// Retransmissions returns a int64
 // total number of TCP retransmissions
 func (obj *metricsResponseFlowResultTcpInfo) HasRetransmissions() bool {
 	return obj.obj.Retransmissions != nil
 }
 
-// SetRetransmissions sets the float32 value in the MetricsResponseFlowResultTcpInfo object
+// SetRetransmissions sets the int64 value in the MetricsResponseFlowResultTcpInfo object
 // total number of TCP retransmissions
-func (obj *metricsResponseFlowResultTcpInfo) SetRetransmissions(value float32) MetricsResponseFlowResultTcpInfo {
+func (obj *metricsResponseFlowResultTcpInfo) SetRetransmissions(value int64) MetricsResponseFlowResultTcpInfo {
 
 	obj.obj.Retransmissions = &value
 	return obj
