@@ -3370,7 +3370,8 @@ func (obj *dataflow) setDefault() {
 
 // ***** ErrorDetails *****
 type errorDetails struct {
-	obj *onexdataflowapi.ErrorDetails
+	obj          *onexdataflowapi.ErrorDetails
+	errorsHolder ErrorDetailsErrorItemIter
 }
 
 func NewErrorDetails() ErrorDetails {
@@ -3384,7 +3385,7 @@ func (obj *errorDetails) Msg() *onexdataflowapi.ErrorDetails {
 }
 
 func (obj *errorDetails) SetMsg(msg *onexdataflowapi.ErrorDetails) ErrorDetails {
-
+	obj.setNil()
 	proto.Merge(obj.obj, msg)
 	return obj
 }
@@ -3406,7 +3407,7 @@ func (obj *errorDetails) FromPbText(value string) error {
 	if retObj != nil {
 		return retObj
 	}
-
+	obj.setNil()
 	vErr := obj.validateFromText()
 	if vErr != nil {
 		return vErr
@@ -3452,7 +3453,7 @@ func (obj *errorDetails) FromYaml(value string) error {
 		return fmt.Errorf("unmarshal error %s", strings.Replace(
 			uError.Error(), "\u00a0", " ", -1)[7:])
 	}
-
+	obj.setNil()
 	vErr := obj.validateFromText()
 	if vErr != nil {
 		return vErr
@@ -3491,7 +3492,7 @@ func (obj *errorDetails) FromJson(value string) error {
 		return fmt.Errorf("unmarshal error %s", strings.Replace(
 			uError.Error(), "\u00a0", " ", -1)[7:])
 	}
-
+	obj.setNil()
 	err := obj.validateFromText()
 	if err != nil {
 		return err
@@ -3517,6 +3518,10 @@ func (obj *errorDetails) String() string {
 	return str
 }
 
+func (obj *errorDetails) setNil() {
+	obj.errorsHolder = nil
+}
+
 // ErrorDetails is description is TBD
 type ErrorDetails interface {
 	Msg() *onexdataflowapi.ErrorDetails
@@ -3540,36 +3545,114 @@ type ErrorDetails interface {
 	validateFromText() error
 	validateObj(set_default bool)
 	setDefault()
-	// Errors returns []string, set in ErrorDetails.
-	Errors() []string
-	// SetErrors assigns []string provided by user to ErrorDetails
-	SetErrors(value []string) ErrorDetails
+	// Errors returns ErrorDetailsErrorItemIter, set in ErrorDetails
+	Errors() ErrorDetailsErrorItemIter
+	setNil()
 }
 
-// Errors returns a []string
+// Errors returns a []ErrorItem
 // description is TBD
-func (obj *errorDetails) Errors() []string {
-	if obj.obj.Errors == nil {
-		obj.obj.Errors = make([]string, 0)
+func (obj *errorDetails) Errors() ErrorDetailsErrorItemIter {
+	if len(obj.obj.Errors) == 0 {
+		obj.obj.Errors = []*onexdataflowapi.ErrorItem{}
 	}
-	return obj.obj.Errors
+	if obj.errorsHolder == nil {
+		obj.errorsHolder = newErrorDetailsErrorItemIter().setMsg(obj)
+	}
+	return obj.errorsHolder
 }
 
-// SetErrors sets the []string value in the ErrorDetails object
-// description is TBD
-func (obj *errorDetails) SetErrors(value []string) ErrorDetails {
+type errorDetailsErrorItemIter struct {
+	obj            *errorDetails
+	errorItemSlice []ErrorItem
+}
 
-	if obj.obj.Errors == nil {
-		obj.obj.Errors = make([]string, 0)
+func newErrorDetailsErrorItemIter() ErrorDetailsErrorItemIter {
+	return &errorDetailsErrorItemIter{}
+}
+
+type ErrorDetailsErrorItemIter interface {
+	setMsg(*errorDetails) ErrorDetailsErrorItemIter
+	Items() []ErrorItem
+	Add() ErrorItem
+	Append(items ...ErrorItem) ErrorDetailsErrorItemIter
+	Set(index int, newObj ErrorItem) ErrorDetailsErrorItemIter
+	Clear() ErrorDetailsErrorItemIter
+	clearHolderSlice() ErrorDetailsErrorItemIter
+	appendHolderSlice(item ErrorItem) ErrorDetailsErrorItemIter
+}
+
+func (obj *errorDetailsErrorItemIter) setMsg(msg *errorDetails) ErrorDetailsErrorItemIter {
+	obj.clearHolderSlice()
+	for _, val := range msg.obj.Errors {
+		obj.appendHolderSlice(&errorItem{obj: val})
 	}
-	obj.obj.Errors = value
+	obj.obj = msg
+	return obj
+}
 
+func (obj *errorDetailsErrorItemIter) Items() []ErrorItem {
+	return obj.errorItemSlice
+}
+
+func (obj *errorDetailsErrorItemIter) Add() ErrorItem {
+	newObj := &onexdataflowapi.ErrorItem{}
+	obj.obj.obj.Errors = append(obj.obj.obj.Errors, newObj)
+	newLibObj := &errorItem{obj: newObj}
+	newLibObj.setDefault()
+	obj.errorItemSlice = append(obj.errorItemSlice, newLibObj)
+	return newLibObj
+}
+
+func (obj *errorDetailsErrorItemIter) Append(items ...ErrorItem) ErrorDetailsErrorItemIter {
+	for _, item := range items {
+		newObj := item.Msg()
+		obj.obj.obj.Errors = append(obj.obj.obj.Errors, newObj)
+		obj.errorItemSlice = append(obj.errorItemSlice, item)
+	}
+	return obj
+}
+
+func (obj *errorDetailsErrorItemIter) Set(index int, newObj ErrorItem) ErrorDetailsErrorItemIter {
+	obj.obj.obj.Errors[index] = newObj.Msg()
+	obj.errorItemSlice[index] = newObj
+	return obj
+}
+func (obj *errorDetailsErrorItemIter) Clear() ErrorDetailsErrorItemIter {
+	if len(obj.obj.obj.Errors) > 0 {
+		obj.obj.obj.Errors = []*onexdataflowapi.ErrorItem{}
+		obj.errorItemSlice = []ErrorItem{}
+	}
+	return obj
+}
+func (obj *errorDetailsErrorItemIter) clearHolderSlice() ErrorDetailsErrorItemIter {
+	if len(obj.errorItemSlice) > 0 {
+		obj.errorItemSlice = []ErrorItem{}
+	}
+	return obj
+}
+func (obj *errorDetailsErrorItemIter) appendHolderSlice(item ErrorItem) ErrorDetailsErrorItemIter {
+	obj.errorItemSlice = append(obj.errorItemSlice, item)
 	return obj
 }
 
 func (obj *errorDetails) validateObj(set_default bool) {
 	if set_default {
 		obj.setDefault()
+	}
+
+	if obj.obj.Errors != nil {
+
+		if set_default {
+			obj.Errors().clearHolderSlice()
+			for _, item := range obj.obj.Errors {
+				obj.Errors().appendHolderSlice(&errorItem{obj: item})
+			}
+		}
+		for _, item := range obj.Errors().Items() {
+			item.validateObj(set_default)
+		}
+
 	}
 
 }
@@ -3580,7 +3663,8 @@ func (obj *errorDetails) setDefault() {
 
 // ***** WarningDetails *****
 type warningDetails struct {
-	obj *onexdataflowapi.WarningDetails
+	obj            *onexdataflowapi.WarningDetails
+	warningsHolder WarningDetailsErrorItemIter
 }
 
 func NewWarningDetails() WarningDetails {
@@ -3594,7 +3678,7 @@ func (obj *warningDetails) Msg() *onexdataflowapi.WarningDetails {
 }
 
 func (obj *warningDetails) SetMsg(msg *onexdataflowapi.WarningDetails) WarningDetails {
-
+	obj.setNil()
 	proto.Merge(obj.obj, msg)
 	return obj
 }
@@ -3616,7 +3700,7 @@ func (obj *warningDetails) FromPbText(value string) error {
 	if retObj != nil {
 		return retObj
 	}
-
+	obj.setNil()
 	vErr := obj.validateFromText()
 	if vErr != nil {
 		return vErr
@@ -3662,7 +3746,7 @@ func (obj *warningDetails) FromYaml(value string) error {
 		return fmt.Errorf("unmarshal error %s", strings.Replace(
 			uError.Error(), "\u00a0", " ", -1)[7:])
 	}
-
+	obj.setNil()
 	vErr := obj.validateFromText()
 	if vErr != nil {
 		return vErr
@@ -3701,7 +3785,7 @@ func (obj *warningDetails) FromJson(value string) error {
 		return fmt.Errorf("unmarshal error %s", strings.Replace(
 			uError.Error(), "\u00a0", " ", -1)[7:])
 	}
-
+	obj.setNil()
 	err := obj.validateFromText()
 	if err != nil {
 		return err
@@ -3727,6 +3811,10 @@ func (obj *warningDetails) String() string {
 	return str
 }
 
+func (obj *warningDetails) setNil() {
+	obj.warningsHolder = nil
+}
+
 // WarningDetails is description is TBD
 type WarningDetails interface {
 	Msg() *onexdataflowapi.WarningDetails
@@ -3750,36 +3838,114 @@ type WarningDetails interface {
 	validateFromText() error
 	validateObj(set_default bool)
 	setDefault()
-	// Warnings returns []string, set in WarningDetails.
-	Warnings() []string
-	// SetWarnings assigns []string provided by user to WarningDetails
-	SetWarnings(value []string) WarningDetails
+	// Warnings returns WarningDetailsErrorItemIter, set in WarningDetails
+	Warnings() WarningDetailsErrorItemIter
+	setNil()
 }
 
-// Warnings returns a []string
+// Warnings returns a []ErrorItem
 // description is TBD
-func (obj *warningDetails) Warnings() []string {
-	if obj.obj.Warnings == nil {
-		obj.obj.Warnings = make([]string, 0)
+func (obj *warningDetails) Warnings() WarningDetailsErrorItemIter {
+	if len(obj.obj.Warnings) == 0 {
+		obj.obj.Warnings = []*onexdataflowapi.ErrorItem{}
 	}
-	return obj.obj.Warnings
+	if obj.warningsHolder == nil {
+		obj.warningsHolder = newWarningDetailsErrorItemIter().setMsg(obj)
+	}
+	return obj.warningsHolder
 }
 
-// SetWarnings sets the []string value in the WarningDetails object
-// description is TBD
-func (obj *warningDetails) SetWarnings(value []string) WarningDetails {
+type warningDetailsErrorItemIter struct {
+	obj            *warningDetails
+	errorItemSlice []ErrorItem
+}
 
-	if obj.obj.Warnings == nil {
-		obj.obj.Warnings = make([]string, 0)
+func newWarningDetailsErrorItemIter() WarningDetailsErrorItemIter {
+	return &warningDetailsErrorItemIter{}
+}
+
+type WarningDetailsErrorItemIter interface {
+	setMsg(*warningDetails) WarningDetailsErrorItemIter
+	Items() []ErrorItem
+	Add() ErrorItem
+	Append(items ...ErrorItem) WarningDetailsErrorItemIter
+	Set(index int, newObj ErrorItem) WarningDetailsErrorItemIter
+	Clear() WarningDetailsErrorItemIter
+	clearHolderSlice() WarningDetailsErrorItemIter
+	appendHolderSlice(item ErrorItem) WarningDetailsErrorItemIter
+}
+
+func (obj *warningDetailsErrorItemIter) setMsg(msg *warningDetails) WarningDetailsErrorItemIter {
+	obj.clearHolderSlice()
+	for _, val := range msg.obj.Warnings {
+		obj.appendHolderSlice(&errorItem{obj: val})
 	}
-	obj.obj.Warnings = value
+	obj.obj = msg
+	return obj
+}
 
+func (obj *warningDetailsErrorItemIter) Items() []ErrorItem {
+	return obj.errorItemSlice
+}
+
+func (obj *warningDetailsErrorItemIter) Add() ErrorItem {
+	newObj := &onexdataflowapi.ErrorItem{}
+	obj.obj.obj.Warnings = append(obj.obj.obj.Warnings, newObj)
+	newLibObj := &errorItem{obj: newObj}
+	newLibObj.setDefault()
+	obj.errorItemSlice = append(obj.errorItemSlice, newLibObj)
+	return newLibObj
+}
+
+func (obj *warningDetailsErrorItemIter) Append(items ...ErrorItem) WarningDetailsErrorItemIter {
+	for _, item := range items {
+		newObj := item.Msg()
+		obj.obj.obj.Warnings = append(obj.obj.obj.Warnings, newObj)
+		obj.errorItemSlice = append(obj.errorItemSlice, item)
+	}
+	return obj
+}
+
+func (obj *warningDetailsErrorItemIter) Set(index int, newObj ErrorItem) WarningDetailsErrorItemIter {
+	obj.obj.obj.Warnings[index] = newObj.Msg()
+	obj.errorItemSlice[index] = newObj
+	return obj
+}
+func (obj *warningDetailsErrorItemIter) Clear() WarningDetailsErrorItemIter {
+	if len(obj.obj.obj.Warnings) > 0 {
+		obj.obj.obj.Warnings = []*onexdataflowapi.ErrorItem{}
+		obj.errorItemSlice = []ErrorItem{}
+	}
+	return obj
+}
+func (obj *warningDetailsErrorItemIter) clearHolderSlice() WarningDetailsErrorItemIter {
+	if len(obj.errorItemSlice) > 0 {
+		obj.errorItemSlice = []ErrorItem{}
+	}
+	return obj
+}
+func (obj *warningDetailsErrorItemIter) appendHolderSlice(item ErrorItem) WarningDetailsErrorItemIter {
+	obj.errorItemSlice = append(obj.errorItemSlice, item)
 	return obj
 }
 
 func (obj *warningDetails) validateObj(set_default bool) {
 	if set_default {
 		obj.setDefault()
+	}
+
+	if obj.obj.Warnings != nil {
+
+		if set_default {
+			obj.Warnings().clearHolderSlice()
+			for _, item := range obj.obj.Warnings {
+				obj.Warnings().appendHolderSlice(&errorItem{obj: item})
+			}
+		}
+		for _, item := range obj.Warnings().Items() {
+			item.validateObj(set_default)
+		}
+
 	}
 
 }
@@ -5351,6 +5517,275 @@ func (obj *dataflowFlowProfile) validateObj(set_default bool) {
 }
 
 func (obj *dataflowFlowProfile) setDefault() {
+
+}
+
+// ***** ErrorItem *****
+type errorItem struct {
+	obj *onexdataflowapi.ErrorItem
+}
+
+func NewErrorItem() ErrorItem {
+	obj := errorItem{obj: &onexdataflowapi.ErrorItem{}}
+	obj.setDefault()
+	return &obj
+}
+
+func (obj *errorItem) Msg() *onexdataflowapi.ErrorItem {
+	return obj.obj
+}
+
+func (obj *errorItem) SetMsg(msg *onexdataflowapi.ErrorItem) ErrorItem {
+
+	proto.Merge(obj.obj, msg)
+	return obj
+}
+
+func (obj *errorItem) ToPbText() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	protoMarshal, err := proto.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(protoMarshal), nil
+}
+
+func (obj *errorItem) FromPbText(value string) error {
+	retObj := proto.Unmarshal([]byte(value), obj.Msg())
+	if retObj != nil {
+		return retObj
+	}
+
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return retObj
+}
+
+func (obj *errorItem) ToYaml() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	data, err = yaml.JSONToYAML(data)
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *errorItem) FromYaml(value string) error {
+	if value == "" {
+		value = "{}"
+	}
+	data, err := yaml.YAMLToJSON([]byte(value))
+	if err != nil {
+		return err
+	}
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	uError := opts.Unmarshal([]byte(data), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return nil
+}
+
+func (obj *errorItem) ToJson() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+		Indent:          "  ",
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *errorItem) FromJson(value string) error {
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	if value == "" {
+		value = "{}"
+	}
+	uError := opts.Unmarshal([]byte(value), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+
+	err := obj.validateFromText()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (obj *errorItem) validateFromText() error {
+	obj.validateObj(true)
+	return validationResult()
+}
+
+func (obj *errorItem) Validate() error {
+	obj.validateObj(false)
+	return validationResult()
+}
+
+func (obj *errorItem) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
+// ErrorItem is description is TBD
+type ErrorItem interface {
+	Msg() *onexdataflowapi.ErrorItem
+	SetMsg(*onexdataflowapi.ErrorItem) ErrorItem
+	// ToPbText marshals ErrorItem to protobuf text
+	ToPbText() (string, error)
+	// ToYaml marshals ErrorItem to YAML text
+	ToYaml() (string, error)
+	// ToJson marshals ErrorItem to JSON text
+	ToJson() (string, error)
+	// FromPbText unmarshals ErrorItem from protobuf text
+	FromPbText(value string) error
+	// FromYaml unmarshals ErrorItem from YAML text
+	FromYaml(value string) error
+	// FromJson unmarshals ErrorItem from JSON text
+	FromJson(value string) error
+	// Validate validates ErrorItem
+	Validate() error
+	// A stringer function
+	String() string
+	validateFromText() error
+	validateObj(set_default bool)
+	setDefault()
+	// Message returns string, set in ErrorItem.
+	Message() string
+	// SetMessage assigns string provided by user to ErrorItem
+	SetMessage(value string) ErrorItem
+	// HasMessage checks if Message has been set in ErrorItem
+	HasMessage() bool
+	// Code returns int32, set in ErrorItem.
+	Code() int32
+	// SetCode assigns int32 provided by user to ErrorItem
+	SetCode(value int32) ErrorItem
+	// HasCode checks if Code has been set in ErrorItem
+	HasCode() bool
+	// Detail returns string, set in ErrorItem.
+	Detail() string
+	// SetDetail assigns string provided by user to ErrorItem
+	SetDetail(value string) ErrorItem
+	// HasDetail checks if Detail has been set in ErrorItem
+	HasDetail() bool
+}
+
+// Message returns a string
+// description is TBD
+func (obj *errorItem) Message() string {
+
+	return *obj.obj.Message
+
+}
+
+// Message returns a string
+// description is TBD
+func (obj *errorItem) HasMessage() bool {
+	return obj.obj.Message != nil
+}
+
+// SetMessage sets the string value in the ErrorItem object
+// description is TBD
+func (obj *errorItem) SetMessage(value string) ErrorItem {
+
+	obj.obj.Message = &value
+	return obj
+}
+
+// Code returns a int32
+// description is TBD
+func (obj *errorItem) Code() int32 {
+
+	return *obj.obj.Code
+
+}
+
+// Code returns a int32
+// description is TBD
+func (obj *errorItem) HasCode() bool {
+	return obj.obj.Code != nil
+}
+
+// SetCode sets the int32 value in the ErrorItem object
+// description is TBD
+func (obj *errorItem) SetCode(value int32) ErrorItem {
+
+	obj.obj.Code = &value
+	return obj
+}
+
+// Detail returns a string
+// description is TBD
+func (obj *errorItem) Detail() string {
+
+	return *obj.obj.Detail
+
+}
+
+// Detail returns a string
+// description is TBD
+func (obj *errorItem) HasDetail() bool {
+	return obj.obj.Detail != nil
+}
+
+// SetDetail sets the string value in the ErrorItem object
+// description is TBD
+func (obj *errorItem) SetDetail(value string) ErrorItem {
+
+	obj.obj.Detail = &value
+	return obj
+}
+
+func (obj *errorItem) validateObj(set_default bool) {
+	if set_default {
+		obj.setDefault()
+	}
+
+}
+
+func (obj *errorItem) setDefault() {
 
 }
 
