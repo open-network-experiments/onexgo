@@ -4548,6 +4548,7 @@ type dataflowWorkloadItem struct {
 	computeHolder   DataflowComputeWorkload
 	allReduceHolder DataflowAllReduceWorkload
 	broadcastHolder DataflowBroadcastWorkload
+	allToAllHolder  DataflowAlltoallWorkload
 }
 
 func NewDataflowWorkloadItem() DataflowWorkloadItem {
@@ -4701,6 +4702,7 @@ func (obj *dataflowWorkloadItem) setNil() {
 	obj.computeHolder = nil
 	obj.allReduceHolder = nil
 	obj.broadcastHolder = nil
+	obj.allToAllHolder = nil
 }
 
 // DataflowWorkloadItem is description is TBD
@@ -4782,6 +4784,14 @@ type DataflowWorkloadItem interface {
 	SetBroadcast(value DataflowBroadcastWorkload) DataflowWorkloadItem
 	// HasBroadcast checks if Broadcast has been set in DataflowWorkloadItem
 	HasBroadcast() bool
+	// AllToAll returns DataflowAlltoallWorkload, set in DataflowWorkloadItem.
+	// DataflowAlltoallWorkload is creates full-mesh flows between all nodes
+	AllToAll() DataflowAlltoallWorkload
+	// SetAllToAll assigns DataflowAlltoallWorkload provided by user to DataflowWorkloadItem.
+	// DataflowAlltoallWorkload is creates full-mesh flows between all nodes
+	SetAllToAll(value DataflowAlltoallWorkload) DataflowWorkloadItem
+	// HasAllToAll checks if AllToAll has been set in DataflowWorkloadItem
+	HasAllToAll() bool
 	setNil()
 }
 
@@ -5039,6 +5049,34 @@ func (obj *dataflowWorkloadItem) SetBroadcast(value DataflowBroadcastWorkload) D
 	return obj
 }
 
+// AllToAll returns a DataflowAlltoallWorkload
+// description is TBD
+func (obj *dataflowWorkloadItem) AllToAll() DataflowAlltoallWorkload {
+	if obj.obj.AllToAll == nil {
+		obj.obj.AllToAll = NewDataflowAlltoallWorkload().Msg()
+	}
+	if obj.allToAllHolder == nil {
+		obj.allToAllHolder = &dataflowAlltoallWorkload{obj: obj.obj.AllToAll}
+	}
+	return obj.allToAllHolder
+}
+
+// AllToAll returns a DataflowAlltoallWorkload
+// description is TBD
+func (obj *dataflowWorkloadItem) HasAllToAll() bool {
+	return obj.obj.AllToAll != nil
+}
+
+// SetAllToAll sets the DataflowAlltoallWorkload value in the DataflowWorkloadItem object
+// description is TBD
+func (obj *dataflowWorkloadItem) SetAllToAll(value DataflowAlltoallWorkload) DataflowWorkloadItem {
+
+	obj.allToAllHolder = nil
+	obj.obj.AllToAll = value.Msg()
+
+	return obj
+}
+
 func (obj *dataflowWorkloadItem) validateObj(set_default bool) {
 	if set_default {
 		obj.setDefault()
@@ -5076,6 +5114,10 @@ func (obj *dataflowWorkloadItem) validateObj(set_default bool) {
 
 	if obj.obj.Broadcast != nil {
 		obj.Broadcast().validateObj(set_default)
+	}
+
+	if obj.obj.AllToAll != nil {
+		obj.AllToAll().validateObj(set_default)
 	}
 
 }
@@ -7963,6 +8005,244 @@ func (obj *dataflowBroadcastWorkload) validateObj(set_default bool) {
 }
 
 func (obj *dataflowBroadcastWorkload) setDefault() {
+
+}
+
+// ***** DataflowAlltoallWorkload *****
+type dataflowAlltoallWorkload struct {
+	obj *onexdataflowapi.DataflowAlltoallWorkload
+}
+
+func NewDataflowAlltoallWorkload() DataflowAlltoallWorkload {
+	obj := dataflowAlltoallWorkload{obj: &onexdataflowapi.DataflowAlltoallWorkload{}}
+	obj.setDefault()
+	return &obj
+}
+
+func (obj *dataflowAlltoallWorkload) Msg() *onexdataflowapi.DataflowAlltoallWorkload {
+	return obj.obj
+}
+
+func (obj *dataflowAlltoallWorkload) SetMsg(msg *onexdataflowapi.DataflowAlltoallWorkload) DataflowAlltoallWorkload {
+
+	proto.Merge(obj.obj, msg)
+	return obj
+}
+
+func (obj *dataflowAlltoallWorkload) ToPbText() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	protoMarshal, err := proto.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(protoMarshal), nil
+}
+
+func (obj *dataflowAlltoallWorkload) FromPbText(value string) error {
+	retObj := proto.Unmarshal([]byte(value), obj.Msg())
+	if retObj != nil {
+		return retObj
+	}
+
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return retObj
+}
+
+func (obj *dataflowAlltoallWorkload) ToYaml() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	data, err = yaml.JSONToYAML(data)
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *dataflowAlltoallWorkload) FromYaml(value string) error {
+	if value == "" {
+		value = "{}"
+	}
+	data, err := yaml.YAMLToJSON([]byte(value))
+	if err != nil {
+		return err
+	}
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	uError := opts.Unmarshal([]byte(data), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return nil
+}
+
+func (obj *dataflowAlltoallWorkload) ToJson() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+		Indent:          "  ",
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *dataflowAlltoallWorkload) FromJson(value string) error {
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	if value == "" {
+		value = "{}"
+	}
+	uError := opts.Unmarshal([]byte(value), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+
+	err := obj.validateFromText()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (obj *dataflowAlltoallWorkload) validateFromText() error {
+	obj.validateObj(true)
+	return validationResult()
+}
+
+func (obj *dataflowAlltoallWorkload) Validate() error {
+	obj.validateObj(false)
+	return validationResult()
+}
+
+func (obj *dataflowAlltoallWorkload) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
+// DataflowAlltoallWorkload is creates full-mesh flows between all nodes
+type DataflowAlltoallWorkload interface {
+	Msg() *onexdataflowapi.DataflowAlltoallWorkload
+	SetMsg(*onexdataflowapi.DataflowAlltoallWorkload) DataflowAlltoallWorkload
+	// ToPbText marshals DataflowAlltoallWorkload to protobuf text
+	ToPbText() (string, error)
+	// ToYaml marshals DataflowAlltoallWorkload to YAML text
+	ToYaml() (string, error)
+	// ToJson marshals DataflowAlltoallWorkload to JSON text
+	ToJson() (string, error)
+	// FromPbText unmarshals DataflowAlltoallWorkload from protobuf text
+	FromPbText(value string) error
+	// FromYaml unmarshals DataflowAlltoallWorkload from YAML text
+	FromYaml(value string) error
+	// FromJson unmarshals DataflowAlltoallWorkload from JSON text
+	FromJson(value string) error
+	// Validate validates DataflowAlltoallWorkload
+	Validate() error
+	// A stringer function
+	String() string
+	validateFromText() error
+	validateObj(set_default bool)
+	setDefault()
+	// Nodes returns []string, set in DataflowAlltoallWorkload.
+	Nodes() []string
+	// SetNodes assigns []string provided by user to DataflowAlltoallWorkload
+	SetNodes(value []string) DataflowAlltoallWorkload
+	// FlowProfileName returns string, set in DataflowAlltoallWorkload.
+	FlowProfileName() string
+	// SetFlowProfileName assigns string provided by user to DataflowAlltoallWorkload
+	SetFlowProfileName(value string) DataflowAlltoallWorkload
+	// HasFlowProfileName checks if FlowProfileName has been set in DataflowAlltoallWorkload
+	HasFlowProfileName() bool
+}
+
+// Nodes returns a []string
+// description is TBD
+func (obj *dataflowAlltoallWorkload) Nodes() []string {
+	if obj.obj.Nodes == nil {
+		obj.obj.Nodes = make([]string, 0)
+	}
+	return obj.obj.Nodes
+}
+
+// SetNodes sets the []string value in the DataflowAlltoallWorkload object
+// description is TBD
+func (obj *dataflowAlltoallWorkload) SetNodes(value []string) DataflowAlltoallWorkload {
+
+	if obj.obj.Nodes == nil {
+		obj.obj.Nodes = make([]string, 0)
+	}
+	obj.obj.Nodes = value
+
+	return obj
+}
+
+// FlowProfileName returns a string
+// flow profile reference
+func (obj *dataflowAlltoallWorkload) FlowProfileName() string {
+
+	return *obj.obj.FlowProfileName
+
+}
+
+// FlowProfileName returns a string
+// flow profile reference
+func (obj *dataflowAlltoallWorkload) HasFlowProfileName() bool {
+	return obj.obj.FlowProfileName != nil
+}
+
+// SetFlowProfileName sets the string value in the DataflowAlltoallWorkload object
+// flow profile reference
+func (obj *dataflowAlltoallWorkload) SetFlowProfileName(value string) DataflowAlltoallWorkload {
+
+	obj.obj.FlowProfileName = &value
+	return obj
+}
+
+func (obj *dataflowAlltoallWorkload) validateObj(set_default bool) {
+	if set_default {
+		obj.setDefault()
+	}
+
+}
+
+func (obj *dataflowAlltoallWorkload) setDefault() {
 
 }
 
