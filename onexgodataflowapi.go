@@ -4473,10 +4473,14 @@ type DataflowHostManagement interface {
 	ManagementAddress() string
 	// SetManagementAddress assigns string provided by user to DataflowHostManagement
 	SetManagementAddress(value string) DataflowHostManagement
+	// HasManagementAddress checks if ManagementAddress has been set in DataflowHostManagement
+	HasManagementAddress() bool
 	// NicName returns string, set in DataflowHostManagement.
 	NicName() string
 	// SetNicName assigns string provided by user to DataflowHostManagement
 	SetNicName(value string) DataflowHostManagement
+	// HasNicName checks if NicName has been set in DataflowHostManagement
+	HasNicName() bool
 }
 
 // HostName returns a string
@@ -4572,14 +4576,21 @@ func (obj *dataflowHostManagement) SetNicSpeed(value int32) DataflowHostManageme
 // Hostname or address of management interface of a server running dataflow traffic
 func (obj *dataflowHostManagement) ManagementAddress() string {
 
-	return obj.obj.ManagementAddress
+	return *obj.obj.ManagementAddress
+
+}
+
+// ManagementAddress returns a string
+// Hostname or address of management interface of a server running dataflow traffic
+func (obj *dataflowHostManagement) HasManagementAddress() bool {
+	return obj.obj.ManagementAddress != nil
 }
 
 // SetManagementAddress sets the string value in the DataflowHostManagement object
 // Hostname or address of management interface of a server running dataflow traffic
 func (obj *dataflowHostManagement) SetManagementAddress(value string) DataflowHostManagement {
 
-	obj.obj.ManagementAddress = value
+	obj.obj.ManagementAddress = &value
 	return obj
 }
 
@@ -4587,14 +4598,21 @@ func (obj *dataflowHostManagement) SetManagementAddress(value string) DataflowHo
 // unique idenfier for the network interface card (nic), e.g. "eth1"
 func (obj *dataflowHostManagement) NicName() string {
 
-	return obj.obj.NicName
+	return *obj.obj.NicName
+
+}
+
+// NicName returns a string
+// unique idenfier for the network interface card (nic), e.g. "eth1"
+func (obj *dataflowHostManagement) HasNicName() bool {
+	return obj.obj.NicName != nil
 }
 
 // SetNicName sets the string value in the DataflowHostManagement object
 // unique idenfier for the network interface card (nic), e.g. "eth1"
 func (obj *dataflowHostManagement) SetNicName(value string) DataflowHostManagement {
 
-	obj.obj.NicName = value
+	obj.obj.NicName = &value
 	return obj
 }
 
@@ -4606,16 +4624,6 @@ func (obj *dataflowHostManagement) validateObj(set_default bool) {
 	// HostName is required
 	if obj.obj.HostName == "" {
 		validation = append(validation, "HostName is required field on interface DataflowHostManagement")
-	}
-
-	// ManagementAddress is required
-	if obj.obj.ManagementAddress == "" {
-		validation = append(validation, "ManagementAddress is required field on interface DataflowHostManagement")
-	}
-
-	// NicName is required
-	if obj.obj.NicName == "" {
-		validation = append(validation, "NicName is required field on interface DataflowHostManagement")
 	}
 }
 
