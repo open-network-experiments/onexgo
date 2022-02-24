@@ -4451,6 +4451,24 @@ type DataflowHostManagement interface {
 	HostName() string
 	// SetHostName assigns string provided by user to DataflowHostManagement
 	SetHostName(value string) DataflowHostManagement
+	// NicRxBuffer returns int32, set in DataflowHostManagement.
+	NicRxBuffer() int32
+	// SetNicRxBuffer assigns int32 provided by user to DataflowHostManagement
+	SetNicRxBuffer(value int32) DataflowHostManagement
+	// HasNicRxBuffer checks if NicRxBuffer has been set in DataflowHostManagement
+	HasNicRxBuffer() bool
+	// NicTxBuffer returns int32, set in DataflowHostManagement.
+	NicTxBuffer() int32
+	// SetNicTxBuffer assigns int32 provided by user to DataflowHostManagement
+	SetNicTxBuffer(value int32) DataflowHostManagement
+	// HasNicTxBuffer checks if NicTxBuffer has been set in DataflowHostManagement
+	HasNicTxBuffer() bool
+	// NicSpeed returns int32, set in DataflowHostManagement.
+	NicSpeed() int32
+	// SetNicSpeed assigns int32 provided by user to DataflowHostManagement
+	SetNicSpeed(value int32) DataflowHostManagement
+	// HasNicSpeed checks if NicSpeed has been set in DataflowHostManagement
+	HasNicSpeed() bool
 	// ManagementAddress returns string, set in DataflowHostManagement.
 	ManagementAddress() string
 	// SetManagementAddress assigns string provided by user to DataflowHostManagement
@@ -4481,6 +4499,72 @@ func (obj *dataflowHostManagement) HostName() string {
 func (obj *dataflowHostManagement) SetHostName(value string) DataflowHostManagement {
 
 	obj.obj.HostName = value
+	return obj
+}
+
+// NicRxBuffer returns a int32
+// RX buffer size in bytes
+func (obj *dataflowHostManagement) NicRxBuffer() int32 {
+
+	return *obj.obj.NicRxBuffer
+
+}
+
+// NicRxBuffer returns a int32
+// RX buffer size in bytes
+func (obj *dataflowHostManagement) HasNicRxBuffer() bool {
+	return obj.obj.NicRxBuffer != nil
+}
+
+// SetNicRxBuffer sets the int32 value in the DataflowHostManagement object
+// RX buffer size in bytes
+func (obj *dataflowHostManagement) SetNicRxBuffer(value int32) DataflowHostManagement {
+
+	obj.obj.NicRxBuffer = &value
+	return obj
+}
+
+// NicTxBuffer returns a int32
+// TX buffer size in bytes
+func (obj *dataflowHostManagement) NicTxBuffer() int32 {
+
+	return *obj.obj.NicTxBuffer
+
+}
+
+// NicTxBuffer returns a int32
+// TX buffer size in bytes
+func (obj *dataflowHostManagement) HasNicTxBuffer() bool {
+	return obj.obj.NicTxBuffer != nil
+}
+
+// SetNicTxBuffer sets the int32 value in the DataflowHostManagement object
+// TX buffer size in bytes
+func (obj *dataflowHostManagement) SetNicTxBuffer(value int32) DataflowHostManagement {
+
+	obj.obj.NicTxBuffer = &value
+	return obj
+}
+
+// NicSpeed returns a int32
+// configured link speed Mbps (e.g. 100000 for 100G)
+func (obj *dataflowHostManagement) NicSpeed() int32 {
+
+	return *obj.obj.NicSpeed
+
+}
+
+// NicSpeed returns a int32
+// configured link speed Mbps (e.g. 100000 for 100G)
+func (obj *dataflowHostManagement) HasNicSpeed() bool {
+	return obj.obj.NicSpeed != nil
+}
+
+// SetNicSpeed sets the int32 value in the DataflowHostManagement object
+// configured link speed Mbps (e.g. 100000 for 100G)
+func (obj *dataflowHostManagement) SetNicSpeed(value int32) DataflowHostManagement {
+
+	obj.obj.NicSpeed = &value
 	return obj
 }
 
@@ -5138,6 +5222,7 @@ func (obj *dataflowWorkloadItem) setDefault() {
 type dataflowFlowProfile struct {
 	obj            *onexdataflowapi.DataflowFlowProfile
 	ethernetHolder DataflowFlowProfileEthernet
+	ipHolder       DataflowFlowProfileIp
 	tcpHolder      DataflowFlowProfileTcp
 	udpHolder      DataflowFlowProfileUdp
 }
@@ -5288,6 +5373,7 @@ func (obj *dataflowFlowProfile) String() string {
 
 func (obj *dataflowFlowProfile) setNil() {
 	obj.ethernetHolder = nil
+	obj.ipHolder = nil
 	obj.tcpHolder = nil
 	obj.udpHolder = nil
 }
@@ -5343,6 +5429,14 @@ type DataflowFlowProfile interface {
 	SetL4ProtocolChoice(value DataflowFlowProfileL4ProtocolChoiceEnum) DataflowFlowProfile
 	// HasL4ProtocolChoice checks if L4ProtocolChoice has been set in DataflowFlowProfile
 	HasL4ProtocolChoice() bool
+	// Ip returns DataflowFlowProfileIp, set in DataflowFlowProfile.
+	// DataflowFlowProfileIp is description is TBD
+	Ip() DataflowFlowProfileIp
+	// SetIp assigns DataflowFlowProfileIp provided by user to DataflowFlowProfile.
+	// DataflowFlowProfileIp is description is TBD
+	SetIp(value DataflowFlowProfileIp) DataflowFlowProfile
+	// HasIp checks if Ip has been set in DataflowFlowProfile
+	HasIp() bool
 	// Tcp returns DataflowFlowProfileTcp, set in DataflowFlowProfile.
 	// DataflowFlowProfileTcp is description is TBD
 	Tcp() DataflowFlowProfileTcp
@@ -5486,6 +5580,34 @@ func (obj *dataflowFlowProfile) SetL4ProtocolChoice(value DataflowFlowProfileL4P
 	return obj
 }
 
+// Ip returns a DataflowFlowProfileIp
+// description is TBD
+func (obj *dataflowFlowProfile) Ip() DataflowFlowProfileIp {
+	if obj.obj.Ip == nil {
+		obj.obj.Ip = NewDataflowFlowProfileIp().Msg()
+	}
+	if obj.ipHolder == nil {
+		obj.ipHolder = &dataflowFlowProfileIp{obj: obj.obj.Ip}
+	}
+	return obj.ipHolder
+}
+
+// Ip returns a DataflowFlowProfileIp
+// description is TBD
+func (obj *dataflowFlowProfile) HasIp() bool {
+	return obj.obj.Ip != nil
+}
+
+// SetIp sets the DataflowFlowProfileIp value in the DataflowFlowProfile object
+// description is TBD
+func (obj *dataflowFlowProfile) SetIp(value DataflowFlowProfileIp) DataflowFlowProfile {
+
+	obj.ipHolder = nil
+	obj.obj.Ip = value.Msg()
+
+	return obj
+}
+
 // Tcp returns a DataflowFlowProfileTcp
 // description is TBD
 func (obj *dataflowFlowProfile) Tcp() DataflowFlowProfileTcp {
@@ -5554,6 +5676,10 @@ func (obj *dataflowFlowProfile) validateObj(set_default bool) {
 
 	if obj.obj.Ethernet != nil {
 		obj.Ethernet().validateObj(set_default)
+	}
+
+	if obj.obj.Ip != nil {
+		obj.Ip().validateObj(set_default)
 	}
 
 	if obj.obj.Tcp != nil {
@@ -8470,6 +8596,219 @@ func (obj *dataflowFlowProfileEthernet) setDefault() {
 
 }
 
+// ***** DataflowFlowProfileIp *****
+type dataflowFlowProfileIp struct {
+	obj *onexdataflowapi.DataflowFlowProfileIp
+}
+
+func NewDataflowFlowProfileIp() DataflowFlowProfileIp {
+	obj := dataflowFlowProfileIp{obj: &onexdataflowapi.DataflowFlowProfileIp{}}
+	obj.setDefault()
+	return &obj
+}
+
+func (obj *dataflowFlowProfileIp) Msg() *onexdataflowapi.DataflowFlowProfileIp {
+	return obj.obj
+}
+
+func (obj *dataflowFlowProfileIp) SetMsg(msg *onexdataflowapi.DataflowFlowProfileIp) DataflowFlowProfileIp {
+
+	proto.Merge(obj.obj, msg)
+	return obj
+}
+
+func (obj *dataflowFlowProfileIp) ToPbText() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	protoMarshal, err := proto.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(protoMarshal), nil
+}
+
+func (obj *dataflowFlowProfileIp) FromPbText(value string) error {
+	retObj := proto.Unmarshal([]byte(value), obj.Msg())
+	if retObj != nil {
+		return retObj
+	}
+
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return retObj
+}
+
+func (obj *dataflowFlowProfileIp) ToYaml() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	data, err = yaml.JSONToYAML(data)
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *dataflowFlowProfileIp) FromYaml(value string) error {
+	if value == "" {
+		value = "{}"
+	}
+	data, err := yaml.YAMLToJSON([]byte(value))
+	if err != nil {
+		return err
+	}
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	uError := opts.Unmarshal([]byte(data), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return nil
+}
+
+func (obj *dataflowFlowProfileIp) ToJson() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+		Indent:          "  ",
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *dataflowFlowProfileIp) FromJson(value string) error {
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	if value == "" {
+		value = "{}"
+	}
+	uError := opts.Unmarshal([]byte(value), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+
+	err := obj.validateFromText()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (obj *dataflowFlowProfileIp) validateFromText() error {
+	obj.validateObj(true)
+	return validationResult()
+}
+
+func (obj *dataflowFlowProfileIp) Validate() error {
+	obj.validateObj(false)
+	return validationResult()
+}
+
+func (obj *dataflowFlowProfileIp) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
+// DataflowFlowProfileIp is description is TBD
+type DataflowFlowProfileIp interface {
+	Msg() *onexdataflowapi.DataflowFlowProfileIp
+	SetMsg(*onexdataflowapi.DataflowFlowProfileIp) DataflowFlowProfileIp
+	// ToPbText marshals DataflowFlowProfileIp to protobuf text
+	ToPbText() (string, error)
+	// ToYaml marshals DataflowFlowProfileIp to YAML text
+	ToYaml() (string, error)
+	// ToJson marshals DataflowFlowProfileIp to JSON text
+	ToJson() (string, error)
+	// FromPbText unmarshals DataflowFlowProfileIp from protobuf text
+	FromPbText(value string) error
+	// FromYaml unmarshals DataflowFlowProfileIp from YAML text
+	FromYaml(value string) error
+	// FromJson unmarshals DataflowFlowProfileIp from JSON text
+	FromJson(value string) error
+	// Validate validates DataflowFlowProfileIp
+	Validate() error
+	// A stringer function
+	String() string
+	validateFromText() error
+	validateObj(set_default bool)
+	setDefault()
+	// Dscp returns int32, set in DataflowFlowProfileIp.
+	Dscp() int32
+	// SetDscp assigns int32 provided by user to DataflowFlowProfileIp
+	SetDscp(value int32) DataflowFlowProfileIp
+	// HasDscp checks if Dscp has been set in DataflowFlowProfileIp
+	HasDscp() bool
+}
+
+// Dscp returns a int32
+// differentiated services code point
+func (obj *dataflowFlowProfileIp) Dscp() int32 {
+
+	return *obj.obj.Dscp
+
+}
+
+// Dscp returns a int32
+// differentiated services code point
+func (obj *dataflowFlowProfileIp) HasDscp() bool {
+	return obj.obj.Dscp != nil
+}
+
+// SetDscp sets the int32 value in the DataflowFlowProfileIp object
+// differentiated services code point
+func (obj *dataflowFlowProfileIp) SetDscp(value int32) DataflowFlowProfileIp {
+
+	obj.obj.Dscp = &value
+	return obj
+}
+
+func (obj *dataflowFlowProfileIp) validateObj(set_default bool) {
+	if set_default {
+		obj.setDefault()
+	}
+
+}
+
+func (obj *dataflowFlowProfileIp) setDefault() {
+
+}
+
 // ***** DataflowFlowProfileTcp *****
 type dataflowFlowProfileTcp struct {
 	obj                   *onexdataflowapi.DataflowFlowProfileTcp
@@ -8673,6 +9012,42 @@ type DataflowFlowProfileTcp interface {
 	SetReceiveBuf(value int32) DataflowFlowProfileTcp
 	// HasReceiveBuf checks if ReceiveBuf has been set in DataflowFlowProfileTcp
 	HasReceiveBuf() bool
+	// DelayedAck returns int32, set in DataflowFlowProfileTcp.
+	DelayedAck() int32
+	// SetDelayedAck assigns int32 provided by user to DataflowFlowProfileTcp
+	SetDelayedAck(value int32) DataflowFlowProfileTcp
+	// HasDelayedAck checks if DelayedAck has been set in DataflowFlowProfileTcp
+	HasDelayedAck() bool
+	// SelectiveAck returns bool, set in DataflowFlowProfileTcp.
+	SelectiveAck() bool
+	// SetSelectiveAck assigns bool provided by user to DataflowFlowProfileTcp
+	SetSelectiveAck(value bool) DataflowFlowProfileTcp
+	// HasSelectiveAck checks if SelectiveAck has been set in DataflowFlowProfileTcp
+	HasSelectiveAck() bool
+	// MinRto returns int32, set in DataflowFlowProfileTcp.
+	MinRto() int32
+	// SetMinRto assigns int32 provided by user to DataflowFlowProfileTcp
+	SetMinRto(value int32) DataflowFlowProfileTcp
+	// HasMinRto checks if MinRto has been set in DataflowFlowProfileTcp
+	HasMinRto() bool
+	// Mss returns int32, set in DataflowFlowProfileTcp.
+	Mss() int32
+	// SetMss assigns int32 provided by user to DataflowFlowProfileTcp
+	SetMss(value int32) DataflowFlowProfileTcp
+	// HasMss checks if Mss has been set in DataflowFlowProfileTcp
+	HasMss() bool
+	// Ecn returns bool, set in DataflowFlowProfileTcp.
+	Ecn() bool
+	// SetEcn assigns bool provided by user to DataflowFlowProfileTcp
+	SetEcn(value bool) DataflowFlowProfileTcp
+	// HasEcn checks if Ecn has been set in DataflowFlowProfileTcp
+	HasEcn() bool
+	// EnableTimestamp returns bool, set in DataflowFlowProfileTcp.
+	EnableTimestamp() bool
+	// SetEnableTimestamp assigns bool provided by user to DataflowFlowProfileTcp
+	SetEnableTimestamp(value bool) DataflowFlowProfileTcp
+	// HasEnableTimestamp checks if EnableTimestamp has been set in DataflowFlowProfileTcp
+	HasEnableTimestamp() bool
 	// DestinationPort returns L4PortRange, set in DataflowFlowProfileTcp.
 	// L4PortRange is layer4 protocol source or destination port values
 	DestinationPort() L4PortRange
@@ -8800,6 +9175,138 @@ func (obj *dataflowFlowProfileTcp) SetReceiveBuf(value int32) DataflowFlowProfil
 	return obj
 }
 
+// DelayedAck returns a int32
+// delayed acknowledgment
+func (obj *dataflowFlowProfileTcp) DelayedAck() int32 {
+
+	return *obj.obj.DelayedAck
+
+}
+
+// DelayedAck returns a int32
+// delayed acknowledgment
+func (obj *dataflowFlowProfileTcp) HasDelayedAck() bool {
+	return obj.obj.DelayedAck != nil
+}
+
+// SetDelayedAck sets the int32 value in the DataflowFlowProfileTcp object
+// delayed acknowledgment
+func (obj *dataflowFlowProfileTcp) SetDelayedAck(value int32) DataflowFlowProfileTcp {
+
+	obj.obj.DelayedAck = &value
+	return obj
+}
+
+// SelectiveAck returns a bool
+// selective acknowledgment
+func (obj *dataflowFlowProfileTcp) SelectiveAck() bool {
+
+	return *obj.obj.SelectiveAck
+
+}
+
+// SelectiveAck returns a bool
+// selective acknowledgment
+func (obj *dataflowFlowProfileTcp) HasSelectiveAck() bool {
+	return obj.obj.SelectiveAck != nil
+}
+
+// SetSelectiveAck sets the bool value in the DataflowFlowProfileTcp object
+// selective acknowledgment
+func (obj *dataflowFlowProfileTcp) SetSelectiveAck(value bool) DataflowFlowProfileTcp {
+
+	obj.obj.SelectiveAck = &value
+	return obj
+}
+
+// MinRto returns a int32
+// minimum retransmission timeout
+func (obj *dataflowFlowProfileTcp) MinRto() int32 {
+
+	return *obj.obj.MinRto
+
+}
+
+// MinRto returns a int32
+// minimum retransmission timeout
+func (obj *dataflowFlowProfileTcp) HasMinRto() bool {
+	return obj.obj.MinRto != nil
+}
+
+// SetMinRto sets the int32 value in the DataflowFlowProfileTcp object
+// minimum retransmission timeout
+func (obj *dataflowFlowProfileTcp) SetMinRto(value int32) DataflowFlowProfileTcp {
+
+	obj.obj.MinRto = &value
+	return obj
+}
+
+// Mss returns a int32
+// Maximum Segment Size
+func (obj *dataflowFlowProfileTcp) Mss() int32 {
+
+	return *obj.obj.Mss
+
+}
+
+// Mss returns a int32
+// Maximum Segment Size
+func (obj *dataflowFlowProfileTcp) HasMss() bool {
+	return obj.obj.Mss != nil
+}
+
+// SetMss sets the int32 value in the DataflowFlowProfileTcp object
+// Maximum Segment Size
+func (obj *dataflowFlowProfileTcp) SetMss(value int32) DataflowFlowProfileTcp {
+
+	obj.obj.Mss = &value
+	return obj
+}
+
+// Ecn returns a bool
+// early congestion notification
+func (obj *dataflowFlowProfileTcp) Ecn() bool {
+
+	return *obj.obj.Ecn
+
+}
+
+// Ecn returns a bool
+// early congestion notification
+func (obj *dataflowFlowProfileTcp) HasEcn() bool {
+	return obj.obj.Ecn != nil
+}
+
+// SetEcn sets the bool value in the DataflowFlowProfileTcp object
+// early congestion notification
+func (obj *dataflowFlowProfileTcp) SetEcn(value bool) DataflowFlowProfileTcp {
+
+	obj.obj.Ecn = &value
+	return obj
+}
+
+// EnableTimestamp returns a bool
+// enable tcp timestamping
+func (obj *dataflowFlowProfileTcp) EnableTimestamp() bool {
+
+	return *obj.obj.EnableTimestamp
+
+}
+
+// EnableTimestamp returns a bool
+// enable tcp timestamping
+func (obj *dataflowFlowProfileTcp) HasEnableTimestamp() bool {
+	return obj.obj.EnableTimestamp != nil
+}
+
+// SetEnableTimestamp sets the bool value in the DataflowFlowProfileTcp object
+// enable tcp timestamping
+func (obj *dataflowFlowProfileTcp) SetEnableTimestamp(value bool) DataflowFlowProfileTcp {
+
+	obj.obj.EnableTimestamp = &value
+	return obj
+}
+
 // DestinationPort returns a L4PortRange
 // description is TBD
 func (obj *dataflowFlowProfileTcp) DestinationPort() L4PortRange {
@@ -8875,6 +9382,9 @@ func (obj *dataflowFlowProfileTcp) setDefault() {
 	if obj.obj.CongestionAlgorithm == nil {
 		obj.SetCongestionAlgorithm(DataflowFlowProfileTcpCongestionAlgorithm.CUBIC)
 
+	}
+	if obj.obj.Mss == nil {
+		obj.SetMss(1500)
 	}
 
 }
