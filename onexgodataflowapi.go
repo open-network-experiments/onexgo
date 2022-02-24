@@ -4820,6 +4820,7 @@ var DataflowWorkloadItemChoice = struct {
 	LOOP       DataflowWorkloadItemChoiceEnum
 	COMPUTE    DataflowWorkloadItemChoiceEnum
 	BROADCAST  DataflowWorkloadItemChoiceEnum
+	ALL_TO_ALL DataflowWorkloadItemChoiceEnum
 }{
 	SCATTER:    DataflowWorkloadItemChoiceEnum("scatter"),
 	GATHER:     DataflowWorkloadItemChoiceEnum("gather"),
@@ -4827,6 +4828,7 @@ var DataflowWorkloadItemChoice = struct {
 	LOOP:       DataflowWorkloadItemChoiceEnum("loop"),
 	COMPUTE:    DataflowWorkloadItemChoiceEnum("compute"),
 	BROADCAST:  DataflowWorkloadItemChoiceEnum("broadcast"),
+	ALL_TO_ALL: DataflowWorkloadItemChoiceEnum("all_to_all"),
 }
 
 func (obj *dataflowWorkloadItem) Choice() DataflowWorkloadItemChoiceEnum {
@@ -4841,6 +4843,8 @@ func (obj *dataflowWorkloadItem) SetChoice(value DataflowWorkloadItemChoiceEnum)
 		return obj
 	}
 	obj.obj.Choice = onexdataflowapi.DataflowWorkloadItem_Choice_Enum(intValue)
+	obj.obj.AllToAll = nil
+	obj.allToAllHolder = nil
 	obj.obj.Broadcast = nil
 	obj.broadcastHolder = nil
 	obj.obj.AllReduce = nil
@@ -4876,6 +4880,10 @@ func (obj *dataflowWorkloadItem) SetChoice(value DataflowWorkloadItemChoiceEnum)
 
 	if value == DataflowWorkloadItemChoice.BROADCAST {
 		obj.obj.Broadcast = NewDataflowBroadcastWorkload().Msg()
+	}
+
+	if value == DataflowWorkloadItemChoice.ALL_TO_ALL {
+		obj.obj.AllToAll = NewDataflowAlltoallWorkload().Msg()
 	}
 
 	return obj
@@ -5053,7 +5061,7 @@ func (obj *dataflowWorkloadItem) SetBroadcast(value DataflowBroadcastWorkload) D
 // description is TBD
 func (obj *dataflowWorkloadItem) AllToAll() DataflowAlltoallWorkload {
 	if obj.obj.AllToAll == nil {
-		obj.obj.AllToAll = NewDataflowAlltoallWorkload().Msg()
+		obj.SetChoice(DataflowWorkloadItemChoice.ALL_TO_ALL)
 	}
 	if obj.allToAllHolder == nil {
 		obj.allToAllHolder = &dataflowAlltoallWorkload{obj: obj.obj.AllToAll}
@@ -5070,7 +5078,7 @@ func (obj *dataflowWorkloadItem) HasAllToAll() bool {
 // SetAllToAll sets the DataflowAlltoallWorkload value in the DataflowWorkloadItem object
 // description is TBD
 func (obj *dataflowWorkloadItem) SetAllToAll(value DataflowAlltoallWorkload) DataflowWorkloadItem {
-
+	obj.SetChoice(DataflowWorkloadItemChoice.ALL_TO_ALL)
 	obj.allToAllHolder = nil
 	obj.obj.AllToAll = value.Msg()
 
