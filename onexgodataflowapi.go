@@ -9772,10 +9772,34 @@ type MetricsResponseFlowResultTcpInfo interface {
 	SetRetransmissions(value int64) MetricsResponseFlowResultTcpInfo
 	// HasRetransmissions checks if Retransmissions has been set in MetricsResponseFlowResultTcpInfo
 	HasRetransmissions() bool
+	// RetransmissionTimeout returns int64, set in MetricsResponseFlowResultTcpInfo.
+	RetransmissionTimeout() int64
+	// SetRetransmissionTimeout assigns int64 provided by user to MetricsResponseFlowResultTcpInfo
+	SetRetransmissionTimeout(value int64) MetricsResponseFlowResultTcpInfo
+	// HasRetransmissionTimeout checks if RetransmissionTimeout has been set in MetricsResponseFlowResultTcpInfo
+	HasRetransmissionTimeout() bool
+	// CongestionWindow returns int64, set in MetricsResponseFlowResultTcpInfo.
+	CongestionWindow() int64
+	// SetCongestionWindow assigns int64 provided by user to MetricsResponseFlowResultTcpInfo
+	SetCongestionWindow(value int64) MetricsResponseFlowResultTcpInfo
+	// HasCongestionWindow checks if CongestionWindow has been set in MetricsResponseFlowResultTcpInfo
+	HasCongestionWindow() bool
+	// SlowStartThreshold returns int64, set in MetricsResponseFlowResultTcpInfo.
+	SlowStartThreshold() int64
+	// SetSlowStartThreshold assigns int64 provided by user to MetricsResponseFlowResultTcpInfo
+	SetSlowStartThreshold(value int64) MetricsResponseFlowResultTcpInfo
+	// HasSlowStartThreshold checks if SlowStartThreshold has been set in MetricsResponseFlowResultTcpInfo
+	HasSlowStartThreshold() bool
+	// PathMtu returns int64, set in MetricsResponseFlowResultTcpInfo.
+	PathMtu() int64
+	// SetPathMtu assigns int64 provided by user to MetricsResponseFlowResultTcpInfo
+	SetPathMtu(value int64) MetricsResponseFlowResultTcpInfo
+	// HasPathMtu checks if PathMtu has been set in MetricsResponseFlowResultTcpInfo
+	HasPathMtu() bool
 }
 
 // Rtt returns a int64
-// round trip time in microseconds
+// average round trip time in microseconds
 func (obj *metricsResponseFlowResultTcpInfo) Rtt() int64 {
 
 	return *obj.obj.Rtt
@@ -9783,13 +9807,13 @@ func (obj *metricsResponseFlowResultTcpInfo) Rtt() int64 {
 }
 
 // Rtt returns a int64
-// round trip time in microseconds
+// average round trip time in microseconds
 func (obj *metricsResponseFlowResultTcpInfo) HasRtt() bool {
 	return obj.obj.Rtt != nil
 }
 
 // SetRtt sets the int64 value in the MetricsResponseFlowResultTcpInfo object
-// round trip time in microseconds
+// average round trip time in microseconds
 func (obj *metricsResponseFlowResultTcpInfo) SetRtt(value int64) MetricsResponseFlowResultTcpInfo {
 
 	obj.obj.Rtt = &value
@@ -9837,6 +9861,94 @@ func (obj *metricsResponseFlowResultTcpInfo) HasRetransmissions() bool {
 func (obj *metricsResponseFlowResultTcpInfo) SetRetransmissions(value int64) MetricsResponseFlowResultTcpInfo {
 
 	obj.obj.Retransmissions = &value
+	return obj
+}
+
+// RetransmissionTimeout returns a int64
+// retransmission timeout in micro seconds
+func (obj *metricsResponseFlowResultTcpInfo) RetransmissionTimeout() int64 {
+
+	return *obj.obj.RetransmissionTimeout
+
+}
+
+// RetransmissionTimeout returns a int64
+// retransmission timeout in micro seconds
+func (obj *metricsResponseFlowResultTcpInfo) HasRetransmissionTimeout() bool {
+	return obj.obj.RetransmissionTimeout != nil
+}
+
+// SetRetransmissionTimeout sets the int64 value in the MetricsResponseFlowResultTcpInfo object
+// retransmission timeout in micro seconds
+func (obj *metricsResponseFlowResultTcpInfo) SetRetransmissionTimeout(value int64) MetricsResponseFlowResultTcpInfo {
+
+	obj.obj.RetransmissionTimeout = &value
+	return obj
+}
+
+// CongestionWindow returns a int64
+// congestion windows size in bytes
+func (obj *metricsResponseFlowResultTcpInfo) CongestionWindow() int64 {
+
+	return *obj.obj.CongestionWindow
+
+}
+
+// CongestionWindow returns a int64
+// congestion windows size in bytes
+func (obj *metricsResponseFlowResultTcpInfo) HasCongestionWindow() bool {
+	return obj.obj.CongestionWindow != nil
+}
+
+// SetCongestionWindow sets the int64 value in the MetricsResponseFlowResultTcpInfo object
+// congestion windows size in bytes
+func (obj *metricsResponseFlowResultTcpInfo) SetCongestionWindow(value int64) MetricsResponseFlowResultTcpInfo {
+
+	obj.obj.CongestionWindow = &value
+	return obj
+}
+
+// SlowStartThreshold returns a int64
+// slow start threshold in bytes (max int64 value when wide open)
+func (obj *metricsResponseFlowResultTcpInfo) SlowStartThreshold() int64 {
+
+	return *obj.obj.SlowStartThreshold
+
+}
+
+// SlowStartThreshold returns a int64
+// slow start threshold in bytes (max int64 value when wide open)
+func (obj *metricsResponseFlowResultTcpInfo) HasSlowStartThreshold() bool {
+	return obj.obj.SlowStartThreshold != nil
+}
+
+// SetSlowStartThreshold sets the int64 value in the MetricsResponseFlowResultTcpInfo object
+// slow start threshold in bytes (max int64 value when wide open)
+func (obj *metricsResponseFlowResultTcpInfo) SetSlowStartThreshold(value int64) MetricsResponseFlowResultTcpInfo {
+
+	obj.obj.SlowStartThreshold = &value
+	return obj
+}
+
+// PathMtu returns a int64
+// path MTU
+func (obj *metricsResponseFlowResultTcpInfo) PathMtu() int64 {
+
+	return *obj.obj.PathMtu
+
+}
+
+// PathMtu returns a int64
+// path MTU
+func (obj *metricsResponseFlowResultTcpInfo) HasPathMtu() bool {
+	return obj.obj.PathMtu != nil
+}
+
+// SetPathMtu sets the int64 value in the MetricsResponseFlowResultTcpInfo object
+// path MTU
+func (obj *metricsResponseFlowResultTcpInfo) SetPathMtu(value int64) MetricsResponseFlowResultTcpInfo {
+
+	obj.obj.PathMtu = &value
 	return obj
 }
 
