@@ -5975,8 +5975,9 @@ func (obj *errorItem) setDefault() {
 
 // ***** MetricsResponseFlowResult *****
 type metricsResponseFlowResult struct {
-	obj           *onexdataflowapi.MetricsResponseFlowResult
-	tcpInfoHolder MetricsResponseFlowResultTcpInfo
+	obj                    *onexdataflowapi.MetricsResponseFlowResult
+	tcpInfoInitiatorHolder MetricsResponseFlowResultTcpInfo
+	tcpInfoResponderHolder MetricsResponseFlowResultTcpInfo
 }
 
 func NewMetricsResponseFlowResult() MetricsResponseFlowResult {
@@ -6124,7 +6125,8 @@ func (obj *metricsResponseFlowResult) String() string {
 }
 
 func (obj *metricsResponseFlowResult) setNil() {
-	obj.tcpInfoHolder = nil
+	obj.tcpInfoInitiatorHolder = nil
+	obj.tcpInfoResponderHolder = nil
 }
 
 // MetricsResponseFlowResult is result for a single data flow
@@ -6204,14 +6206,22 @@ type MetricsResponseFlowResult interface {
 	SetBytesRx(value int64) MetricsResponseFlowResult
 	// HasBytesRx checks if BytesRx has been set in MetricsResponseFlowResult
 	HasBytesRx() bool
-	// TcpInfo returns MetricsResponseFlowResultTcpInfo, set in MetricsResponseFlowResult.
+	// TcpInfoInitiator returns MetricsResponseFlowResultTcpInfo, set in MetricsResponseFlowResult.
 	// MetricsResponseFlowResultTcpInfo is tCP information for this flow
-	TcpInfo() MetricsResponseFlowResultTcpInfo
-	// SetTcpInfo assigns MetricsResponseFlowResultTcpInfo provided by user to MetricsResponseFlowResult.
+	TcpInfoInitiator() MetricsResponseFlowResultTcpInfo
+	// SetTcpInfoInitiator assigns MetricsResponseFlowResultTcpInfo provided by user to MetricsResponseFlowResult.
 	// MetricsResponseFlowResultTcpInfo is tCP information for this flow
-	SetTcpInfo(value MetricsResponseFlowResultTcpInfo) MetricsResponseFlowResult
-	// HasTcpInfo checks if TcpInfo has been set in MetricsResponseFlowResult
-	HasTcpInfo() bool
+	SetTcpInfoInitiator(value MetricsResponseFlowResultTcpInfo) MetricsResponseFlowResult
+	// HasTcpInfoInitiator checks if TcpInfoInitiator has been set in MetricsResponseFlowResult
+	HasTcpInfoInitiator() bool
+	// TcpInfoResponder returns MetricsResponseFlowResultTcpInfo, set in MetricsResponseFlowResult.
+	// MetricsResponseFlowResultTcpInfo is tCP information for this flow
+	TcpInfoResponder() MetricsResponseFlowResultTcpInfo
+	// SetTcpInfoResponder assigns MetricsResponseFlowResultTcpInfo provided by user to MetricsResponseFlowResult.
+	// MetricsResponseFlowResultTcpInfo is tCP information for this flow
+	SetTcpInfoResponder(value MetricsResponseFlowResultTcpInfo) MetricsResponseFlowResult
+	// HasTcpInfoResponder checks if TcpInfoResponder has been set in MetricsResponseFlowResult
+	HasTcpInfoResponder() bool
 	setNil()
 }
 
@@ -6413,30 +6423,58 @@ func (obj *metricsResponseFlowResult) SetBytesRx(value int64) MetricsResponseFlo
 	return obj
 }
 
-// TcpInfo returns a MetricsResponseFlowResultTcpInfo
+// TcpInfoInitiator returns a MetricsResponseFlowResultTcpInfo
 // description is TBD
-func (obj *metricsResponseFlowResult) TcpInfo() MetricsResponseFlowResultTcpInfo {
-	if obj.obj.TcpInfo == nil {
-		obj.obj.TcpInfo = NewMetricsResponseFlowResultTcpInfo().Msg()
+func (obj *metricsResponseFlowResult) TcpInfoInitiator() MetricsResponseFlowResultTcpInfo {
+	if obj.obj.TcpInfoInitiator == nil {
+		obj.obj.TcpInfoInitiator = NewMetricsResponseFlowResultTcpInfo().Msg()
 	}
-	if obj.tcpInfoHolder == nil {
-		obj.tcpInfoHolder = &metricsResponseFlowResultTcpInfo{obj: obj.obj.TcpInfo}
+	if obj.tcpInfoInitiatorHolder == nil {
+		obj.tcpInfoInitiatorHolder = &metricsResponseFlowResultTcpInfo{obj: obj.obj.TcpInfoInitiator}
 	}
-	return obj.tcpInfoHolder
+	return obj.tcpInfoInitiatorHolder
 }
 
-// TcpInfo returns a MetricsResponseFlowResultTcpInfo
+// TcpInfoInitiator returns a MetricsResponseFlowResultTcpInfo
 // description is TBD
-func (obj *metricsResponseFlowResult) HasTcpInfo() bool {
-	return obj.obj.TcpInfo != nil
+func (obj *metricsResponseFlowResult) HasTcpInfoInitiator() bool {
+	return obj.obj.TcpInfoInitiator != nil
 }
 
-// SetTcpInfo sets the MetricsResponseFlowResultTcpInfo value in the MetricsResponseFlowResult object
+// SetTcpInfoInitiator sets the MetricsResponseFlowResultTcpInfo value in the MetricsResponseFlowResult object
 // description is TBD
-func (obj *metricsResponseFlowResult) SetTcpInfo(value MetricsResponseFlowResultTcpInfo) MetricsResponseFlowResult {
+func (obj *metricsResponseFlowResult) SetTcpInfoInitiator(value MetricsResponseFlowResultTcpInfo) MetricsResponseFlowResult {
 
-	obj.tcpInfoHolder = nil
-	obj.obj.TcpInfo = value.Msg()
+	obj.tcpInfoInitiatorHolder = nil
+	obj.obj.TcpInfoInitiator = value.Msg()
+
+	return obj
+}
+
+// TcpInfoResponder returns a MetricsResponseFlowResultTcpInfo
+// description is TBD
+func (obj *metricsResponseFlowResult) TcpInfoResponder() MetricsResponseFlowResultTcpInfo {
+	if obj.obj.TcpInfoResponder == nil {
+		obj.obj.TcpInfoResponder = NewMetricsResponseFlowResultTcpInfo().Msg()
+	}
+	if obj.tcpInfoResponderHolder == nil {
+		obj.tcpInfoResponderHolder = &metricsResponseFlowResultTcpInfo{obj: obj.obj.TcpInfoResponder}
+	}
+	return obj.tcpInfoResponderHolder
+}
+
+// TcpInfoResponder returns a MetricsResponseFlowResultTcpInfo
+// description is TBD
+func (obj *metricsResponseFlowResult) HasTcpInfoResponder() bool {
+	return obj.obj.TcpInfoResponder != nil
+}
+
+// SetTcpInfoResponder sets the MetricsResponseFlowResultTcpInfo value in the MetricsResponseFlowResult object
+// description is TBD
+func (obj *metricsResponseFlowResult) SetTcpInfoResponder(value MetricsResponseFlowResultTcpInfo) MetricsResponseFlowResult {
+
+	obj.tcpInfoResponderHolder = nil
+	obj.obj.TcpInfoResponder = value.Msg()
 
 	return obj
 }
@@ -6446,8 +6484,12 @@ func (obj *metricsResponseFlowResult) validateObj(set_default bool) {
 		obj.setDefault()
 	}
 
-	if obj.obj.TcpInfo != nil {
-		obj.TcpInfo().validateObj(set_default)
+	if obj.obj.TcpInfoInitiator != nil {
+		obj.TcpInfoInitiator().validateObj(set_default)
+	}
+
+	if obj.obj.TcpInfoResponder != nil {
+		obj.TcpInfoResponder().validateObj(set_default)
 	}
 
 }
