@@ -6158,12 +6158,6 @@ type MetricsResponseFlowResult interface {
 	SetWorkloadName(value string) MetricsResponseFlowResult
 	// HasWorkloadName checks if WorkloadName has been set in MetricsResponseFlowResult
 	HasWorkloadName() bool
-	// FlowNumber returns int64, set in MetricsResponseFlowResult.
-	FlowNumber() int64
-	// SetFlowNumber assigns int64 provided by user to MetricsResponseFlowResult
-	SetFlowNumber(value int64) MetricsResponseFlowResult
-	// HasFlowNumber checks if FlowNumber has been set in MetricsResponseFlowResult
-	HasFlowNumber() bool
 	// FromHostName returns string, set in MetricsResponseFlowResult.
 	FromHostName() string
 	// SetFromHostName assigns string provided by user to MetricsResponseFlowResult
@@ -6244,28 +6238,6 @@ func (obj *metricsResponseFlowResult) HasWorkloadName() bool {
 func (obj *metricsResponseFlowResult) SetWorkloadName(value string) MetricsResponseFlowResult {
 
 	obj.obj.WorkloadName = &value
-	return obj
-}
-
-// FlowNumber returns a int64
-// description is TBD
-func (obj *metricsResponseFlowResult) FlowNumber() int64 {
-
-	return *obj.obj.FlowNumber
-
-}
-
-// FlowNumber returns a int64
-// description is TBD
-func (obj *metricsResponseFlowResult) HasFlowNumber() bool {
-	return obj.obj.FlowNumber != nil
-}
-
-// SetFlowNumber sets the int64 value in the MetricsResponseFlowResult object
-// description is TBD
-func (obj *metricsResponseFlowResult) SetFlowNumber(value int64) MetricsResponseFlowResult {
-
-	obj.obj.FlowNumber = &value
 	return obj
 }
 
