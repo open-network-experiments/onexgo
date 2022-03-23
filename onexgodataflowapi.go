@@ -121,6 +121,12 @@ type OnexgodataflowapiApi interface {
 	// NewExperimentRequest returns a new instance of ExperimentRequest.
 	// ExperimentRequest is experiment request details
 	NewExperimentRequest() ExperimentRequest
+	// NewControlStartRequest returns a new instance of ControlStartRequest.
+	// ControlStartRequest is start request details
+	NewControlStartRequest() ControlStartRequest
+	// NewControlStatusRequest returns a new instance of ControlStatusRequest.
+	// ControlStatusRequest is control.state request details
+	NewControlStatusRequest() ControlStatusRequest
 	// NewMetricsRequest returns a new instance of MetricsRequest.
 	// MetricsRequest is metrics request details
 	NewMetricsRequest() MetricsRequest
@@ -133,6 +139,12 @@ type OnexgodataflowapiApi interface {
 	// NewRunExperimentResponse returns a new instance of RunExperimentResponse.
 	// RunExperimentResponse is description is TBD
 	NewRunExperimentResponse() RunExperimentResponse
+	// NewStartResponse returns a new instance of StartResponse.
+	// StartResponse is description is TBD
+	NewStartResponse() StartResponse
+	// NewGetStatusResponse returns a new instance of GetStatusResponse.
+	// GetStatusResponse is description is TBD
+	NewGetStatusResponse() GetStatusResponse
 	// NewGetMetricsResponse returns a new instance of GetMetricsResponse.
 	// GetMetricsResponse is description is TBD
 	NewGetMetricsResponse() GetMetricsResponse
@@ -142,6 +154,10 @@ type OnexgodataflowapiApi interface {
 	GetConfig(getConfigDetails GetConfigDetails) (Config, error)
 	// RunExperiment runs the currently configured experiment
 	RunExperiment(experimentRequest ExperimentRequest) (WarningDetails, error)
+	// Start starts the currently configured experiment
+	Start(controlStartRequest ControlStartRequest) (WarningDetails, error)
+	// GetStatus gets the control status (e.g. started/completed/error)
+	GetStatus(controlStatusRequest ControlStatusRequest) (ControlStatusResponse, error)
 	// GetMetrics description is TBD
 	GetMetrics(metricsRequest MetricsRequest) (MetricsResponse, error)
 }
@@ -158,6 +174,14 @@ func (api *onexgodataflowapiApi) NewExperimentRequest() ExperimentRequest {
 	return NewExperimentRequest()
 }
 
+func (api *onexgodataflowapiApi) NewControlStartRequest() ControlStartRequest {
+	return NewControlStartRequest()
+}
+
+func (api *onexgodataflowapiApi) NewControlStatusRequest() ControlStatusRequest {
+	return NewControlStatusRequest()
+}
+
 func (api *onexgodataflowapiApi) NewMetricsRequest() MetricsRequest {
 	return NewMetricsRequest()
 }
@@ -172,6 +196,14 @@ func (api *onexgodataflowapiApi) NewGetConfigResponse() GetConfigResponse {
 
 func (api *onexgodataflowapiApi) NewRunExperimentResponse() RunExperimentResponse {
 	return NewRunExperimentResponse()
+}
+
+func (api *onexgodataflowapiApi) NewStartResponse() StartResponse {
+	return NewStartResponse()
+}
+
+func (api *onexgodataflowapiApi) NewGetStatusResponse() GetStatusResponse {
+	return NewGetStatusResponse()
 }
 
 func (api *onexgodataflowapiApi) NewGetMetricsResponse() GetMetricsResponse {
@@ -271,6 +303,76 @@ func (api *onexgodataflowapiApi) RunExperiment(experimentRequest ExperimentReque
 	}
 	if resp.GetStatusCode_200() != nil {
 		return NewWarningDetails().SetMsg(resp.GetStatusCode_200()), nil
+	}
+	if resp.GetStatusCode_400() != nil {
+		data, _ := yaml.Marshal(resp.GetStatusCode_400())
+		return nil, fmt.Errorf(string(data))
+	}
+	if resp.GetStatusCode_500() != nil {
+		data, _ := yaml.Marshal(resp.GetStatusCode_500())
+		return nil, fmt.Errorf(string(data))
+	}
+	return nil, fmt.Errorf("response of 200, 400, 500 has not been implemented")
+}
+
+func (api *onexgodataflowapiApi) Start(controlStartRequest ControlStartRequest) (WarningDetails, error) {
+
+	err := controlStartRequest.Validate()
+	if err != nil {
+		return nil, err
+	}
+
+	if api.hasHttpTransport() {
+		return api.httpStart(controlStartRequest)
+	}
+
+	if err := api.grpcConnect(); err != nil {
+		return nil, err
+	}
+	request := onexdataflowapi.StartRequest{ControlStartRequest: controlStartRequest.Msg()}
+	ctx, cancelFunc := context.WithTimeout(context.Background(), api.grpc.requestTimeout)
+	defer cancelFunc()
+	resp, err := api.grpcClient.Start(ctx, &request)
+	if err != nil {
+		return nil, err
+	}
+	if resp.GetStatusCode_200() != nil {
+		return NewWarningDetails().SetMsg(resp.GetStatusCode_200()), nil
+	}
+	if resp.GetStatusCode_400() != nil {
+		data, _ := yaml.Marshal(resp.GetStatusCode_400())
+		return nil, fmt.Errorf(string(data))
+	}
+	if resp.GetStatusCode_500() != nil {
+		data, _ := yaml.Marshal(resp.GetStatusCode_500())
+		return nil, fmt.Errorf(string(data))
+	}
+	return nil, fmt.Errorf("response of 200, 400, 500 has not been implemented")
+}
+
+func (api *onexgodataflowapiApi) GetStatus(controlStatusRequest ControlStatusRequest) (ControlStatusResponse, error) {
+
+	err := controlStatusRequest.Validate()
+	if err != nil {
+		return nil, err
+	}
+
+	if api.hasHttpTransport() {
+		return api.httpGetStatus(controlStatusRequest)
+	}
+
+	if err := api.grpcConnect(); err != nil {
+		return nil, err
+	}
+	request := onexdataflowapi.GetStatusRequest{ControlStatusRequest: controlStatusRequest.Msg()}
+	ctx, cancelFunc := context.WithTimeout(context.Background(), api.grpc.requestTimeout)
+	defer cancelFunc()
+	resp, err := api.grpcClient.GetStatus(ctx, &request)
+	if err != nil {
+		return nil, err
+	}
+	if resp.GetStatusCode_200() != nil {
+		return NewControlStatusResponse().SetMsg(resp.GetStatusCode_200()), nil
 	}
 	if resp.GetStatusCode_400() != nil {
 		data, _ := yaml.Marshal(resp.GetStatusCode_400())
@@ -403,6 +505,74 @@ func (api *onexgodataflowapiApi) httpRunExperiment(experimentRequest ExperimentR
 	}
 	if resp.StatusCode == 200 {
 		obj := api.NewRunExperimentResponse().StatusCode200()
+		if err := obj.FromJson(string(bodyBytes)); err != nil {
+			return nil, err
+		}
+		if err != nil {
+			return nil, err
+		}
+		return obj, nil
+	}
+	if resp.StatusCode == 400 {
+		return nil, fmt.Errorf(string(bodyBytes))
+	}
+	if resp.StatusCode == 500 {
+		return nil, fmt.Errorf(string(bodyBytes))
+	}
+	return nil, fmt.Errorf("response not implemented")
+}
+
+func (api *onexgodataflowapiApi) httpStart(controlStartRequest ControlStartRequest) (WarningDetails, error) {
+	controlStartRequestJson, err := controlStartRequest.ToJson()
+	if err != nil {
+		return nil, err
+	}
+	resp, err := api.httpSendRecv("control/start", controlStartRequestJson, "POST")
+
+	if err != nil {
+		return nil, err
+	}
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode == 200 {
+		obj := api.NewStartResponse().StatusCode200()
+		if err := obj.FromJson(string(bodyBytes)); err != nil {
+			return nil, err
+		}
+		if err != nil {
+			return nil, err
+		}
+		return obj, nil
+	}
+	if resp.StatusCode == 400 {
+		return nil, fmt.Errorf(string(bodyBytes))
+	}
+	if resp.StatusCode == 500 {
+		return nil, fmt.Errorf(string(bodyBytes))
+	}
+	return nil, fmt.Errorf("response not implemented")
+}
+
+func (api *onexgodataflowapiApi) httpGetStatus(controlStatusRequest ControlStatusRequest) (ControlStatusResponse, error) {
+	controlStatusRequestJson, err := controlStatusRequest.ToJson()
+	if err != nil {
+		return nil, err
+	}
+	resp, err := api.httpSendRecv("control/status", controlStatusRequestJson, "GET")
+
+	if err != nil {
+		return nil, err
+	}
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode == 200 {
+		obj := api.NewGetStatusResponse().StatusCode200()
 		if err := obj.FromJson(string(bodyBytes)); err != nil {
 			return nil, err
 		}
@@ -1156,6 +1326,376 @@ func (obj *experimentRequest) validateObj(set_default bool) {
 }
 
 func (obj *experimentRequest) setDefault() {
+
+}
+
+// ***** ControlStartRequest *****
+type controlStartRequest struct {
+	obj *onexdataflowapi.ControlStartRequest
+}
+
+func NewControlStartRequest() ControlStartRequest {
+	obj := controlStartRequest{obj: &onexdataflowapi.ControlStartRequest{}}
+	obj.setDefault()
+	return &obj
+}
+
+func (obj *controlStartRequest) Msg() *onexdataflowapi.ControlStartRequest {
+	return obj.obj
+}
+
+func (obj *controlStartRequest) SetMsg(msg *onexdataflowapi.ControlStartRequest) ControlStartRequest {
+
+	proto.Merge(obj.obj, msg)
+	return obj
+}
+
+func (obj *controlStartRequest) ToPbText() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	protoMarshal, err := proto.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(protoMarshal), nil
+}
+
+func (obj *controlStartRequest) FromPbText(value string) error {
+	retObj := proto.Unmarshal([]byte(value), obj.Msg())
+	if retObj != nil {
+		return retObj
+	}
+
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return retObj
+}
+
+func (obj *controlStartRequest) ToYaml() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	data, err = yaml.JSONToYAML(data)
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *controlStartRequest) FromYaml(value string) error {
+	if value == "" {
+		value = "{}"
+	}
+	data, err := yaml.YAMLToJSON([]byte(value))
+	if err != nil {
+		return err
+	}
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	uError := opts.Unmarshal([]byte(data), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return nil
+}
+
+func (obj *controlStartRequest) ToJson() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+		Indent:          "  ",
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *controlStartRequest) FromJson(value string) error {
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	if value == "" {
+		value = "{}"
+	}
+	uError := opts.Unmarshal([]byte(value), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+
+	err := obj.validateFromText()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (obj *controlStartRequest) validateFromText() error {
+	obj.validateObj(true)
+	return validationResult()
+}
+
+func (obj *controlStartRequest) Validate() error {
+	obj.validateObj(false)
+	return validationResult()
+}
+
+func (obj *controlStartRequest) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
+// ControlStartRequest is start request details
+type ControlStartRequest interface {
+	Msg() *onexdataflowapi.ControlStartRequest
+	SetMsg(*onexdataflowapi.ControlStartRequest) ControlStartRequest
+	// ToPbText marshals ControlStartRequest to protobuf text
+	ToPbText() (string, error)
+	// ToYaml marshals ControlStartRequest to YAML text
+	ToYaml() (string, error)
+	// ToJson marshals ControlStartRequest to JSON text
+	ToJson() (string, error)
+	// FromPbText unmarshals ControlStartRequest from protobuf text
+	FromPbText(value string) error
+	// FromYaml unmarshals ControlStartRequest from YAML text
+	FromYaml(value string) error
+	// FromJson unmarshals ControlStartRequest from JSON text
+	FromJson(value string) error
+	// Validate validates ControlStartRequest
+	Validate() error
+	// A stringer function
+	String() string
+	validateFromText() error
+	validateObj(set_default bool)
+	setDefault()
+}
+
+func (obj *controlStartRequest) validateObj(set_default bool) {
+	if set_default {
+		obj.setDefault()
+	}
+
+}
+
+func (obj *controlStartRequest) setDefault() {
+
+}
+
+// ***** ControlStatusRequest *****
+type controlStatusRequest struct {
+	obj *onexdataflowapi.ControlStatusRequest
+}
+
+func NewControlStatusRequest() ControlStatusRequest {
+	obj := controlStatusRequest{obj: &onexdataflowapi.ControlStatusRequest{}}
+	obj.setDefault()
+	return &obj
+}
+
+func (obj *controlStatusRequest) Msg() *onexdataflowapi.ControlStatusRequest {
+	return obj.obj
+}
+
+func (obj *controlStatusRequest) SetMsg(msg *onexdataflowapi.ControlStatusRequest) ControlStatusRequest {
+
+	proto.Merge(obj.obj, msg)
+	return obj
+}
+
+func (obj *controlStatusRequest) ToPbText() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	protoMarshal, err := proto.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(protoMarshal), nil
+}
+
+func (obj *controlStatusRequest) FromPbText(value string) error {
+	retObj := proto.Unmarshal([]byte(value), obj.Msg())
+	if retObj != nil {
+		return retObj
+	}
+
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return retObj
+}
+
+func (obj *controlStatusRequest) ToYaml() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	data, err = yaml.JSONToYAML(data)
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *controlStatusRequest) FromYaml(value string) error {
+	if value == "" {
+		value = "{}"
+	}
+	data, err := yaml.YAMLToJSON([]byte(value))
+	if err != nil {
+		return err
+	}
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	uError := opts.Unmarshal([]byte(data), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return nil
+}
+
+func (obj *controlStatusRequest) ToJson() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+		Indent:          "  ",
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *controlStatusRequest) FromJson(value string) error {
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	if value == "" {
+		value = "{}"
+	}
+	uError := opts.Unmarshal([]byte(value), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+
+	err := obj.validateFromText()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (obj *controlStatusRequest) validateFromText() error {
+	obj.validateObj(true)
+	return validationResult()
+}
+
+func (obj *controlStatusRequest) Validate() error {
+	obj.validateObj(false)
+	return validationResult()
+}
+
+func (obj *controlStatusRequest) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
+// ControlStatusRequest is control.state request details
+type ControlStatusRequest interface {
+	Msg() *onexdataflowapi.ControlStatusRequest
+	SetMsg(*onexdataflowapi.ControlStatusRequest) ControlStatusRequest
+	// ToPbText marshals ControlStatusRequest to protobuf text
+	ToPbText() (string, error)
+	// ToYaml marshals ControlStatusRequest to YAML text
+	ToYaml() (string, error)
+	// ToJson marshals ControlStatusRequest to JSON text
+	ToJson() (string, error)
+	// FromPbText unmarshals ControlStatusRequest from protobuf text
+	FromPbText(value string) error
+	// FromYaml unmarshals ControlStatusRequest from YAML text
+	FromYaml(value string) error
+	// FromJson unmarshals ControlStatusRequest from JSON text
+	FromJson(value string) error
+	// Validate validates ControlStatusRequest
+	Validate() error
+	// A stringer function
+	String() string
+	validateFromText() error
+	validateObj(set_default bool)
+	setDefault()
+}
+
+func (obj *controlStatusRequest) validateObj(set_default bool) {
+	if set_default {
+		obj.setDefault()
+	}
+
+}
+
+func (obj *controlStatusRequest) setDefault() {
 
 }
 
@@ -2286,6 +2826,636 @@ func (obj *runExperimentResponse) validateObj(set_default bool) {
 }
 
 func (obj *runExperimentResponse) setDefault() {
+
+}
+
+// ***** StartResponse *****
+type startResponse struct {
+	obj                  *onexdataflowapi.StartResponse
+	statusCode_400Holder ErrorDetails
+	statusCode_500Holder ErrorDetails
+	statusCode_200Holder WarningDetails
+}
+
+func NewStartResponse() StartResponse {
+	obj := startResponse{obj: &onexdataflowapi.StartResponse{}}
+	obj.setDefault()
+	return &obj
+}
+
+func (obj *startResponse) Msg() *onexdataflowapi.StartResponse {
+	return obj.obj
+}
+
+func (obj *startResponse) SetMsg(msg *onexdataflowapi.StartResponse) StartResponse {
+	obj.setNil()
+	proto.Merge(obj.obj, msg)
+	return obj
+}
+
+func (obj *startResponse) ToPbText() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	protoMarshal, err := proto.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(protoMarshal), nil
+}
+
+func (obj *startResponse) FromPbText(value string) error {
+	retObj := proto.Unmarshal([]byte(value), obj.Msg())
+	if retObj != nil {
+		return retObj
+	}
+	obj.setNil()
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return retObj
+}
+
+func (obj *startResponse) ToYaml() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	data, err = yaml.JSONToYAML(data)
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *startResponse) FromYaml(value string) error {
+	if value == "" {
+		value = "{}"
+	}
+	data, err := yaml.YAMLToJSON([]byte(value))
+	if err != nil {
+		return err
+	}
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	uError := opts.Unmarshal([]byte(data), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+	obj.setNil()
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return nil
+}
+
+func (obj *startResponse) ToJson() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+		Indent:          "  ",
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *startResponse) FromJson(value string) error {
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	if value == "" {
+		value = "{}"
+	}
+	uError := opts.Unmarshal([]byte(value), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+	obj.setNil()
+	err := obj.validateFromText()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (obj *startResponse) validateFromText() error {
+	obj.validateObj(true)
+	return validationResult()
+}
+
+func (obj *startResponse) Validate() error {
+	obj.validateObj(false)
+	return validationResult()
+}
+
+func (obj *startResponse) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
+func (obj *startResponse) setNil() {
+	obj.statusCode_400Holder = nil
+	obj.statusCode_500Holder = nil
+	obj.statusCode_200Holder = nil
+}
+
+// StartResponse is description is TBD
+type StartResponse interface {
+	Msg() *onexdataflowapi.StartResponse
+	SetMsg(*onexdataflowapi.StartResponse) StartResponse
+	// ToPbText marshals StartResponse to protobuf text
+	ToPbText() (string, error)
+	// ToYaml marshals StartResponse to YAML text
+	ToYaml() (string, error)
+	// ToJson marshals StartResponse to JSON text
+	ToJson() (string, error)
+	// FromPbText unmarshals StartResponse from protobuf text
+	FromPbText(value string) error
+	// FromYaml unmarshals StartResponse from YAML text
+	FromYaml(value string) error
+	// FromJson unmarshals StartResponse from JSON text
+	FromJson(value string) error
+	// Validate validates StartResponse
+	Validate() error
+	// A stringer function
+	String() string
+	validateFromText() error
+	validateObj(set_default bool)
+	setDefault()
+	// StatusCode400 returns ErrorDetails, set in StartResponse.
+	// ErrorDetails is description is TBD
+	StatusCode400() ErrorDetails
+	// SetStatusCode400 assigns ErrorDetails provided by user to StartResponse.
+	// ErrorDetails is description is TBD
+	SetStatusCode400(value ErrorDetails) StartResponse
+	// HasStatusCode400 checks if StatusCode400 has been set in StartResponse
+	HasStatusCode400() bool
+	// StatusCode500 returns ErrorDetails, set in StartResponse.
+	// ErrorDetails is description is TBD
+	StatusCode500() ErrorDetails
+	// SetStatusCode500 assigns ErrorDetails provided by user to StartResponse.
+	// ErrorDetails is description is TBD
+	SetStatusCode500(value ErrorDetails) StartResponse
+	// HasStatusCode500 checks if StatusCode500 has been set in StartResponse
+	HasStatusCode500() bool
+	// StatusCode200 returns WarningDetails, set in StartResponse.
+	// WarningDetails is description is TBD
+	StatusCode200() WarningDetails
+	// SetStatusCode200 assigns WarningDetails provided by user to StartResponse.
+	// WarningDetails is description is TBD
+	SetStatusCode200(value WarningDetails) StartResponse
+	// HasStatusCode200 checks if StatusCode200 has been set in StartResponse
+	HasStatusCode200() bool
+	setNil()
+}
+
+// StatusCode400 returns a ErrorDetails
+// description is TBD
+func (obj *startResponse) StatusCode400() ErrorDetails {
+	if obj.obj.StatusCode_400 == nil {
+		obj.obj.StatusCode_400 = NewErrorDetails().Msg()
+	}
+	if obj.statusCode_400Holder == nil {
+		obj.statusCode_400Holder = &errorDetails{obj: obj.obj.StatusCode_400}
+	}
+	return obj.statusCode_400Holder
+}
+
+// StatusCode400 returns a ErrorDetails
+// description is TBD
+func (obj *startResponse) HasStatusCode400() bool {
+	return obj.obj.StatusCode_400 != nil
+}
+
+// SetStatusCode400 sets the ErrorDetails value in the StartResponse object
+// description is TBD
+func (obj *startResponse) SetStatusCode400(value ErrorDetails) StartResponse {
+
+	obj.statusCode_400Holder = nil
+	obj.obj.StatusCode_400 = value.Msg()
+
+	return obj
+}
+
+// StatusCode500 returns a ErrorDetails
+// description is TBD
+func (obj *startResponse) StatusCode500() ErrorDetails {
+	if obj.obj.StatusCode_500 == nil {
+		obj.obj.StatusCode_500 = NewErrorDetails().Msg()
+	}
+	if obj.statusCode_500Holder == nil {
+		obj.statusCode_500Holder = &errorDetails{obj: obj.obj.StatusCode_500}
+	}
+	return obj.statusCode_500Holder
+}
+
+// StatusCode500 returns a ErrorDetails
+// description is TBD
+func (obj *startResponse) HasStatusCode500() bool {
+	return obj.obj.StatusCode_500 != nil
+}
+
+// SetStatusCode500 sets the ErrorDetails value in the StartResponse object
+// description is TBD
+func (obj *startResponse) SetStatusCode500(value ErrorDetails) StartResponse {
+
+	obj.statusCode_500Holder = nil
+	obj.obj.StatusCode_500 = value.Msg()
+
+	return obj
+}
+
+// StatusCode200 returns a WarningDetails
+// description is TBD
+func (obj *startResponse) StatusCode200() WarningDetails {
+	if obj.obj.StatusCode_200 == nil {
+		obj.obj.StatusCode_200 = NewWarningDetails().Msg()
+	}
+	if obj.statusCode_200Holder == nil {
+		obj.statusCode_200Holder = &warningDetails{obj: obj.obj.StatusCode_200}
+	}
+	return obj.statusCode_200Holder
+}
+
+// StatusCode200 returns a WarningDetails
+// description is TBD
+func (obj *startResponse) HasStatusCode200() bool {
+	return obj.obj.StatusCode_200 != nil
+}
+
+// SetStatusCode200 sets the WarningDetails value in the StartResponse object
+// description is TBD
+func (obj *startResponse) SetStatusCode200(value WarningDetails) StartResponse {
+
+	obj.statusCode_200Holder = nil
+	obj.obj.StatusCode_200 = value.Msg()
+
+	return obj
+}
+
+func (obj *startResponse) validateObj(set_default bool) {
+	if set_default {
+		obj.setDefault()
+	}
+
+	if obj.obj.StatusCode_400 != nil {
+		obj.StatusCode400().validateObj(set_default)
+	}
+
+	if obj.obj.StatusCode_500 != nil {
+		obj.StatusCode500().validateObj(set_default)
+	}
+
+	if obj.obj.StatusCode_200 != nil {
+		obj.StatusCode200().validateObj(set_default)
+	}
+
+}
+
+func (obj *startResponse) setDefault() {
+
+}
+
+// ***** GetStatusResponse *****
+type getStatusResponse struct {
+	obj                  *onexdataflowapi.GetStatusResponse
+	statusCode_200Holder ControlStatusResponse
+	statusCode_400Holder ErrorDetails
+	statusCode_500Holder ErrorDetails
+}
+
+func NewGetStatusResponse() GetStatusResponse {
+	obj := getStatusResponse{obj: &onexdataflowapi.GetStatusResponse{}}
+	obj.setDefault()
+	return &obj
+}
+
+func (obj *getStatusResponse) Msg() *onexdataflowapi.GetStatusResponse {
+	return obj.obj
+}
+
+func (obj *getStatusResponse) SetMsg(msg *onexdataflowapi.GetStatusResponse) GetStatusResponse {
+	obj.setNil()
+	proto.Merge(obj.obj, msg)
+	return obj
+}
+
+func (obj *getStatusResponse) ToPbText() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	protoMarshal, err := proto.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(protoMarshal), nil
+}
+
+func (obj *getStatusResponse) FromPbText(value string) error {
+	retObj := proto.Unmarshal([]byte(value), obj.Msg())
+	if retObj != nil {
+		return retObj
+	}
+	obj.setNil()
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return retObj
+}
+
+func (obj *getStatusResponse) ToYaml() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	data, err = yaml.JSONToYAML(data)
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *getStatusResponse) FromYaml(value string) error {
+	if value == "" {
+		value = "{}"
+	}
+	data, err := yaml.YAMLToJSON([]byte(value))
+	if err != nil {
+		return err
+	}
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	uError := opts.Unmarshal([]byte(data), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+	obj.setNil()
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return nil
+}
+
+func (obj *getStatusResponse) ToJson() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+		Indent:          "  ",
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *getStatusResponse) FromJson(value string) error {
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	if value == "" {
+		value = "{}"
+	}
+	uError := opts.Unmarshal([]byte(value), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+	obj.setNil()
+	err := obj.validateFromText()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (obj *getStatusResponse) validateFromText() error {
+	obj.validateObj(true)
+	return validationResult()
+}
+
+func (obj *getStatusResponse) Validate() error {
+	obj.validateObj(false)
+	return validationResult()
+}
+
+func (obj *getStatusResponse) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
+func (obj *getStatusResponse) setNil() {
+	obj.statusCode_200Holder = nil
+	obj.statusCode_400Holder = nil
+	obj.statusCode_500Holder = nil
+}
+
+// GetStatusResponse is description is TBD
+type GetStatusResponse interface {
+	Msg() *onexdataflowapi.GetStatusResponse
+	SetMsg(*onexdataflowapi.GetStatusResponse) GetStatusResponse
+	// ToPbText marshals GetStatusResponse to protobuf text
+	ToPbText() (string, error)
+	// ToYaml marshals GetStatusResponse to YAML text
+	ToYaml() (string, error)
+	// ToJson marshals GetStatusResponse to JSON text
+	ToJson() (string, error)
+	// FromPbText unmarshals GetStatusResponse from protobuf text
+	FromPbText(value string) error
+	// FromYaml unmarshals GetStatusResponse from YAML text
+	FromYaml(value string) error
+	// FromJson unmarshals GetStatusResponse from JSON text
+	FromJson(value string) error
+	// Validate validates GetStatusResponse
+	Validate() error
+	// A stringer function
+	String() string
+	validateFromText() error
+	validateObj(set_default bool)
+	setDefault()
+	// StatusCode200 returns ControlStatusResponse, set in GetStatusResponse.
+	// ControlStatusResponse is control/state response details
+	StatusCode200() ControlStatusResponse
+	// SetStatusCode200 assigns ControlStatusResponse provided by user to GetStatusResponse.
+	// ControlStatusResponse is control/state response details
+	SetStatusCode200(value ControlStatusResponse) GetStatusResponse
+	// HasStatusCode200 checks if StatusCode200 has been set in GetStatusResponse
+	HasStatusCode200() bool
+	// StatusCode400 returns ErrorDetails, set in GetStatusResponse.
+	// ErrorDetails is description is TBD
+	StatusCode400() ErrorDetails
+	// SetStatusCode400 assigns ErrorDetails provided by user to GetStatusResponse.
+	// ErrorDetails is description is TBD
+	SetStatusCode400(value ErrorDetails) GetStatusResponse
+	// HasStatusCode400 checks if StatusCode400 has been set in GetStatusResponse
+	HasStatusCode400() bool
+	// StatusCode500 returns ErrorDetails, set in GetStatusResponse.
+	// ErrorDetails is description is TBD
+	StatusCode500() ErrorDetails
+	// SetStatusCode500 assigns ErrorDetails provided by user to GetStatusResponse.
+	// ErrorDetails is description is TBD
+	SetStatusCode500(value ErrorDetails) GetStatusResponse
+	// HasStatusCode500 checks if StatusCode500 has been set in GetStatusResponse
+	HasStatusCode500() bool
+	setNil()
+}
+
+// StatusCode200 returns a ControlStatusResponse
+// description is TBD
+func (obj *getStatusResponse) StatusCode200() ControlStatusResponse {
+	if obj.obj.StatusCode_200 == nil {
+		obj.obj.StatusCode_200 = NewControlStatusResponse().Msg()
+	}
+	if obj.statusCode_200Holder == nil {
+		obj.statusCode_200Holder = &controlStatusResponse{obj: obj.obj.StatusCode_200}
+	}
+	return obj.statusCode_200Holder
+}
+
+// StatusCode200 returns a ControlStatusResponse
+// description is TBD
+func (obj *getStatusResponse) HasStatusCode200() bool {
+	return obj.obj.StatusCode_200 != nil
+}
+
+// SetStatusCode200 sets the ControlStatusResponse value in the GetStatusResponse object
+// description is TBD
+func (obj *getStatusResponse) SetStatusCode200(value ControlStatusResponse) GetStatusResponse {
+
+	obj.statusCode_200Holder = nil
+	obj.obj.StatusCode_200 = value.Msg()
+
+	return obj
+}
+
+// StatusCode400 returns a ErrorDetails
+// description is TBD
+func (obj *getStatusResponse) StatusCode400() ErrorDetails {
+	if obj.obj.StatusCode_400 == nil {
+		obj.obj.StatusCode_400 = NewErrorDetails().Msg()
+	}
+	if obj.statusCode_400Holder == nil {
+		obj.statusCode_400Holder = &errorDetails{obj: obj.obj.StatusCode_400}
+	}
+	return obj.statusCode_400Holder
+}
+
+// StatusCode400 returns a ErrorDetails
+// description is TBD
+func (obj *getStatusResponse) HasStatusCode400() bool {
+	return obj.obj.StatusCode_400 != nil
+}
+
+// SetStatusCode400 sets the ErrorDetails value in the GetStatusResponse object
+// description is TBD
+func (obj *getStatusResponse) SetStatusCode400(value ErrorDetails) GetStatusResponse {
+
+	obj.statusCode_400Holder = nil
+	obj.obj.StatusCode_400 = value.Msg()
+
+	return obj
+}
+
+// StatusCode500 returns a ErrorDetails
+// description is TBD
+func (obj *getStatusResponse) StatusCode500() ErrorDetails {
+	if obj.obj.StatusCode_500 == nil {
+		obj.obj.StatusCode_500 = NewErrorDetails().Msg()
+	}
+	if obj.statusCode_500Holder == nil {
+		obj.statusCode_500Holder = &errorDetails{obj: obj.obj.StatusCode_500}
+	}
+	return obj.statusCode_500Holder
+}
+
+// StatusCode500 returns a ErrorDetails
+// description is TBD
+func (obj *getStatusResponse) HasStatusCode500() bool {
+	return obj.obj.StatusCode_500 != nil
+}
+
+// SetStatusCode500 sets the ErrorDetails value in the GetStatusResponse object
+// description is TBD
+func (obj *getStatusResponse) SetStatusCode500(value ErrorDetails) GetStatusResponse {
+
+	obj.statusCode_500Holder = nil
+	obj.obj.StatusCode_500 = value.Msg()
+
+	return obj
+}
+
+func (obj *getStatusResponse) validateObj(set_default bool) {
+	if set_default {
+		obj.setDefault()
+	}
+
+	if obj.obj.StatusCode_200 != nil {
+		obj.StatusCode200().validateObj(set_default)
+	}
+
+	if obj.obj.StatusCode_400 != nil {
+		obj.StatusCode400().validateObj(set_default)
+	}
+
+	if obj.obj.StatusCode_500 != nil {
+		obj.StatusCode500().validateObj(set_default)
+	}
+
+}
+
+func (obj *getStatusResponse) setDefault() {
 
 }
 
@@ -3951,6 +5121,344 @@ func (obj *warningDetails) validateObj(set_default bool) {
 }
 
 func (obj *warningDetails) setDefault() {
+
+}
+
+// ***** ControlStatusResponse *****
+type controlStatusResponse struct {
+	obj          *onexdataflowapi.ControlStatusResponse
+	errorsHolder ControlStatusResponseErrorItemIter
+}
+
+func NewControlStatusResponse() ControlStatusResponse {
+	obj := controlStatusResponse{obj: &onexdataflowapi.ControlStatusResponse{}}
+	obj.setDefault()
+	return &obj
+}
+
+func (obj *controlStatusResponse) Msg() *onexdataflowapi.ControlStatusResponse {
+	return obj.obj
+}
+
+func (obj *controlStatusResponse) SetMsg(msg *onexdataflowapi.ControlStatusResponse) ControlStatusResponse {
+	obj.setNil()
+	proto.Merge(obj.obj, msg)
+	return obj
+}
+
+func (obj *controlStatusResponse) ToPbText() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	protoMarshal, err := proto.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(protoMarshal), nil
+}
+
+func (obj *controlStatusResponse) FromPbText(value string) error {
+	retObj := proto.Unmarshal([]byte(value), obj.Msg())
+	if retObj != nil {
+		return retObj
+	}
+	obj.setNil()
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return retObj
+}
+
+func (obj *controlStatusResponse) ToYaml() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	data, err = yaml.JSONToYAML(data)
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *controlStatusResponse) FromYaml(value string) error {
+	if value == "" {
+		value = "{}"
+	}
+	data, err := yaml.YAMLToJSON([]byte(value))
+	if err != nil {
+		return err
+	}
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	uError := opts.Unmarshal([]byte(data), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+	obj.setNil()
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return nil
+}
+
+func (obj *controlStatusResponse) ToJson() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+		Indent:          "  ",
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *controlStatusResponse) FromJson(value string) error {
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	if value == "" {
+		value = "{}"
+	}
+	uError := opts.Unmarshal([]byte(value), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+	obj.setNil()
+	err := obj.validateFromText()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (obj *controlStatusResponse) validateFromText() error {
+	obj.validateObj(true)
+	return validationResult()
+}
+
+func (obj *controlStatusResponse) Validate() error {
+	obj.validateObj(false)
+	return validationResult()
+}
+
+func (obj *controlStatusResponse) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
+func (obj *controlStatusResponse) setNil() {
+	obj.errorsHolder = nil
+}
+
+// ControlStatusResponse is control/state response details
+type ControlStatusResponse interface {
+	Msg() *onexdataflowapi.ControlStatusResponse
+	SetMsg(*onexdataflowapi.ControlStatusResponse) ControlStatusResponse
+	// ToPbText marshals ControlStatusResponse to protobuf text
+	ToPbText() (string, error)
+	// ToYaml marshals ControlStatusResponse to YAML text
+	ToYaml() (string, error)
+	// ToJson marshals ControlStatusResponse to JSON text
+	ToJson() (string, error)
+	// FromPbText unmarshals ControlStatusResponse from protobuf text
+	FromPbText(value string) error
+	// FromYaml unmarshals ControlStatusResponse from YAML text
+	FromYaml(value string) error
+	// FromJson unmarshals ControlStatusResponse from JSON text
+	FromJson(value string) error
+	// Validate validates ControlStatusResponse
+	Validate() error
+	// A stringer function
+	String() string
+	validateFromText() error
+	validateObj(set_default bool)
+	setDefault()
+	// DataflowStatus returns ControlStatusResponseDataflowStatusEnum, set in ControlStatusResponse
+	DataflowStatus() ControlStatusResponseDataflowStatusEnum
+	// SetDataflowStatus assigns ControlStatusResponseDataflowStatusEnum provided by user to ControlStatusResponse
+	SetDataflowStatus(value ControlStatusResponseDataflowStatusEnum) ControlStatusResponse
+	// HasDataflowStatus checks if DataflowStatus has been set in ControlStatusResponse
+	HasDataflowStatus() bool
+	// Errors returns ControlStatusResponseErrorItemIter, set in ControlStatusResponse
+	Errors() ControlStatusResponseErrorItemIter
+	setNil()
+}
+
+type ControlStatusResponseDataflowStatusEnum string
+
+//  Enum of DataflowStatus on ControlStatusResponse
+var ControlStatusResponseDataflowStatus = struct {
+	STARTED   ControlStatusResponseDataflowStatusEnum
+	COMPLETED ControlStatusResponseDataflowStatusEnum
+	ERROR     ControlStatusResponseDataflowStatusEnum
+}{
+	STARTED:   ControlStatusResponseDataflowStatusEnum("started"),
+	COMPLETED: ControlStatusResponseDataflowStatusEnum("completed"),
+	ERROR:     ControlStatusResponseDataflowStatusEnum("error"),
+}
+
+func (obj *controlStatusResponse) DataflowStatus() ControlStatusResponseDataflowStatusEnum {
+	return ControlStatusResponseDataflowStatusEnum(obj.obj.DataflowStatus.Enum().String())
+}
+
+// DataflowStatus returns a string
+// dataflow status:
+// started - data flow traffic is running
+// completed - all traffic flows completed, metrics are available
+// error - an error occurred
+func (obj *controlStatusResponse) HasDataflowStatus() bool {
+	return obj.obj.DataflowStatus != nil
+}
+
+func (obj *controlStatusResponse) SetDataflowStatus(value ControlStatusResponseDataflowStatusEnum) ControlStatusResponse {
+	intValue, ok := onexdataflowapi.ControlStatusResponse_DataflowStatus_Enum_value[string(value)]
+	if !ok {
+		validation = append(validation, fmt.Sprintf(
+			"%s is not a valid choice on ControlStatusResponseDataflowStatusEnum", string(value)))
+		return obj
+	}
+	enumValue := onexdataflowapi.ControlStatusResponse_DataflowStatus_Enum(intValue)
+	obj.obj.DataflowStatus = &enumValue
+
+	return obj
+}
+
+// Errors returns a []ErrorItem
+// description is TBD
+func (obj *controlStatusResponse) Errors() ControlStatusResponseErrorItemIter {
+	if len(obj.obj.Errors) == 0 {
+		obj.obj.Errors = []*onexdataflowapi.ErrorItem{}
+	}
+	if obj.errorsHolder == nil {
+		obj.errorsHolder = newControlStatusResponseErrorItemIter().setMsg(obj)
+	}
+	return obj.errorsHolder
+}
+
+type controlStatusResponseErrorItemIter struct {
+	obj            *controlStatusResponse
+	errorItemSlice []ErrorItem
+}
+
+func newControlStatusResponseErrorItemIter() ControlStatusResponseErrorItemIter {
+	return &controlStatusResponseErrorItemIter{}
+}
+
+type ControlStatusResponseErrorItemIter interface {
+	setMsg(*controlStatusResponse) ControlStatusResponseErrorItemIter
+	Items() []ErrorItem
+	Add() ErrorItem
+	Append(items ...ErrorItem) ControlStatusResponseErrorItemIter
+	Set(index int, newObj ErrorItem) ControlStatusResponseErrorItemIter
+	Clear() ControlStatusResponseErrorItemIter
+	clearHolderSlice() ControlStatusResponseErrorItemIter
+	appendHolderSlice(item ErrorItem) ControlStatusResponseErrorItemIter
+}
+
+func (obj *controlStatusResponseErrorItemIter) setMsg(msg *controlStatusResponse) ControlStatusResponseErrorItemIter {
+	obj.clearHolderSlice()
+	for _, val := range msg.obj.Errors {
+		obj.appendHolderSlice(&errorItem{obj: val})
+	}
+	obj.obj = msg
+	return obj
+}
+
+func (obj *controlStatusResponseErrorItemIter) Items() []ErrorItem {
+	return obj.errorItemSlice
+}
+
+func (obj *controlStatusResponseErrorItemIter) Add() ErrorItem {
+	newObj := &onexdataflowapi.ErrorItem{}
+	obj.obj.obj.Errors = append(obj.obj.obj.Errors, newObj)
+	newLibObj := &errorItem{obj: newObj}
+	newLibObj.setDefault()
+	obj.errorItemSlice = append(obj.errorItemSlice, newLibObj)
+	return newLibObj
+}
+
+func (obj *controlStatusResponseErrorItemIter) Append(items ...ErrorItem) ControlStatusResponseErrorItemIter {
+	for _, item := range items {
+		newObj := item.Msg()
+		obj.obj.obj.Errors = append(obj.obj.obj.Errors, newObj)
+		obj.errorItemSlice = append(obj.errorItemSlice, item)
+	}
+	return obj
+}
+
+func (obj *controlStatusResponseErrorItemIter) Set(index int, newObj ErrorItem) ControlStatusResponseErrorItemIter {
+	obj.obj.obj.Errors[index] = newObj.Msg()
+	obj.errorItemSlice[index] = newObj
+	return obj
+}
+func (obj *controlStatusResponseErrorItemIter) Clear() ControlStatusResponseErrorItemIter {
+	if len(obj.obj.obj.Errors) > 0 {
+		obj.obj.obj.Errors = []*onexdataflowapi.ErrorItem{}
+		obj.errorItemSlice = []ErrorItem{}
+	}
+	return obj
+}
+func (obj *controlStatusResponseErrorItemIter) clearHolderSlice() ControlStatusResponseErrorItemIter {
+	if len(obj.errorItemSlice) > 0 {
+		obj.errorItemSlice = []ErrorItem{}
+	}
+	return obj
+}
+func (obj *controlStatusResponseErrorItemIter) appendHolderSlice(item ErrorItem) ControlStatusResponseErrorItemIter {
+	obj.errorItemSlice = append(obj.errorItemSlice, item)
+	return obj
+}
+
+func (obj *controlStatusResponse) validateObj(set_default bool) {
+	if set_default {
+		obj.setDefault()
+	}
+
+	if obj.obj.Errors != nil {
+
+		if set_default {
+			obj.Errors().clearHolderSlice()
+			for _, item := range obj.obj.Errors {
+				obj.Errors().appendHolderSlice(&errorItem{obj: item})
+			}
+		}
+		for _, item := range obj.Errors().Items() {
+			item.validateObj(set_default)
+		}
+
+	}
+
+}
+
+func (obj *controlStatusResponse) setDefault() {
 
 }
 

@@ -21,6 +21,8 @@ type OpenapiClient interface {
 	SetConfig(ctx context.Context, in *SetConfigRequest, opts ...grpc.CallOption) (*SetConfigResponse, error)
 	GetConfig(ctx context.Context, in *GetConfigRequest, opts ...grpc.CallOption) (*GetConfigResponse, error)
 	RunExperiment(ctx context.Context, in *RunExperimentRequest, opts ...grpc.CallOption) (*RunExperimentResponse, error)
+	Start(ctx context.Context, in *StartRequest, opts ...grpc.CallOption) (*StartResponse, error)
+	GetStatus(ctx context.Context, in *GetStatusRequest, opts ...grpc.CallOption) (*GetStatusResponse, error)
 	GetMetrics(ctx context.Context, in *GetMetricsRequest, opts ...grpc.CallOption) (*GetMetricsResponse, error)
 }
 
@@ -59,6 +61,24 @@ func (c *openapiClient) RunExperiment(ctx context.Context, in *RunExperimentRequ
 	return out, nil
 }
 
+func (c *openapiClient) Start(ctx context.Context, in *StartRequest, opts ...grpc.CallOption) (*StartResponse, error) {
+	out := new(StartResponse)
+	err := c.cc.Invoke(ctx, "/onexdataflowapi.Openapi/Start", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *openapiClient) GetStatus(ctx context.Context, in *GetStatusRequest, opts ...grpc.CallOption) (*GetStatusResponse, error) {
+	out := new(GetStatusResponse)
+	err := c.cc.Invoke(ctx, "/onexdataflowapi.Openapi/GetStatus", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *openapiClient) GetMetrics(ctx context.Context, in *GetMetricsRequest, opts ...grpc.CallOption) (*GetMetricsResponse, error) {
 	out := new(GetMetricsResponse)
 	err := c.cc.Invoke(ctx, "/onexdataflowapi.Openapi/GetMetrics", in, out, opts...)
@@ -75,6 +95,8 @@ type OpenapiServer interface {
 	SetConfig(context.Context, *SetConfigRequest) (*SetConfigResponse, error)
 	GetConfig(context.Context, *GetConfigRequest) (*GetConfigResponse, error)
 	RunExperiment(context.Context, *RunExperimentRequest) (*RunExperimentResponse, error)
+	Start(context.Context, *StartRequest) (*StartResponse, error)
+	GetStatus(context.Context, *GetStatusRequest) (*GetStatusResponse, error)
 	GetMetrics(context.Context, *GetMetricsRequest) (*GetMetricsResponse, error)
 	mustEmbedUnimplementedOpenapiServer()
 }
@@ -91,6 +113,12 @@ func (UnimplementedOpenapiServer) GetConfig(context.Context, *GetConfigRequest) 
 }
 func (UnimplementedOpenapiServer) RunExperiment(context.Context, *RunExperimentRequest) (*RunExperimentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RunExperiment not implemented")
+}
+func (UnimplementedOpenapiServer) Start(context.Context, *StartRequest) (*StartResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Start not implemented")
+}
+func (UnimplementedOpenapiServer) GetStatus(context.Context, *GetStatusRequest) (*GetStatusResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetStatus not implemented")
 }
 func (UnimplementedOpenapiServer) GetMetrics(context.Context, *GetMetricsRequest) (*GetMetricsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMetrics not implemented")
@@ -162,6 +190,42 @@ func _Openapi_RunExperiment_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Openapi_Start_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StartRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OpenapiServer).Start(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/onexdataflowapi.Openapi/Start",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OpenapiServer).Start(ctx, req.(*StartRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Openapi_GetStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetStatusRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OpenapiServer).GetStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/onexdataflowapi.Openapi/GetStatus",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OpenapiServer).GetStatus(ctx, req.(*GetStatusRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Openapi_GetMetrics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetMetricsRequest)
 	if err := dec(in); err != nil {
@@ -198,6 +262,14 @@ var Openapi_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RunExperiment",
 			Handler:    _Openapi_RunExperiment_Handler,
+		},
+		{
+			MethodName: "Start",
+			Handler:    _Openapi_Start_Handler,
+		},
+		{
+			MethodName: "GetStatus",
+			Handler:    _Openapi_GetStatus_Handler,
 		},
 		{
 			MethodName: "GetMetrics",
