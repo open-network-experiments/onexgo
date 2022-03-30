@@ -3960,6 +3960,12 @@ type Host interface {
 	SetPrefix(value int32) Host
 	// HasPrefix checks if Prefix has been set in Host
 	HasPrefix() bool
+	// HostType returns HostHostTypeEnum, set in Host
+	HostType() HostHostTypeEnum
+	// SetHostType assigns HostHostTypeEnum provided by user to Host
+	SetHostType(value HostHostTypeEnum) Host
+	// HasHostType checks if HostType has been set in Host
+	HasHostType() bool
 }
 
 // Name returns a string
@@ -4011,6 +4017,42 @@ func (obj *host) HasPrefix() bool {
 func (obj *host) SetPrefix(value int32) Host {
 
 	obj.obj.Prefix = &value
+	return obj
+}
+
+type HostHostTypeEnum string
+
+//  Enum of HostType on Host
+var HostHostType = struct {
+	EXTERNAL              HostHostTypeEnum
+	INTERNAL_TRAFFIC_SINK HostHostTypeEnum
+}{
+	EXTERNAL:              HostHostTypeEnum("external"),
+	INTERNAL_TRAFFIC_SINK: HostHostTypeEnum("internal_traffic_sink"),
+}
+
+func (obj *host) HostType() HostHostTypeEnum {
+	return HostHostTypeEnum(obj.obj.HostType.Enum().String())
+}
+
+// HostType returns a string
+// Optional host type, if fabric is rendered on physical box.
+// - external for hosts/servers physically connected to front panel ports
+// - internal_traffic_sink for an emulated server that acts as a traffic sink (i.e. packets sent to its IP address will be routed through the fabric)
+func (obj *host) HasHostType() bool {
+	return obj.obj.HostType != nil
+}
+
+func (obj *host) SetHostType(value HostHostTypeEnum) Host {
+	intValue, ok := onexdataflowapi.Host_HostType_Enum_value[string(value)]
+	if !ok {
+		validation = append(validation, fmt.Sprintf(
+			"%s is not a valid choice on HostHostTypeEnum", string(value)))
+		return obj
+	}
+	enumValue := onexdataflowapi.Host_HostType_Enum(intValue)
+	obj.obj.HostType = &enumValue
+
 	return obj
 }
 
