@@ -425,7 +425,7 @@ func (api *onexgodataflowapiApi) httpSetConfig(config Config) (Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	resp, err := api.httpSendRecv("config", configJson, "POST")
+	resp, err := api.httpSendRecv("onex/api/v1/dataflow/config", configJson, "POST")
 
 	if err != nil {
 		return nil, err
@@ -459,7 +459,7 @@ func (api *onexgodataflowapiApi) httpGetConfig(getConfigDetails GetConfigDetails
 	if err != nil {
 		return nil, err
 	}
-	resp, err := api.httpSendRecv("config", getConfigDetailsJson, "GET")
+	resp, err := api.httpSendRecv("onex/api/v1/dataflow/config", getConfigDetailsJson, "GET")
 
 	if err != nil {
 		return nil, err
@@ -493,7 +493,7 @@ func (api *onexgodataflowapiApi) httpRunExperiment(experimentRequest ExperimentR
 	if err != nil {
 		return nil, err
 	}
-	resp, err := api.httpSendRecv("control/experiment", experimentRequestJson, "POST")
+	resp, err := api.httpSendRecv("onex/api/v1/dataflow/control/experiment", experimentRequestJson, "POST")
 
 	if err != nil {
 		return nil, err
@@ -527,7 +527,7 @@ func (api *onexgodataflowapiApi) httpStart(controlStartRequest ControlStartReque
 	if err != nil {
 		return nil, err
 	}
-	resp, err := api.httpSendRecv("control/start", controlStartRequestJson, "POST")
+	resp, err := api.httpSendRecv("onex/api/v1/dataflow/control/start", controlStartRequestJson, "POST")
 
 	if err != nil {
 		return nil, err
@@ -561,7 +561,7 @@ func (api *onexgodataflowapiApi) httpGetStatus(controlStatusRequest ControlStatu
 	if err != nil {
 		return nil, err
 	}
-	resp, err := api.httpSendRecv("control/status", controlStatusRequestJson, "GET")
+	resp, err := api.httpSendRecv("onex/api/v1/dataflow/control/status", controlStatusRequestJson, "GET")
 
 	if err != nil {
 		return nil, err
@@ -595,7 +595,7 @@ func (api *onexgodataflowapiApi) httpGetMetrics(metricsRequest MetricsRequest) (
 	if err != nil {
 		return nil, err
 	}
-	resp, err := api.httpSendRecv("results/metrics", metricsRequestJson, "POST")
+	resp, err := api.httpSendRecv("onex/api/v1/dataflow/results/metrics", metricsRequestJson, "POST")
 
 	if err != nil {
 		return nil, err
