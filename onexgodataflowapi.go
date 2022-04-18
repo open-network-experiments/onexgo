@@ -3960,6 +3960,12 @@ type Host interface {
 	SetPrefix(value int32) Host
 	// HasPrefix checks if Prefix has been set in Host
 	HasPrefix() bool
+	// L1ProfileName returns string, set in Host.
+	L1ProfileName() string
+	// SetL1ProfileName assigns string provided by user to Host
+	SetL1ProfileName(value string) Host
+	// HasL1ProfileName checks if L1ProfileName has been set in Host
+	HasL1ProfileName() bool
 }
 
 // Name returns a string
@@ -4011,6 +4017,40 @@ func (obj *host) HasPrefix() bool {
 func (obj *host) SetPrefix(value int32) Host {
 
 	obj.obj.Prefix = &value
+	return obj
+}
+
+// L1ProfileName returns a string
+// The layer 1 settings profile associated with the host/front panel port.
+//
+// x-constraint:
+// - ../l1_profiles.yaml#/components/schemas/L1SettingsProfile/properties/name
+//
+func (obj *host) L1ProfileName() string {
+
+	return *obj.obj.L1ProfileName
+
+}
+
+// L1ProfileName returns a string
+// The layer 1 settings profile associated with the host/front panel port.
+//
+// x-constraint:
+// - ../l1_profiles.yaml#/components/schemas/L1SettingsProfile/properties/name
+//
+func (obj *host) HasL1ProfileName() bool {
+	return obj.obj.L1ProfileName != nil
+}
+
+// SetL1ProfileName sets the string value in the Host object
+// The layer 1 settings profile associated with the host/front panel port.
+//
+// x-constraint:
+// - ../l1_profiles.yaml#/components/schemas/L1SettingsProfile/properties/name
+//
+func (obj *host) SetL1ProfileName(value string) Host {
+
+	obj.obj.L1ProfileName = &value
 	return obj
 }
 
