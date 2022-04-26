@@ -4024,7 +4024,7 @@ func (obj *host) SetPrefix(value int32) Host {
 // The layer 1 settings profile associated with the host/front panel port.
 //
 // x-constraint:
-// - ../l1_profiles.yaml#/components/schemas/L1SettingsProfile/properties/name
+// - ../l1settings/l1_profiles.yaml#/components/schemas/L1SettingsProfile/properties/name
 //
 func (obj *host) L1ProfileName() string {
 
@@ -4036,7 +4036,7 @@ func (obj *host) L1ProfileName() string {
 // The layer 1 settings profile associated with the host/front panel port.
 //
 // x-constraint:
-// - ../l1_profiles.yaml#/components/schemas/L1SettingsProfile/properties/name
+// - ../l1settings/l1_profiles.yaml#/components/schemas/L1SettingsProfile/properties/name
 //
 func (obj *host) HasL1ProfileName() bool {
 	return obj.obj.L1ProfileName != nil
@@ -4046,7 +4046,7 @@ func (obj *host) HasL1ProfileName() bool {
 // The layer 1 settings profile associated with the host/front panel port.
 //
 // x-constraint:
-// - ../l1_profiles.yaml#/components/schemas/L1SettingsProfile/properties/name
+// - ../l1settings/l1_profiles.yaml#/components/schemas/L1SettingsProfile/properties/name
 //
 func (obj *host) SetL1ProfileName(value string) Host {
 
