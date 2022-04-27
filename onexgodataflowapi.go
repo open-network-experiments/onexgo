@@ -1,4 +1,4 @@
-// Distributed System Emulator Dataflow API and Data Models 0.0.1
+// ONEx Dataflow API 0.0.1
 // License: MIT
 
 package onexgodataflowapi
@@ -109,7 +109,7 @@ func (api *onexgodataflowapiApi) httpSendRecv(urlPath string, jsonBody string, m
 	return httpClient.client.Do(req)
 }
 
-// OnexgodataflowapiApi the Dataflow API and Data Models
+// OnexgodataflowapiApi the Open Network Experiments Dataflow API and Data Models
 type OnexgodataflowapiApi interface {
 	Api
 	// NewConfig returns a new instance of Config.
@@ -148,13 +148,13 @@ type OnexgodataflowapiApi interface {
 	// NewGetMetricsResponse returns a new instance of GetMetricsResponse.
 	// GetMetricsResponse is description is TBD
 	NewGetMetricsResponse() GetMetricsResponse
-	// SetConfig sets the ONEx dataflow config
+	// SetConfig sets the ONEx dataflow configuration
 	SetConfig(config Config) (Config, error)
 	// GetConfig gets the ONEx dataflow config from the server, as currently configured
 	GetConfig(getConfigDetails GetConfigDetails) (Config, error)
-	// RunExperiment runs the currently configured experiment
+	// RunExperiment runs the currently configured dataflow experiment
 	RunExperiment(experimentRequest ExperimentRequest) (WarningDetails, error)
-	// Start starts the currently configured experiment
+	// Start starts the currently configured dataflow experiment
 	Start(controlStartRequest ControlStartRequest) (WarningDetails, error)
 	// GetStatus gets the control status (e.g. started/completed/error)
 	GetStatus(controlStatusRequest ControlStatusRequest) (ControlStatusResponse, error)
