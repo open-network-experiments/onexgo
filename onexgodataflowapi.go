@@ -3966,6 +3966,12 @@ type Host interface {
 	SetL1ProfileName(value string) Host
 	// HasL1ProfileName checks if L1ProfileName has been set in Host
 	HasL1ProfileName() bool
+	// Annotations returns string, set in Host.
+	Annotations() string
+	// SetAnnotations assigns string provided by user to Host
+	SetAnnotations(value string) Host
+	// HasAnnotations checks if Annotations has been set in Host
+	HasAnnotations() bool
 }
 
 // Name returns a string
@@ -4051,6 +4057,28 @@ func (obj *host) HasL1ProfileName() bool {
 func (obj *host) SetL1ProfileName(value string) Host {
 
 	obj.obj.L1ProfileName = &value
+	return obj
+}
+
+// Annotations returns a string
+// description is TBD
+func (obj *host) Annotations() string {
+
+	return *obj.obj.Annotations
+
+}
+
+// Annotations returns a string
+// description is TBD
+func (obj *host) HasAnnotations() bool {
+	return obj.obj.Annotations != nil
+}
+
+// SetAnnotations sets the string value in the Host object
+// description is TBD
+func (obj *host) SetAnnotations(value string) Host {
+
+	obj.obj.Annotations = &value
 	return obj
 }
 
