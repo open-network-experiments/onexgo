@@ -5853,7 +5853,8 @@ func (obj *metricsResponse) setDefault() {
 
 // ***** DataflowHostManagement *****
 type dataflowHostManagement struct {
-	obj *onexdataflowapi.DataflowHostManagement
+	obj          *onexdataflowapi.DataflowHostManagement
+	ethNicHolder DataflowHostManagementEthNic
 }
 
 func NewDataflowHostManagement() DataflowHostManagement {
@@ -5867,7 +5868,7 @@ func (obj *dataflowHostManagement) Msg() *onexdataflowapi.DataflowHostManagement
 }
 
 func (obj *dataflowHostManagement) SetMsg(msg *onexdataflowapi.DataflowHostManagement) DataflowHostManagement {
-
+	obj.setNil()
 	proto.Merge(obj.obj, msg)
 	return obj
 }
@@ -5889,7 +5890,7 @@ func (obj *dataflowHostManagement) FromPbText(value string) error {
 	if retObj != nil {
 		return retObj
 	}
-
+	obj.setNil()
 	vErr := obj.validateFromText()
 	if vErr != nil {
 		return vErr
@@ -5935,7 +5936,7 @@ func (obj *dataflowHostManagement) FromYaml(value string) error {
 		return fmt.Errorf("unmarshal error %s", strings.Replace(
 			uError.Error(), "\u00a0", " ", -1)[7:])
 	}
-
+	obj.setNil()
 	vErr := obj.validateFromText()
 	if vErr != nil {
 		return vErr
@@ -5974,7 +5975,7 @@ func (obj *dataflowHostManagement) FromJson(value string) error {
 		return fmt.Errorf("unmarshal error %s", strings.Replace(
 			uError.Error(), "\u00a0", " ", -1)[7:])
 	}
-
+	obj.setNil()
 	err := obj.validateFromText()
 	if err != nil {
 		return err
@@ -5998,6 +5999,10 @@ func (obj *dataflowHostManagement) String() string {
 		return err.Error()
 	}
 	return str
+}
+
+func (obj *dataflowHostManagement) setNil() {
+	obj.ethNicHolder = nil
 }
 
 // DataflowHostManagement is auxillary host information needed to run dataflow experiments
@@ -6027,36 +6032,15 @@ type DataflowHostManagement interface {
 	HostName() string
 	// SetHostName assigns string provided by user to DataflowHostManagement
 	SetHostName(value string) DataflowHostManagement
-	// NicRxBuffer returns int32, set in DataflowHostManagement.
-	NicRxBuffer() int32
-	// SetNicRxBuffer assigns int32 provided by user to DataflowHostManagement
-	SetNicRxBuffer(value int32) DataflowHostManagement
-	// HasNicRxBuffer checks if NicRxBuffer has been set in DataflowHostManagement
-	HasNicRxBuffer() bool
-	// NicTxBuffer returns int32, set in DataflowHostManagement.
-	NicTxBuffer() int32
-	// SetNicTxBuffer assigns int32 provided by user to DataflowHostManagement
-	SetNicTxBuffer(value int32) DataflowHostManagement
-	// HasNicTxBuffer checks if NicTxBuffer has been set in DataflowHostManagement
-	HasNicTxBuffer() bool
-	// NicSpeed returns int32, set in DataflowHostManagement.
-	NicSpeed() int32
-	// SetNicSpeed assigns int32 provided by user to DataflowHostManagement
-	SetNicSpeed(value int32) DataflowHostManagement
-	// HasNicSpeed checks if NicSpeed has been set in DataflowHostManagement
-	HasNicSpeed() bool
-	// ManagementAddress returns string, set in DataflowHostManagement.
-	ManagementAddress() string
-	// SetManagementAddress assigns string provided by user to DataflowHostManagement
-	SetManagementAddress(value string) DataflowHostManagement
-	// HasManagementAddress checks if ManagementAddress has been set in DataflowHostManagement
-	HasManagementAddress() bool
-	// NicName returns string, set in DataflowHostManagement.
-	NicName() string
-	// SetNicName assigns string provided by user to DataflowHostManagement
-	SetNicName(value string) DataflowHostManagement
-	// HasNicName checks if NicName has been set in DataflowHostManagement
-	HasNicName() bool
+	// EthNic returns DataflowHostManagementEthNic, set in DataflowHostManagement.
+	// DataflowHostManagementEthNic is description is TBD
+	EthNic() DataflowHostManagementEthNic
+	// SetEthNic assigns DataflowHostManagementEthNic provided by user to DataflowHostManagement.
+	// DataflowHostManagementEthNic is description is TBD
+	SetEthNic(value DataflowHostManagementEthNic) DataflowHostManagement
+	// HasEthNic checks if EthNic has been set in DataflowHostManagement
+	HasEthNic() bool
+	setNil()
 }
 
 // HostName returns a string
@@ -6082,113 +6066,31 @@ func (obj *dataflowHostManagement) SetHostName(value string) DataflowHostManagem
 	return obj
 }
 
-// NicRxBuffer returns a int32
-// RX buffer size in bytes
-func (obj *dataflowHostManagement) NicRxBuffer() int32 {
-
-	return *obj.obj.NicRxBuffer
-
+// EthNic returns a DataflowHostManagementEthNic
+// description is TBD
+func (obj *dataflowHostManagement) EthNic() DataflowHostManagementEthNic {
+	if obj.obj.EthNic == nil {
+		obj.obj.EthNic = NewDataflowHostManagementEthNic().Msg()
+	}
+	if obj.ethNicHolder == nil {
+		obj.ethNicHolder = &dataflowHostManagementEthNic{obj: obj.obj.EthNic}
+	}
+	return obj.ethNicHolder
 }
 
-// NicRxBuffer returns a int32
-// RX buffer size in bytes
-func (obj *dataflowHostManagement) HasNicRxBuffer() bool {
-	return obj.obj.NicRxBuffer != nil
+// EthNic returns a DataflowHostManagementEthNic
+// description is TBD
+func (obj *dataflowHostManagement) HasEthNic() bool {
+	return obj.obj.EthNic != nil
 }
 
-// SetNicRxBuffer sets the int32 value in the DataflowHostManagement object
-// RX buffer size in bytes
-func (obj *dataflowHostManagement) SetNicRxBuffer(value int32) DataflowHostManagement {
+// SetEthNic sets the DataflowHostManagementEthNic value in the DataflowHostManagement object
+// description is TBD
+func (obj *dataflowHostManagement) SetEthNic(value DataflowHostManagementEthNic) DataflowHostManagement {
 
-	obj.obj.NicRxBuffer = &value
-	return obj
-}
+	obj.ethNicHolder = nil
+	obj.obj.EthNic = value.Msg()
 
-// NicTxBuffer returns a int32
-// TX buffer size in bytes
-func (obj *dataflowHostManagement) NicTxBuffer() int32 {
-
-	return *obj.obj.NicTxBuffer
-
-}
-
-// NicTxBuffer returns a int32
-// TX buffer size in bytes
-func (obj *dataflowHostManagement) HasNicTxBuffer() bool {
-	return obj.obj.NicTxBuffer != nil
-}
-
-// SetNicTxBuffer sets the int32 value in the DataflowHostManagement object
-// TX buffer size in bytes
-func (obj *dataflowHostManagement) SetNicTxBuffer(value int32) DataflowHostManagement {
-
-	obj.obj.NicTxBuffer = &value
-	return obj
-}
-
-// NicSpeed returns a int32
-// configured link speed Mbps (e.g. 100000 for 100G)
-func (obj *dataflowHostManagement) NicSpeed() int32 {
-
-	return *obj.obj.NicSpeed
-
-}
-
-// NicSpeed returns a int32
-// configured link speed Mbps (e.g. 100000 for 100G)
-func (obj *dataflowHostManagement) HasNicSpeed() bool {
-	return obj.obj.NicSpeed != nil
-}
-
-// SetNicSpeed sets the int32 value in the DataflowHostManagement object
-// configured link speed Mbps (e.g. 100000 for 100G)
-func (obj *dataflowHostManagement) SetNicSpeed(value int32) DataflowHostManagement {
-
-	obj.obj.NicSpeed = &value
-	return obj
-}
-
-// ManagementAddress returns a string
-// Hostname or address of management interface of a server running dataflow traffic
-func (obj *dataflowHostManagement) ManagementAddress() string {
-
-	return *obj.obj.ManagementAddress
-
-}
-
-// ManagementAddress returns a string
-// Hostname or address of management interface of a server running dataflow traffic
-func (obj *dataflowHostManagement) HasManagementAddress() bool {
-	return obj.obj.ManagementAddress != nil
-}
-
-// SetManagementAddress sets the string value in the DataflowHostManagement object
-// Hostname or address of management interface of a server running dataflow traffic
-func (obj *dataflowHostManagement) SetManagementAddress(value string) DataflowHostManagement {
-
-	obj.obj.ManagementAddress = &value
-	return obj
-}
-
-// NicName returns a string
-// unique idenfier for the network interface card (nic), e.g. "eth1"
-func (obj *dataflowHostManagement) NicName() string {
-
-	return *obj.obj.NicName
-
-}
-
-// NicName returns a string
-// unique idenfier for the network interface card (nic), e.g. "eth1"
-func (obj *dataflowHostManagement) HasNicName() bool {
-	return obj.obj.NicName != nil
-}
-
-// SetNicName sets the string value in the DataflowHostManagement object
-// unique idenfier for the network interface card (nic), e.g. "eth1"
-func (obj *dataflowHostManagement) SetNicName(value string) DataflowHostManagement {
-
-	obj.obj.NicName = &value
 	return obj
 }
 
@@ -6201,6 +6103,11 @@ func (obj *dataflowHostManagement) validateObj(set_default bool) {
 	if obj.obj.HostName == "" {
 		validation = append(validation, "HostName is required field on interface DataflowHostManagement")
 	}
+
+	if obj.obj.EthNic != nil {
+		obj.EthNic().validateObj(set_default)
+	}
+
 }
 
 func (obj *dataflowHostManagement) setDefault() {
@@ -8043,6 +7950,835 @@ func (obj *metricsResponseFlowResult) validateObj(set_default bool) {
 }
 
 func (obj *metricsResponseFlowResult) setDefault() {
+
+}
+
+// ***** DataflowHostManagementEthNic *****
+type dataflowHostManagementEthNic struct {
+	obj *onexdataflowapi.DataflowHostManagementEthNic
+}
+
+func NewDataflowHostManagementEthNic() DataflowHostManagementEthNic {
+	obj := dataflowHostManagementEthNic{obj: &onexdataflowapi.DataflowHostManagementEthNic{}}
+	obj.setDefault()
+	return &obj
+}
+
+func (obj *dataflowHostManagementEthNic) Msg() *onexdataflowapi.DataflowHostManagementEthNic {
+	return obj.obj
+}
+
+func (obj *dataflowHostManagementEthNic) SetMsg(msg *onexdataflowapi.DataflowHostManagementEthNic) DataflowHostManagementEthNic {
+
+	proto.Merge(obj.obj, msg)
+	return obj
+}
+
+func (obj *dataflowHostManagementEthNic) ToPbText() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	protoMarshal, err := proto.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(protoMarshal), nil
+}
+
+func (obj *dataflowHostManagementEthNic) FromPbText(value string) error {
+	retObj := proto.Unmarshal([]byte(value), obj.Msg())
+	if retObj != nil {
+		return retObj
+	}
+
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return retObj
+}
+
+func (obj *dataflowHostManagementEthNic) ToYaml() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	data, err = yaml.JSONToYAML(data)
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *dataflowHostManagementEthNic) FromYaml(value string) error {
+	if value == "" {
+		value = "{}"
+	}
+	data, err := yaml.YAMLToJSON([]byte(value))
+	if err != nil {
+		return err
+	}
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	uError := opts.Unmarshal([]byte(data), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return nil
+}
+
+func (obj *dataflowHostManagementEthNic) ToJson() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+		Indent:          "  ",
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *dataflowHostManagementEthNic) FromJson(value string) error {
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	if value == "" {
+		value = "{}"
+	}
+	uError := opts.Unmarshal([]byte(value), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+
+	err := obj.validateFromText()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (obj *dataflowHostManagementEthNic) validateFromText() error {
+	obj.validateObj(true)
+	return validationResult()
+}
+
+func (obj *dataflowHostManagementEthNic) Validate() error {
+	obj.validateObj(false)
+	return validationResult()
+}
+
+func (obj *dataflowHostManagementEthNic) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
+// DataflowHostManagementEthNic is description is TBD
+type DataflowHostManagementEthNic interface {
+	Msg() *onexdataflowapi.DataflowHostManagementEthNic
+	SetMsg(*onexdataflowapi.DataflowHostManagementEthNic) DataflowHostManagementEthNic
+	// ToPbText marshals DataflowHostManagementEthNic to protobuf text
+	ToPbText() (string, error)
+	// ToYaml marshals DataflowHostManagementEthNic to YAML text
+	ToYaml() (string, error)
+	// ToJson marshals DataflowHostManagementEthNic to JSON text
+	ToJson() (string, error)
+	// FromPbText unmarshals DataflowHostManagementEthNic from protobuf text
+	FromPbText(value string) error
+	// FromYaml unmarshals DataflowHostManagementEthNic from YAML text
+	FromYaml(value string) error
+	// FromJson unmarshals DataflowHostManagementEthNic from JSON text
+	FromJson(value string) error
+	// Validate validates DataflowHostManagementEthNic
+	Validate() error
+	// A stringer function
+	String() string
+	validateFromText() error
+	validateObj(set_default bool)
+	setDefault()
+	// NicRxBuffer returns int32, set in DataflowHostManagementEthNic.
+	NicRxBuffer() int32
+	// SetNicRxBuffer assigns int32 provided by user to DataflowHostManagementEthNic
+	SetNicRxBuffer(value int32) DataflowHostManagementEthNic
+	// HasNicRxBuffer checks if NicRxBuffer has been set in DataflowHostManagementEthNic
+	HasNicRxBuffer() bool
+	// NicTxBuffer returns int32, set in DataflowHostManagementEthNic.
+	NicTxBuffer() int32
+	// SetNicTxBuffer assigns int32 provided by user to DataflowHostManagementEthNic
+	SetNicTxBuffer(value int32) DataflowHostManagementEthNic
+	// HasNicTxBuffer checks if NicTxBuffer has been set in DataflowHostManagementEthNic
+	HasNicTxBuffer() bool
+	// NicSpeed returns int32, set in DataflowHostManagementEthNic.
+	NicSpeed() int32
+	// SetNicSpeed assigns int32 provided by user to DataflowHostManagementEthNic
+	SetNicSpeed(value int32) DataflowHostManagementEthNic
+	// HasNicSpeed checks if NicSpeed has been set in DataflowHostManagementEthNic
+	HasNicSpeed() bool
+	// ManagementAddress returns string, set in DataflowHostManagementEthNic.
+	ManagementAddress() string
+	// SetManagementAddress assigns string provided by user to DataflowHostManagementEthNic
+	SetManagementAddress(value string) DataflowHostManagementEthNic
+	// HasManagementAddress checks if ManagementAddress has been set in DataflowHostManagementEthNic
+	HasManagementAddress() bool
+	// NicName returns string, set in DataflowHostManagementEthNic.
+	NicName() string
+	// SetNicName assigns string provided by user to DataflowHostManagementEthNic
+	SetNicName(value string) DataflowHostManagementEthNic
+	// HasNicName checks if NicName has been set in DataflowHostManagementEthNic
+	HasNicName() bool
+	// FlowControlAutoneg returns bool, set in DataflowHostManagementEthNic.
+	FlowControlAutoneg() bool
+	// SetFlowControlAutoneg assigns bool provided by user to DataflowHostManagementEthNic
+	SetFlowControlAutoneg(value bool) DataflowHostManagementEthNic
+	// HasFlowControlAutoneg checks if FlowControlAutoneg has been set in DataflowHostManagementEthNic
+	HasFlowControlAutoneg() bool
+	// FlowControlRx returns bool, set in DataflowHostManagementEthNic.
+	FlowControlRx() bool
+	// SetFlowControlRx assigns bool provided by user to DataflowHostManagementEthNic
+	SetFlowControlRx(value bool) DataflowHostManagementEthNic
+	// HasFlowControlRx checks if FlowControlRx has been set in DataflowHostManagementEthNic
+	HasFlowControlRx() bool
+	// FlowControlTx returns bool, set in DataflowHostManagementEthNic.
+	FlowControlTx() bool
+	// SetFlowControlTx assigns bool provided by user to DataflowHostManagementEthNic
+	SetFlowControlTx(value bool) DataflowHostManagementEthNic
+	// HasFlowControlTx checks if FlowControlTx has been set in DataflowHostManagementEthNic
+	HasFlowControlTx() bool
+	// CoalesceAdaptiveRx returns bool, set in DataflowHostManagementEthNic.
+	CoalesceAdaptiveRx() bool
+	// SetCoalesceAdaptiveRx assigns bool provided by user to DataflowHostManagementEthNic
+	SetCoalesceAdaptiveRx(value bool) DataflowHostManagementEthNic
+	// HasCoalesceAdaptiveRx checks if CoalesceAdaptiveRx has been set in DataflowHostManagementEthNic
+	HasCoalesceAdaptiveRx() bool
+	// CoalesceAdaptiveTx returns bool, set in DataflowHostManagementEthNic.
+	CoalesceAdaptiveTx() bool
+	// SetCoalesceAdaptiveTx assigns bool provided by user to DataflowHostManagementEthNic
+	SetCoalesceAdaptiveTx(value bool) DataflowHostManagementEthNic
+	// HasCoalesceAdaptiveTx checks if CoalesceAdaptiveTx has been set in DataflowHostManagementEthNic
+	HasCoalesceAdaptiveTx() bool
+	// CoalesceTxFrames returns bool, set in DataflowHostManagementEthNic.
+	CoalesceTxFrames() bool
+	// SetCoalesceTxFrames assigns bool provided by user to DataflowHostManagementEthNic
+	SetCoalesceTxFrames(value bool) DataflowHostManagementEthNic
+	// HasCoalesceTxFrames checks if CoalesceTxFrames has been set in DataflowHostManagementEthNic
+	HasCoalesceTxFrames() bool
+	// CoalesceRxFrames returns bool, set in DataflowHostManagementEthNic.
+	CoalesceRxFrames() bool
+	// SetCoalesceRxFrames assigns bool provided by user to DataflowHostManagementEthNic
+	SetCoalesceRxFrames(value bool) DataflowHostManagementEthNic
+	// HasCoalesceRxFrames checks if CoalesceRxFrames has been set in DataflowHostManagementEthNic
+	HasCoalesceRxFrames() bool
+	// CoalesceTxUsecs returns bool, set in DataflowHostManagementEthNic.
+	CoalesceTxUsecs() bool
+	// SetCoalesceTxUsecs assigns bool provided by user to DataflowHostManagementEthNic
+	SetCoalesceTxUsecs(value bool) DataflowHostManagementEthNic
+	// HasCoalesceTxUsecs checks if CoalesceTxUsecs has been set in DataflowHostManagementEthNic
+	HasCoalesceTxUsecs() bool
+	// CoalesceRxUsecs returns bool, set in DataflowHostManagementEthNic.
+	CoalesceRxUsecs() bool
+	// SetCoalesceRxUsecs assigns bool provided by user to DataflowHostManagementEthNic
+	SetCoalesceRxUsecs(value bool) DataflowHostManagementEthNic
+	// HasCoalesceRxUsecs checks if CoalesceRxUsecs has been set in DataflowHostManagementEthNic
+	HasCoalesceRxUsecs() bool
+	// OffloadRxChecksum returns bool, set in DataflowHostManagementEthNic.
+	OffloadRxChecksum() bool
+	// SetOffloadRxChecksum assigns bool provided by user to DataflowHostManagementEthNic
+	SetOffloadRxChecksum(value bool) DataflowHostManagementEthNic
+	// HasOffloadRxChecksum checks if OffloadRxChecksum has been set in DataflowHostManagementEthNic
+	HasOffloadRxChecksum() bool
+	// OffloadTxChecksum returns bool, set in DataflowHostManagementEthNic.
+	OffloadTxChecksum() bool
+	// SetOffloadTxChecksum assigns bool provided by user to DataflowHostManagementEthNic
+	SetOffloadTxChecksum(value bool) DataflowHostManagementEthNic
+	// HasOffloadTxChecksum checks if OffloadTxChecksum has been set in DataflowHostManagementEthNic
+	HasOffloadTxChecksum() bool
+	// OffloadSg returns bool, set in DataflowHostManagementEthNic.
+	OffloadSg() bool
+	// SetOffloadSg assigns bool provided by user to DataflowHostManagementEthNic
+	SetOffloadSg(value bool) DataflowHostManagementEthNic
+	// HasOffloadSg checks if OffloadSg has been set in DataflowHostManagementEthNic
+	HasOffloadSg() bool
+	// OffloadTso returns bool, set in DataflowHostManagementEthNic.
+	OffloadTso() bool
+	// SetOffloadTso assigns bool provided by user to DataflowHostManagementEthNic
+	SetOffloadTso(value bool) DataflowHostManagementEthNic
+	// HasOffloadTso checks if OffloadTso has been set in DataflowHostManagementEthNic
+	HasOffloadTso() bool
+	// OffloadGso returns bool, set in DataflowHostManagementEthNic.
+	OffloadGso() bool
+	// SetOffloadGso assigns bool provided by user to DataflowHostManagementEthNic
+	SetOffloadGso(value bool) DataflowHostManagementEthNic
+	// HasOffloadGso checks if OffloadGso has been set in DataflowHostManagementEthNic
+	HasOffloadGso() bool
+	// OffloadLro returns bool, set in DataflowHostManagementEthNic.
+	OffloadLro() bool
+	// SetOffloadLro assigns bool provided by user to DataflowHostManagementEthNic
+	SetOffloadLro(value bool) DataflowHostManagementEthNic
+	// HasOffloadLro checks if OffloadLro has been set in DataflowHostManagementEthNic
+	HasOffloadLro() bool
+	// OffloadTxNocacheCopy returns bool, set in DataflowHostManagementEthNic.
+	OffloadTxNocacheCopy() bool
+	// SetOffloadTxNocacheCopy assigns bool provided by user to DataflowHostManagementEthNic
+	SetOffloadTxNocacheCopy(value bool) DataflowHostManagementEthNic
+	// HasOffloadTxNocacheCopy checks if OffloadTxNocacheCopy has been set in DataflowHostManagementEthNic
+	HasOffloadTxNocacheCopy() bool
+	// OffloadTxUdpSegmentation returns bool, set in DataflowHostManagementEthNic.
+	OffloadTxUdpSegmentation() bool
+	// SetOffloadTxUdpSegmentation assigns bool provided by user to DataflowHostManagementEthNic
+	SetOffloadTxUdpSegmentation(value bool) DataflowHostManagementEthNic
+	// HasOffloadTxUdpSegmentation checks if OffloadTxUdpSegmentation has been set in DataflowHostManagementEthNic
+	HasOffloadTxUdpSegmentation() bool
+	// TxQueueLen returns int32, set in DataflowHostManagementEthNic.
+	TxQueueLen() int32
+	// SetTxQueueLen assigns int32 provided by user to DataflowHostManagementEthNic
+	SetTxQueueLen(value int32) DataflowHostManagementEthNic
+	// HasTxQueueLen checks if TxQueueLen has been set in DataflowHostManagementEthNic
+	HasTxQueueLen() bool
+}
+
+// NicRxBuffer returns a int32
+// RX buffer size in bytes
+func (obj *dataflowHostManagementEthNic) NicRxBuffer() int32 {
+
+	return *obj.obj.NicRxBuffer
+
+}
+
+// NicRxBuffer returns a int32
+// RX buffer size in bytes
+func (obj *dataflowHostManagementEthNic) HasNicRxBuffer() bool {
+	return obj.obj.NicRxBuffer != nil
+}
+
+// SetNicRxBuffer sets the int32 value in the DataflowHostManagementEthNic object
+// RX buffer size in bytes
+func (obj *dataflowHostManagementEthNic) SetNicRxBuffer(value int32) DataflowHostManagementEthNic {
+
+	obj.obj.NicRxBuffer = &value
+	return obj
+}
+
+// NicTxBuffer returns a int32
+// TX buffer size in bytes
+func (obj *dataflowHostManagementEthNic) NicTxBuffer() int32 {
+
+	return *obj.obj.NicTxBuffer
+
+}
+
+// NicTxBuffer returns a int32
+// TX buffer size in bytes
+func (obj *dataflowHostManagementEthNic) HasNicTxBuffer() bool {
+	return obj.obj.NicTxBuffer != nil
+}
+
+// SetNicTxBuffer sets the int32 value in the DataflowHostManagementEthNic object
+// TX buffer size in bytes
+func (obj *dataflowHostManagementEthNic) SetNicTxBuffer(value int32) DataflowHostManagementEthNic {
+
+	obj.obj.NicTxBuffer = &value
+	return obj
+}
+
+// NicSpeed returns a int32
+// configured link speed Mbps (e.g. 100000 for 100G)
+func (obj *dataflowHostManagementEthNic) NicSpeed() int32 {
+
+	return *obj.obj.NicSpeed
+
+}
+
+// NicSpeed returns a int32
+// configured link speed Mbps (e.g. 100000 for 100G)
+func (obj *dataflowHostManagementEthNic) HasNicSpeed() bool {
+	return obj.obj.NicSpeed != nil
+}
+
+// SetNicSpeed sets the int32 value in the DataflowHostManagementEthNic object
+// configured link speed Mbps (e.g. 100000 for 100G)
+func (obj *dataflowHostManagementEthNic) SetNicSpeed(value int32) DataflowHostManagementEthNic {
+
+	obj.obj.NicSpeed = &value
+	return obj
+}
+
+// ManagementAddress returns a string
+// Hostname or address of management interface of a server running dataflow traffic
+func (obj *dataflowHostManagementEthNic) ManagementAddress() string {
+
+	return *obj.obj.ManagementAddress
+
+}
+
+// ManagementAddress returns a string
+// Hostname or address of management interface of a server running dataflow traffic
+func (obj *dataflowHostManagementEthNic) HasManagementAddress() bool {
+	return obj.obj.ManagementAddress != nil
+}
+
+// SetManagementAddress sets the string value in the DataflowHostManagementEthNic object
+// Hostname or address of management interface of a server running dataflow traffic
+func (obj *dataflowHostManagementEthNic) SetManagementAddress(value string) DataflowHostManagementEthNic {
+
+	obj.obj.ManagementAddress = &value
+	return obj
+}
+
+// NicName returns a string
+// unique idenfier for the network interface card (nic), e.g. "eth1"
+func (obj *dataflowHostManagementEthNic) NicName() string {
+
+	return *obj.obj.NicName
+
+}
+
+// NicName returns a string
+// unique idenfier for the network interface card (nic), e.g. "eth1"
+func (obj *dataflowHostManagementEthNic) HasNicName() bool {
+	return obj.obj.NicName != nil
+}
+
+// SetNicName sets the string value in the DataflowHostManagementEthNic object
+// unique idenfier for the network interface card (nic), e.g. "eth1"
+func (obj *dataflowHostManagementEthNic) SetNicName(value string) DataflowHostManagementEthNic {
+
+	obj.obj.NicName = &value
+	return obj
+}
+
+// FlowControlAutoneg returns a bool
+// Value for the autonegotiate pause parameter
+func (obj *dataflowHostManagementEthNic) FlowControlAutoneg() bool {
+
+	return *obj.obj.FlowControlAutoneg
+
+}
+
+// FlowControlAutoneg returns a bool
+// Value for the autonegotiate pause parameter
+func (obj *dataflowHostManagementEthNic) HasFlowControlAutoneg() bool {
+	return obj.obj.FlowControlAutoneg != nil
+}
+
+// SetFlowControlAutoneg sets the bool value in the DataflowHostManagementEthNic object
+// Value for the autonegotiate pause parameter
+func (obj *dataflowHostManagementEthNic) SetFlowControlAutoneg(value bool) DataflowHostManagementEthNic {
+
+	obj.obj.FlowControlAutoneg = &value
+	return obj
+}
+
+// FlowControlRx returns a bool
+// Value for the RX pause parameter
+func (obj *dataflowHostManagementEthNic) FlowControlRx() bool {
+
+	return *obj.obj.FlowControlRx
+
+}
+
+// FlowControlRx returns a bool
+// Value for the RX pause parameter
+func (obj *dataflowHostManagementEthNic) HasFlowControlRx() bool {
+	return obj.obj.FlowControlRx != nil
+}
+
+// SetFlowControlRx sets the bool value in the DataflowHostManagementEthNic object
+// Value for the RX pause parameter
+func (obj *dataflowHostManagementEthNic) SetFlowControlRx(value bool) DataflowHostManagementEthNic {
+
+	obj.obj.FlowControlRx = &value
+	return obj
+}
+
+// FlowControlTx returns a bool
+// Value for the TX pause parameter
+func (obj *dataflowHostManagementEthNic) FlowControlTx() bool {
+
+	return *obj.obj.FlowControlTx
+
+}
+
+// FlowControlTx returns a bool
+// Value for the TX pause parameter
+func (obj *dataflowHostManagementEthNic) HasFlowControlTx() bool {
+	return obj.obj.FlowControlTx != nil
+}
+
+// SetFlowControlTx sets the bool value in the DataflowHostManagementEthNic object
+// Value for the TX pause parameter
+func (obj *dataflowHostManagementEthNic) SetFlowControlTx(value bool) DataflowHostManagementEthNic {
+
+	obj.obj.FlowControlTx = &value
+	return obj
+}
+
+// CoalesceAdaptiveRx returns a bool
+// An algorithm to improve rx latency at low packet-receiving rates and improve throughput at high packet-receiving rates. Some NIC drivers do not support this feature.
+func (obj *dataflowHostManagementEthNic) CoalesceAdaptiveRx() bool {
+
+	return *obj.obj.CoalesceAdaptiveRx
+
+}
+
+// CoalesceAdaptiveRx returns a bool
+// An algorithm to improve rx latency at low packet-receiving rates and improve throughput at high packet-receiving rates. Some NIC drivers do not support this feature.
+func (obj *dataflowHostManagementEthNic) HasCoalesceAdaptiveRx() bool {
+	return obj.obj.CoalesceAdaptiveRx != nil
+}
+
+// SetCoalesceAdaptiveRx sets the bool value in the DataflowHostManagementEthNic object
+// An algorithm to improve rx latency at low packet-receiving rates and improve throughput at high packet-receiving rates. Some NIC drivers do not support this feature.
+func (obj *dataflowHostManagementEthNic) SetCoalesceAdaptiveRx(value bool) DataflowHostManagementEthNic {
+
+	obj.obj.CoalesceAdaptiveRx = &value
+	return obj
+}
+
+// CoalesceAdaptiveTx returns a bool
+// An algorithm to improve tx latency at low packet-sending rates and improve throughput at high packet-sending rates. Some NIC drivers do not support this feature.
+func (obj *dataflowHostManagementEthNic) CoalesceAdaptiveTx() bool {
+
+	return *obj.obj.CoalesceAdaptiveTx
+
+}
+
+// CoalesceAdaptiveTx returns a bool
+// An algorithm to improve tx latency at low packet-sending rates and improve throughput at high packet-sending rates. Some NIC drivers do not support this feature.
+func (obj *dataflowHostManagementEthNic) HasCoalesceAdaptiveTx() bool {
+	return obj.obj.CoalesceAdaptiveTx != nil
+}
+
+// SetCoalesceAdaptiveTx sets the bool value in the DataflowHostManagementEthNic object
+// An algorithm to improve tx latency at low packet-sending rates and improve throughput at high packet-sending rates. Some NIC drivers do not support this feature.
+func (obj *dataflowHostManagementEthNic) SetCoalesceAdaptiveTx(value bool) DataflowHostManagementEthNic {
+
+	obj.obj.CoalesceAdaptiveTx = &value
+	return obj
+}
+
+// CoalesceTxFrames returns a bool
+// Number of packets to delay a TX interrupt after sending a packet. If 0, only tx-usecs is used. Do not set both tx-usecs and tx-max-frames to zero as this would cause TX interrupts to never be generated.
+func (obj *dataflowHostManagementEthNic) CoalesceTxFrames() bool {
+
+	return *obj.obj.CoalesceTxFrames
+
+}
+
+// CoalesceTxFrames returns a bool
+// Number of packets to delay a TX interrupt after sending a packet. If 0, only tx-usecs is used. Do not set both tx-usecs and tx-max-frames to zero as this would cause TX interrupts to never be generated.
+func (obj *dataflowHostManagementEthNic) HasCoalesceTxFrames() bool {
+	return obj.obj.CoalesceTxFrames != nil
+}
+
+// SetCoalesceTxFrames sets the bool value in the DataflowHostManagementEthNic object
+// Number of packets to delay a TX interrupt after sending a packet. If 0, only tx-usecs is used. Do not set both tx-usecs and tx-max-frames to zero as this would cause TX interrupts to never be generated.
+func (obj *dataflowHostManagementEthNic) SetCoalesceTxFrames(value bool) DataflowHostManagementEthNic {
+
+	obj.obj.CoalesceTxFrames = &value
+	return obj
+}
+
+// CoalesceRxFrames returns a bool
+// Number of packets to delay an RX interrupt after packet arrival. If 0, only rx-usecs is used. Do not set both rx-usecs and rx-max-frames to zero as this would cause RX interrupts to never be generated.
+func (obj *dataflowHostManagementEthNic) CoalesceRxFrames() bool {
+
+	return *obj.obj.CoalesceRxFrames
+
+}
+
+// CoalesceRxFrames returns a bool
+// Number of packets to delay an RX interrupt after packet arrival. If 0, only rx-usecs is used. Do not set both rx-usecs and rx-max-frames to zero as this would cause RX interrupts to never be generated.
+func (obj *dataflowHostManagementEthNic) HasCoalesceRxFrames() bool {
+	return obj.obj.CoalesceRxFrames != nil
+}
+
+// SetCoalesceRxFrames sets the bool value in the DataflowHostManagementEthNic object
+// Number of packets to delay an RX interrupt after packet arrival. If 0, only rx-usecs is used. Do not set both rx-usecs and rx-max-frames to zero as this would cause RX interrupts to never be generated.
+func (obj *dataflowHostManagementEthNic) SetCoalesceRxFrames(value bool) DataflowHostManagementEthNic {
+
+	obj.obj.CoalesceRxFrames = &value
+	return obj
+}
+
+// CoalesceTxUsecs returns a bool
+// Number of microseconds to delay a TX interrupt after a sending a packet. If 0, only tx-max-frames is used. Do not set both tx-usecs and tx-max-frames to zero as this would cause TX interrupts to never be generated.
+func (obj *dataflowHostManagementEthNic) CoalesceTxUsecs() bool {
+
+	return *obj.obj.CoalesceTxUsecs
+
+}
+
+// CoalesceTxUsecs returns a bool
+// Number of microseconds to delay a TX interrupt after a sending a packet. If 0, only tx-max-frames is used. Do not set both tx-usecs and tx-max-frames to zero as this would cause TX interrupts to never be generated.
+func (obj *dataflowHostManagementEthNic) HasCoalesceTxUsecs() bool {
+	return obj.obj.CoalesceTxUsecs != nil
+}
+
+// SetCoalesceTxUsecs sets the bool value in the DataflowHostManagementEthNic object
+// Number of microseconds to delay a TX interrupt after a sending a packet. If 0, only tx-max-frames is used. Do not set both tx-usecs and tx-max-frames to zero as this would cause TX interrupts to never be generated.
+func (obj *dataflowHostManagementEthNic) SetCoalesceTxUsecs(value bool) DataflowHostManagementEthNic {
+
+	obj.obj.CoalesceTxUsecs = &value
+	return obj
+}
+
+// CoalesceRxUsecs returns a bool
+// Number of microseconds to delay an RX interrupt after packet arrival. If 0, only rx-max-frames is used. Do not set both rx-usecs and rx-max-frames to zero as this would cause RX interrupts to never be generated.
+func (obj *dataflowHostManagementEthNic) CoalesceRxUsecs() bool {
+
+	return *obj.obj.CoalesceRxUsecs
+
+}
+
+// CoalesceRxUsecs returns a bool
+// Number of microseconds to delay an RX interrupt after packet arrival. If 0, only rx-max-frames is used. Do not set both rx-usecs and rx-max-frames to zero as this would cause RX interrupts to never be generated.
+func (obj *dataflowHostManagementEthNic) HasCoalesceRxUsecs() bool {
+	return obj.obj.CoalesceRxUsecs != nil
+}
+
+// SetCoalesceRxUsecs sets the bool value in the DataflowHostManagementEthNic object
+// Number of microseconds to delay an RX interrupt after packet arrival. If 0, only rx-max-frames is used. Do not set both rx-usecs and rx-max-frames to zero as this would cause RX interrupts to never be generated.
+func (obj *dataflowHostManagementEthNic) SetCoalesceRxUsecs(value bool) DataflowHostManagementEthNic {
+
+	obj.obj.CoalesceRxUsecs = &value
+	return obj
+}
+
+// OffloadRxChecksum returns a bool
+// Specifies whether RX checksumming should be enabled.
+func (obj *dataflowHostManagementEthNic) OffloadRxChecksum() bool {
+
+	return *obj.obj.OffloadRxChecksum
+
+}
+
+// OffloadRxChecksum returns a bool
+// Specifies whether RX checksumming should be enabled.
+func (obj *dataflowHostManagementEthNic) HasOffloadRxChecksum() bool {
+	return obj.obj.OffloadRxChecksum != nil
+}
+
+// SetOffloadRxChecksum sets the bool value in the DataflowHostManagementEthNic object
+// Specifies whether RX checksumming should be enabled.
+func (obj *dataflowHostManagementEthNic) SetOffloadRxChecksum(value bool) DataflowHostManagementEthNic {
+
+	obj.obj.OffloadRxChecksum = &value
+	return obj
+}
+
+// OffloadTxChecksum returns a bool
+// Specifies whether TX checksumming should be enabled.
+func (obj *dataflowHostManagementEthNic) OffloadTxChecksum() bool {
+
+	return *obj.obj.OffloadTxChecksum
+
+}
+
+// OffloadTxChecksum returns a bool
+// Specifies whether TX checksumming should be enabled.
+func (obj *dataflowHostManagementEthNic) HasOffloadTxChecksum() bool {
+	return obj.obj.OffloadTxChecksum != nil
+}
+
+// SetOffloadTxChecksum sets the bool value in the DataflowHostManagementEthNic object
+// Specifies whether TX checksumming should be enabled.
+func (obj *dataflowHostManagementEthNic) SetOffloadTxChecksum(value bool) DataflowHostManagementEthNic {
+
+	obj.obj.OffloadTxChecksum = &value
+	return obj
+}
+
+// OffloadSg returns a bool
+// Specifies whether scatter-gather should be enabled.
+func (obj *dataflowHostManagementEthNic) OffloadSg() bool {
+
+	return *obj.obj.OffloadSg
+
+}
+
+// OffloadSg returns a bool
+// Specifies whether scatter-gather should be enabled.
+func (obj *dataflowHostManagementEthNic) HasOffloadSg() bool {
+	return obj.obj.OffloadSg != nil
+}
+
+// SetOffloadSg sets the bool value in the DataflowHostManagementEthNic object
+// Specifies whether scatter-gather should be enabled.
+func (obj *dataflowHostManagementEthNic) SetOffloadSg(value bool) DataflowHostManagementEthNic {
+
+	obj.obj.OffloadSg = &value
+	return obj
+}
+
+// OffloadTso returns a bool
+// Specifies whether TCP segmentation offload should be enabled.
+func (obj *dataflowHostManagementEthNic) OffloadTso() bool {
+
+	return *obj.obj.OffloadTso
+
+}
+
+// OffloadTso returns a bool
+// Specifies whether TCP segmentation offload should be enabled.
+func (obj *dataflowHostManagementEthNic) HasOffloadTso() bool {
+	return obj.obj.OffloadTso != nil
+}
+
+// SetOffloadTso sets the bool value in the DataflowHostManagementEthNic object
+// Specifies whether TCP segmentation offload should be enabled.
+func (obj *dataflowHostManagementEthNic) SetOffloadTso(value bool) DataflowHostManagementEthNic {
+
+	obj.obj.OffloadTso = &value
+	return obj
+}
+
+// OffloadGso returns a bool
+// Specifies whether generic segmentation offload should be enabled
+func (obj *dataflowHostManagementEthNic) OffloadGso() bool {
+
+	return *obj.obj.OffloadGso
+
+}
+
+// OffloadGso returns a bool
+// Specifies whether generic segmentation offload should be enabled
+func (obj *dataflowHostManagementEthNic) HasOffloadGso() bool {
+	return obj.obj.OffloadGso != nil
+}
+
+// SetOffloadGso sets the bool value in the DataflowHostManagementEthNic object
+// Specifies whether generic segmentation offload should be enabled
+func (obj *dataflowHostManagementEthNic) SetOffloadGso(value bool) DataflowHostManagementEthNic {
+
+	obj.obj.OffloadGso = &value
+	return obj
+}
+
+// OffloadLro returns a bool
+// Specifies whether large receive offload should be enabled
+func (obj *dataflowHostManagementEthNic) OffloadLro() bool {
+
+	return *obj.obj.OffloadLro
+
+}
+
+// OffloadLro returns a bool
+// Specifies whether large receive offload should be enabled
+func (obj *dataflowHostManagementEthNic) HasOffloadLro() bool {
+	return obj.obj.OffloadLro != nil
+}
+
+// SetOffloadLro sets the bool value in the DataflowHostManagementEthNic object
+// Specifies whether large receive offload should be enabled
+func (obj *dataflowHostManagementEthNic) SetOffloadLro(value bool) DataflowHostManagementEthNic {
+
+	obj.obj.OffloadLro = &value
+	return obj
+}
+
+// OffloadTxNocacheCopy returns a bool
+// Helps to reduce CPU cycles by bypassing the local cache and writing user-space data directly into memory.
+func (obj *dataflowHostManagementEthNic) OffloadTxNocacheCopy() bool {
+
+	return *obj.obj.OffloadTxNocacheCopy
+
+}
+
+// OffloadTxNocacheCopy returns a bool
+// Helps to reduce CPU cycles by bypassing the local cache and writing user-space data directly into memory.
+func (obj *dataflowHostManagementEthNic) HasOffloadTxNocacheCopy() bool {
+	return obj.obj.OffloadTxNocacheCopy != nil
+}
+
+// SetOffloadTxNocacheCopy sets the bool value in the DataflowHostManagementEthNic object
+// Helps to reduce CPU cycles by bypassing the local cache and writing user-space data directly into memory.
+func (obj *dataflowHostManagementEthNic) SetOffloadTxNocacheCopy(value bool) DataflowHostManagementEthNic {
+
+	obj.obj.OffloadTxNocacheCopy = &value
+	return obj
+}
+
+// OffloadTxUdpSegmentation returns a bool
+// Specifies whether UDP TX segmentation offload should be enabled.
+func (obj *dataflowHostManagementEthNic) OffloadTxUdpSegmentation() bool {
+
+	return *obj.obj.OffloadTxUdpSegmentation
+
+}
+
+// OffloadTxUdpSegmentation returns a bool
+// Specifies whether UDP TX segmentation offload should be enabled.
+func (obj *dataflowHostManagementEthNic) HasOffloadTxUdpSegmentation() bool {
+	return obj.obj.OffloadTxUdpSegmentation != nil
+}
+
+// SetOffloadTxUdpSegmentation sets the bool value in the DataflowHostManagementEthNic object
+// Specifies whether UDP TX segmentation offload should be enabled.
+func (obj *dataflowHostManagementEthNic) SetOffloadTxUdpSegmentation(value bool) DataflowHostManagementEthNic {
+
+	obj.obj.OffloadTxUdpSegmentation = &value
+	return obj
+}
+
+// TxQueueLen returns a int32
+// Sets the TX queue size
+func (obj *dataflowHostManagementEthNic) TxQueueLen() int32 {
+
+	return *obj.obj.TxQueueLen
+
+}
+
+// TxQueueLen returns a int32
+// Sets the TX queue size
+func (obj *dataflowHostManagementEthNic) HasTxQueueLen() bool {
+	return obj.obj.TxQueueLen != nil
+}
+
+// SetTxQueueLen sets the int32 value in the DataflowHostManagementEthNic object
+// Sets the TX queue size
+func (obj *dataflowHostManagementEthNic) SetTxQueueLen(value int32) DataflowHostManagementEthNic {
+
+	obj.obj.TxQueueLen = &value
+	return obj
+}
+
+func (obj *dataflowHostManagementEthNic) validateObj(set_default bool) {
+	if set_default {
+		obj.setDefault()
+	}
+
+}
+
+func (obj *dataflowHostManagementEthNic) setDefault() {
 
 }
 
