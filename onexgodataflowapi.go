@@ -6704,11 +6704,9 @@ func (obj *dataflowWorkloadItem) setDefault() {
 
 // ***** DataflowFlowProfile *****
 type dataflowFlowProfile struct {
-	obj            *onexdataflowapi.DataflowFlowProfile
-	ethernetHolder DataflowFlowProfileEthernet
-	ipHolder       DataflowFlowProfileIp
-	tcpHolder      DataflowFlowProfileTcp
-	udpHolder      DataflowFlowProfileUdp
+	obj         *onexdataflowapi.DataflowFlowProfile
+	rdmaHolder  DataflowFlowProfileRdmaStack
+	tcpipHolder DataflowFlowProfileTcpIpStack
 }
 
 func NewDataflowFlowProfile() DataflowFlowProfile {
@@ -6856,10 +6854,8 @@ func (obj *dataflowFlowProfile) String() string {
 }
 
 func (obj *dataflowFlowProfile) setNil() {
-	obj.ethernetHolder = nil
-	obj.ipHolder = nil
-	obj.tcpHolder = nil
-	obj.udpHolder = nil
+	obj.rdmaHolder = nil
+	obj.tcpipHolder = nil
 }
 
 // DataflowFlowProfile is description is TBD
@@ -6893,50 +6889,34 @@ type DataflowFlowProfile interface {
 	DataSize() int32
 	// SetDataSize assigns int32 provided by user to DataflowFlowProfile
 	SetDataSize(value int32) DataflowFlowProfile
-	// L2ProtocolChoice returns DataflowFlowProfileL2ProtocolChoiceEnum, set in DataflowFlowProfile
-	L2ProtocolChoice() DataflowFlowProfileL2ProtocolChoiceEnum
-	// SetL2ProtocolChoice assigns DataflowFlowProfileL2ProtocolChoiceEnum provided by user to DataflowFlowProfile
-	SetL2ProtocolChoice(value DataflowFlowProfileL2ProtocolChoiceEnum) DataflowFlowProfile
-	// HasL2ProtocolChoice checks if L2ProtocolChoice has been set in DataflowFlowProfile
-	HasL2ProtocolChoice() bool
-	// Ethernet returns DataflowFlowProfileEthernet, set in DataflowFlowProfile.
-	// DataflowFlowProfileEthernet is description is TBD
-	Ethernet() DataflowFlowProfileEthernet
-	// SetEthernet assigns DataflowFlowProfileEthernet provided by user to DataflowFlowProfile.
-	// DataflowFlowProfileEthernet is description is TBD
-	SetEthernet(value DataflowFlowProfileEthernet) DataflowFlowProfile
-	// HasEthernet checks if Ethernet has been set in DataflowFlowProfile
-	HasEthernet() bool
-	// L4ProtocolChoice returns DataflowFlowProfileL4ProtocolChoiceEnum, set in DataflowFlowProfile
-	L4ProtocolChoice() DataflowFlowProfileL4ProtocolChoiceEnum
-	// SetL4ProtocolChoice assigns DataflowFlowProfileL4ProtocolChoiceEnum provided by user to DataflowFlowProfile
-	SetL4ProtocolChoice(value DataflowFlowProfileL4ProtocolChoiceEnum) DataflowFlowProfile
-	// HasL4ProtocolChoice checks if L4ProtocolChoice has been set in DataflowFlowProfile
-	HasL4ProtocolChoice() bool
-	// Ip returns DataflowFlowProfileIp, set in DataflowFlowProfile.
-	// DataflowFlowProfileIp is description is TBD
-	Ip() DataflowFlowProfileIp
-	// SetIp assigns DataflowFlowProfileIp provided by user to DataflowFlowProfile.
-	// DataflowFlowProfileIp is description is TBD
-	SetIp(value DataflowFlowProfileIp) DataflowFlowProfile
-	// HasIp checks if Ip has been set in DataflowFlowProfile
-	HasIp() bool
-	// Tcp returns DataflowFlowProfileTcp, set in DataflowFlowProfile.
-	// DataflowFlowProfileTcp is description is TBD
-	Tcp() DataflowFlowProfileTcp
-	// SetTcp assigns DataflowFlowProfileTcp provided by user to DataflowFlowProfile.
-	// DataflowFlowProfileTcp is description is TBD
-	SetTcp(value DataflowFlowProfileTcp) DataflowFlowProfile
-	// HasTcp checks if Tcp has been set in DataflowFlowProfile
-	HasTcp() bool
-	// Udp returns DataflowFlowProfileUdp, set in DataflowFlowProfile.
-	// DataflowFlowProfileUdp is description is TBD
-	Udp() DataflowFlowProfileUdp
-	// SetUdp assigns DataflowFlowProfileUdp provided by user to DataflowFlowProfile.
-	// DataflowFlowProfileUdp is description is TBD
-	SetUdp(value DataflowFlowProfileUdp) DataflowFlowProfile
-	// HasUdp checks if Udp has been set in DataflowFlowProfile
-	HasUdp() bool
+	// Mtu returns int32, set in DataflowFlowProfile.
+	Mtu() int32
+	// SetMtu assigns int32 provided by user to DataflowFlowProfile
+	SetMtu(value int32) DataflowFlowProfile
+	// HasMtu checks if Mtu has been set in DataflowFlowProfile
+	HasMtu() bool
+	// Choice returns DataflowFlowProfileChoiceEnum, set in DataflowFlowProfile
+	Choice() DataflowFlowProfileChoiceEnum
+	// SetChoice assigns DataflowFlowProfileChoiceEnum provided by user to DataflowFlowProfile
+	SetChoice(value DataflowFlowProfileChoiceEnum) DataflowFlowProfile
+	// HasChoice checks if Choice has been set in DataflowFlowProfile
+	HasChoice() bool
+	// Rdma returns DataflowFlowProfileRdmaStack, set in DataflowFlowProfile.
+	// DataflowFlowProfileRdmaStack is description is TBD
+	Rdma() DataflowFlowProfileRdmaStack
+	// SetRdma assigns DataflowFlowProfileRdmaStack provided by user to DataflowFlowProfile.
+	// DataflowFlowProfileRdmaStack is description is TBD
+	SetRdma(value DataflowFlowProfileRdmaStack) DataflowFlowProfile
+	// HasRdma checks if Rdma has been set in DataflowFlowProfile
+	HasRdma() bool
+	// Tcpip returns DataflowFlowProfileTcpIpStack, set in DataflowFlowProfile.
+	// DataflowFlowProfileTcpIpStack is description is TBD
+	Tcpip() DataflowFlowProfileTcpIpStack
+	// SetTcpip assigns DataflowFlowProfileTcpIpStack provided by user to DataflowFlowProfile.
+	// DataflowFlowProfileTcpIpStack is description is TBD
+	SetTcpip(value DataflowFlowProfileTcpIpStack) DataflowFlowProfile
+	// HasTcpip checks if Tcpip has been set in DataflowFlowProfile
+	HasTcpip() bool
 	setNil()
 }
 
@@ -6970,180 +6950,126 @@ func (obj *dataflowFlowProfile) SetDataSize(value int32) DataflowFlowProfile {
 	return obj
 }
 
-type DataflowFlowProfileL2ProtocolChoiceEnum string
+// Mtu returns a int32
+// Maximum Transmission Unit
+func (obj *dataflowFlowProfile) Mtu() int32 {
 
-//  Enum of L2ProtocolChoice on DataflowFlowProfile
-var DataflowFlowProfileL2ProtocolChoice = struct {
-	ETHERNET DataflowFlowProfileL2ProtocolChoiceEnum
+	return *obj.obj.Mtu
+
+}
+
+// Mtu returns a int32
+// Maximum Transmission Unit
+func (obj *dataflowFlowProfile) HasMtu() bool {
+	return obj.obj.Mtu != nil
+}
+
+// SetMtu sets the int32 value in the DataflowFlowProfile object
+// Maximum Transmission Unit
+func (obj *dataflowFlowProfile) SetMtu(value int32) DataflowFlowProfile {
+
+	obj.obj.Mtu = &value
+	return obj
+}
+
+type DataflowFlowProfileChoiceEnum string
+
+//  Enum of Choice on DataflowFlowProfile
+var DataflowFlowProfileChoice = struct {
+	RDMA  DataflowFlowProfileChoiceEnum
+	TCPIP DataflowFlowProfileChoiceEnum
 }{
-	ETHERNET: DataflowFlowProfileL2ProtocolChoiceEnum("ethernet"),
+	RDMA:  DataflowFlowProfileChoiceEnum("rdma"),
+	TCPIP: DataflowFlowProfileChoiceEnum("tcpip"),
 }
 
-func (obj *dataflowFlowProfile) L2ProtocolChoice() DataflowFlowProfileL2ProtocolChoiceEnum {
-	return DataflowFlowProfileL2ProtocolChoiceEnum(obj.obj.L2ProtocolChoice.Enum().String())
+func (obj *dataflowFlowProfile) Choice() DataflowFlowProfileChoiceEnum {
+	return DataflowFlowProfileChoiceEnum(obj.obj.Choice.Enum().String())
 }
 
-// L2ProtocolChoice returns a string
-// layer2 protocol selection
-func (obj *dataflowFlowProfile) HasL2ProtocolChoice() bool {
-	return obj.obj.L2ProtocolChoice != nil
+// Choice returns a string
+// RDMA traffic or traditional TCP/IP
+func (obj *dataflowFlowProfile) HasChoice() bool {
+	return obj.obj.Choice != nil
 }
 
-func (obj *dataflowFlowProfile) SetL2ProtocolChoice(value DataflowFlowProfileL2ProtocolChoiceEnum) DataflowFlowProfile {
-	intValue, ok := onexdataflowapi.DataflowFlowProfile_L2ProtocolChoice_Enum_value[string(value)]
+func (obj *dataflowFlowProfile) SetChoice(value DataflowFlowProfileChoiceEnum) DataflowFlowProfile {
+	intValue, ok := onexdataflowapi.DataflowFlowProfile_Choice_Enum_value[string(value)]
 	if !ok {
 		validation = append(validation, fmt.Sprintf(
-			"%s is not a valid choice on DataflowFlowProfileL2ProtocolChoiceEnum", string(value)))
+			"%s is not a valid choice on DataflowFlowProfileChoiceEnum", string(value)))
 		return obj
 	}
-	enumValue := onexdataflowapi.DataflowFlowProfile_L2ProtocolChoice_Enum(intValue)
-	obj.obj.L2ProtocolChoice = &enumValue
+	enumValue := onexdataflowapi.DataflowFlowProfile_Choice_Enum(intValue)
+	obj.obj.Choice = &enumValue
+	obj.obj.Tcpip = nil
+	obj.tcpipHolder = nil
+	obj.obj.Rdma = nil
+	obj.rdmaHolder = nil
+
+	if value == DataflowFlowProfileChoice.RDMA {
+		obj.obj.Rdma = NewDataflowFlowProfileRdmaStack().Msg()
+	}
+
+	if value == DataflowFlowProfileChoice.TCPIP {
+		obj.obj.Tcpip = NewDataflowFlowProfileTcpIpStack().Msg()
+	}
 
 	return obj
 }
 
-// Ethernet returns a DataflowFlowProfileEthernet
+// Rdma returns a DataflowFlowProfileRdmaStack
 // description is TBD
-func (obj *dataflowFlowProfile) Ethernet() DataflowFlowProfileEthernet {
-	if obj.obj.Ethernet == nil {
-		obj.obj.Ethernet = NewDataflowFlowProfileEthernet().Msg()
+func (obj *dataflowFlowProfile) Rdma() DataflowFlowProfileRdmaStack {
+	if obj.obj.Rdma == nil {
+		obj.SetChoice(DataflowFlowProfileChoice.RDMA)
 	}
-	if obj.ethernetHolder == nil {
-		obj.ethernetHolder = &dataflowFlowProfileEthernet{obj: obj.obj.Ethernet}
+	if obj.rdmaHolder == nil {
+		obj.rdmaHolder = &dataflowFlowProfileRdmaStack{obj: obj.obj.Rdma}
 	}
-	return obj.ethernetHolder
+	return obj.rdmaHolder
 }
 
-// Ethernet returns a DataflowFlowProfileEthernet
+// Rdma returns a DataflowFlowProfileRdmaStack
 // description is TBD
-func (obj *dataflowFlowProfile) HasEthernet() bool {
-	return obj.obj.Ethernet != nil
+func (obj *dataflowFlowProfile) HasRdma() bool {
+	return obj.obj.Rdma != nil
 }
 
-// SetEthernet sets the DataflowFlowProfileEthernet value in the DataflowFlowProfile object
+// SetRdma sets the DataflowFlowProfileRdmaStack value in the DataflowFlowProfile object
 // description is TBD
-func (obj *dataflowFlowProfile) SetEthernet(value DataflowFlowProfileEthernet) DataflowFlowProfile {
-
-	obj.ethernetHolder = nil
-	obj.obj.Ethernet = value.Msg()
+func (obj *dataflowFlowProfile) SetRdma(value DataflowFlowProfileRdmaStack) DataflowFlowProfile {
+	obj.SetChoice(DataflowFlowProfileChoice.RDMA)
+	obj.rdmaHolder = nil
+	obj.obj.Rdma = value.Msg()
 
 	return obj
 }
 
-type DataflowFlowProfileL4ProtocolChoiceEnum string
-
-//  Enum of L4ProtocolChoice on DataflowFlowProfile
-var DataflowFlowProfileL4ProtocolChoice = struct {
-	TCP DataflowFlowProfileL4ProtocolChoiceEnum
-	UDP DataflowFlowProfileL4ProtocolChoiceEnum
-}{
-	TCP: DataflowFlowProfileL4ProtocolChoiceEnum("tcp"),
-	UDP: DataflowFlowProfileL4ProtocolChoiceEnum("udp"),
-}
-
-func (obj *dataflowFlowProfile) L4ProtocolChoice() DataflowFlowProfileL4ProtocolChoiceEnum {
-	return DataflowFlowProfileL4ProtocolChoiceEnum(obj.obj.L4ProtocolChoice.Enum().String())
-}
-
-// L4ProtocolChoice returns a string
-// layer4 protocol selection
-func (obj *dataflowFlowProfile) HasL4ProtocolChoice() bool {
-	return obj.obj.L4ProtocolChoice != nil
-}
-
-func (obj *dataflowFlowProfile) SetL4ProtocolChoice(value DataflowFlowProfileL4ProtocolChoiceEnum) DataflowFlowProfile {
-	intValue, ok := onexdataflowapi.DataflowFlowProfile_L4ProtocolChoice_Enum_value[string(value)]
-	if !ok {
-		validation = append(validation, fmt.Sprintf(
-			"%s is not a valid choice on DataflowFlowProfileL4ProtocolChoiceEnum", string(value)))
-		return obj
+// Tcpip returns a DataflowFlowProfileTcpIpStack
+// description is TBD
+func (obj *dataflowFlowProfile) Tcpip() DataflowFlowProfileTcpIpStack {
+	if obj.obj.Tcpip == nil {
+		obj.SetChoice(DataflowFlowProfileChoice.TCPIP)
 	}
-	enumValue := onexdataflowapi.DataflowFlowProfile_L4ProtocolChoice_Enum(intValue)
-	obj.obj.L4ProtocolChoice = &enumValue
-
-	return obj
-}
-
-// Ip returns a DataflowFlowProfileIp
-// description is TBD
-func (obj *dataflowFlowProfile) Ip() DataflowFlowProfileIp {
-	if obj.obj.Ip == nil {
-		obj.obj.Ip = NewDataflowFlowProfileIp().Msg()
+	if obj.tcpipHolder == nil {
+		obj.tcpipHolder = &dataflowFlowProfileTcpIpStack{obj: obj.obj.Tcpip}
 	}
-	if obj.ipHolder == nil {
-		obj.ipHolder = &dataflowFlowProfileIp{obj: obj.obj.Ip}
-	}
-	return obj.ipHolder
+	return obj.tcpipHolder
 }
 
-// Ip returns a DataflowFlowProfileIp
+// Tcpip returns a DataflowFlowProfileTcpIpStack
 // description is TBD
-func (obj *dataflowFlowProfile) HasIp() bool {
-	return obj.obj.Ip != nil
+func (obj *dataflowFlowProfile) HasTcpip() bool {
+	return obj.obj.Tcpip != nil
 }
 
-// SetIp sets the DataflowFlowProfileIp value in the DataflowFlowProfile object
+// SetTcpip sets the DataflowFlowProfileTcpIpStack value in the DataflowFlowProfile object
 // description is TBD
-func (obj *dataflowFlowProfile) SetIp(value DataflowFlowProfileIp) DataflowFlowProfile {
-
-	obj.ipHolder = nil
-	obj.obj.Ip = value.Msg()
-
-	return obj
-}
-
-// Tcp returns a DataflowFlowProfileTcp
-// description is TBD
-func (obj *dataflowFlowProfile) Tcp() DataflowFlowProfileTcp {
-	if obj.obj.Tcp == nil {
-		obj.obj.Tcp = NewDataflowFlowProfileTcp().Msg()
-	}
-	if obj.tcpHolder == nil {
-		obj.tcpHolder = &dataflowFlowProfileTcp{obj: obj.obj.Tcp}
-	}
-	return obj.tcpHolder
-}
-
-// Tcp returns a DataflowFlowProfileTcp
-// description is TBD
-func (obj *dataflowFlowProfile) HasTcp() bool {
-	return obj.obj.Tcp != nil
-}
-
-// SetTcp sets the DataflowFlowProfileTcp value in the DataflowFlowProfile object
-// description is TBD
-func (obj *dataflowFlowProfile) SetTcp(value DataflowFlowProfileTcp) DataflowFlowProfile {
-
-	obj.tcpHolder = nil
-	obj.obj.Tcp = value.Msg()
-
-	return obj
-}
-
-// Udp returns a DataflowFlowProfileUdp
-// description is TBD
-func (obj *dataflowFlowProfile) Udp() DataflowFlowProfileUdp {
-	if obj.obj.Udp == nil {
-		obj.obj.Udp = NewDataflowFlowProfileUdp().Msg()
-	}
-	if obj.udpHolder == nil {
-		obj.udpHolder = &dataflowFlowProfileUdp{obj: obj.obj.Udp}
-	}
-	return obj.udpHolder
-}
-
-// Udp returns a DataflowFlowProfileUdp
-// description is TBD
-func (obj *dataflowFlowProfile) HasUdp() bool {
-	return obj.obj.Udp != nil
-}
-
-// SetUdp sets the DataflowFlowProfileUdp value in the DataflowFlowProfile object
-// description is TBD
-func (obj *dataflowFlowProfile) SetUdp(value DataflowFlowProfileUdp) DataflowFlowProfile {
-
-	obj.udpHolder = nil
-	obj.obj.Udp = value.Msg()
+func (obj *dataflowFlowProfile) SetTcpip(value DataflowFlowProfileTcpIpStack) DataflowFlowProfile {
+	obj.SetChoice(DataflowFlowProfileChoice.TCPIP)
+	obj.tcpipHolder = nil
+	obj.obj.Tcpip = value.Msg()
 
 	return obj
 }
@@ -7158,25 +7084,20 @@ func (obj *dataflowFlowProfile) validateObj(set_default bool) {
 		validation = append(validation, "Name is required field on interface DataflowFlowProfile")
 	}
 
-	if obj.obj.Ethernet != nil {
-		obj.Ethernet().validateObj(set_default)
+	if obj.obj.Rdma != nil {
+		obj.Rdma().validateObj(set_default)
 	}
 
-	if obj.obj.Ip != nil {
-		obj.Ip().validateObj(set_default)
-	}
-
-	if obj.obj.Tcp != nil {
-		obj.Tcp().validateObj(set_default)
-	}
-
-	if obj.obj.Udp != nil {
-		obj.Udp().validateObj(set_default)
+	if obj.obj.Tcpip != nil {
+		obj.Tcpip().validateObj(set_default)
 	}
 
 }
 
 func (obj *dataflowFlowProfile) setDefault() {
+	if obj.obj.Mtu == nil {
+		obj.SetMtu(1500)
+	}
 
 }
 
@@ -9878,459 +9799,29 @@ func (obj *dataflowAlltoallWorkload) setDefault() {
 
 }
 
-// ***** DataflowFlowProfileEthernet *****
-type dataflowFlowProfileEthernet struct {
-	obj *onexdataflowapi.DataflowFlowProfileEthernet
+// ***** DataflowFlowProfileRdmaStack *****
+type dataflowFlowProfileRdmaStack struct {
+	obj          *onexdataflowapi.DataflowFlowProfileRdmaStack
+	rocev2Holder DataflowFlowProfileRdmaStackRoceV2
 }
 
-func NewDataflowFlowProfileEthernet() DataflowFlowProfileEthernet {
-	obj := dataflowFlowProfileEthernet{obj: &onexdataflowapi.DataflowFlowProfileEthernet{}}
+func NewDataflowFlowProfileRdmaStack() DataflowFlowProfileRdmaStack {
+	obj := dataflowFlowProfileRdmaStack{obj: &onexdataflowapi.DataflowFlowProfileRdmaStack{}}
 	obj.setDefault()
 	return &obj
 }
 
-func (obj *dataflowFlowProfileEthernet) Msg() *onexdataflowapi.DataflowFlowProfileEthernet {
+func (obj *dataflowFlowProfileRdmaStack) Msg() *onexdataflowapi.DataflowFlowProfileRdmaStack {
 	return obj.obj
 }
 
-func (obj *dataflowFlowProfileEthernet) SetMsg(msg *onexdataflowapi.DataflowFlowProfileEthernet) DataflowFlowProfileEthernet {
-
-	proto.Merge(obj.obj, msg)
-	return obj
-}
-
-func (obj *dataflowFlowProfileEthernet) ToPbText() (string, error) {
-	vErr := obj.Validate()
-	if vErr != nil {
-		return "", vErr
-	}
-	protoMarshal, err := proto.Marshal(obj.Msg())
-	if err != nil {
-		return "", err
-	}
-	return string(protoMarshal), nil
-}
-
-func (obj *dataflowFlowProfileEthernet) FromPbText(value string) error {
-	retObj := proto.Unmarshal([]byte(value), obj.Msg())
-	if retObj != nil {
-		return retObj
-	}
-
-	vErr := obj.validateFromText()
-	if vErr != nil {
-		return vErr
-	}
-	return retObj
-}
-
-func (obj *dataflowFlowProfileEthernet) ToYaml() (string, error) {
-	vErr := obj.Validate()
-	if vErr != nil {
-		return "", vErr
-	}
-	opts := protojson.MarshalOptions{
-		UseProtoNames:   true,
-		AllowPartial:    true,
-		EmitUnpopulated: false,
-	}
-	data, err := opts.Marshal(obj.Msg())
-	if err != nil {
-		return "", err
-	}
-	data, err = yaml.JSONToYAML(data)
-	if err != nil {
-		return "", err
-	}
-	return string(data), nil
-}
-
-func (obj *dataflowFlowProfileEthernet) FromYaml(value string) error {
-	if value == "" {
-		value = "{}"
-	}
-	data, err := yaml.YAMLToJSON([]byte(value))
-	if err != nil {
-		return err
-	}
-	opts := protojson.UnmarshalOptions{
-		AllowPartial:   true,
-		DiscardUnknown: false,
-	}
-	uError := opts.Unmarshal([]byte(data), obj.Msg())
-	if uError != nil {
-		return fmt.Errorf("unmarshal error %s", strings.Replace(
-			uError.Error(), "\u00a0", " ", -1)[7:])
-	}
-
-	vErr := obj.validateFromText()
-	if vErr != nil {
-		return vErr
-	}
-	return nil
-}
-
-func (obj *dataflowFlowProfileEthernet) ToJson() (string, error) {
-	vErr := obj.Validate()
-	if vErr != nil {
-		return "", vErr
-	}
-	opts := protojson.MarshalOptions{
-		UseProtoNames:   true,
-		AllowPartial:    true,
-		EmitUnpopulated: false,
-		Indent:          "  ",
-	}
-	data, err := opts.Marshal(obj.Msg())
-	if err != nil {
-		return "", err
-	}
-	return string(data), nil
-}
-
-func (obj *dataflowFlowProfileEthernet) FromJson(value string) error {
-	opts := protojson.UnmarshalOptions{
-		AllowPartial:   true,
-		DiscardUnknown: false,
-	}
-	if value == "" {
-		value = "{}"
-	}
-	uError := opts.Unmarshal([]byte(value), obj.Msg())
-	if uError != nil {
-		return fmt.Errorf("unmarshal error %s", strings.Replace(
-			uError.Error(), "\u00a0", " ", -1)[7:])
-	}
-
-	err := obj.validateFromText()
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (obj *dataflowFlowProfileEthernet) validateFromText() error {
-	obj.validateObj(true)
-	return validationResult()
-}
-
-func (obj *dataflowFlowProfileEthernet) Validate() error {
-	obj.validateObj(false)
-	return validationResult()
-}
-
-func (obj *dataflowFlowProfileEthernet) String() string {
-	str, err := obj.ToYaml()
-	if err != nil {
-		return err.Error()
-	}
-	return str
-}
-
-// DataflowFlowProfileEthernet is description is TBD
-type DataflowFlowProfileEthernet interface {
-	Msg() *onexdataflowapi.DataflowFlowProfileEthernet
-	SetMsg(*onexdataflowapi.DataflowFlowProfileEthernet) DataflowFlowProfileEthernet
-	// ToPbText marshals DataflowFlowProfileEthernet to protobuf text
-	ToPbText() (string, error)
-	// ToYaml marshals DataflowFlowProfileEthernet to YAML text
-	ToYaml() (string, error)
-	// ToJson marshals DataflowFlowProfileEthernet to JSON text
-	ToJson() (string, error)
-	// FromPbText unmarshals DataflowFlowProfileEthernet from protobuf text
-	FromPbText(value string) error
-	// FromYaml unmarshals DataflowFlowProfileEthernet from YAML text
-	FromYaml(value string) error
-	// FromJson unmarshals DataflowFlowProfileEthernet from JSON text
-	FromJson(value string) error
-	// Validate validates DataflowFlowProfileEthernet
-	Validate() error
-	// A stringer function
-	String() string
-	validateFromText() error
-	validateObj(set_default bool)
-	setDefault()
-	// Mtu returns int32, set in DataflowFlowProfileEthernet.
-	Mtu() int32
-	// SetMtu assigns int32 provided by user to DataflowFlowProfileEthernet
-	SetMtu(value int32) DataflowFlowProfileEthernet
-	// HasMtu checks if Mtu has been set in DataflowFlowProfileEthernet
-	HasMtu() bool
-}
-
-// Mtu returns a int32
-// Maximum Transmission Unit
-func (obj *dataflowFlowProfileEthernet) Mtu() int32 {
-
-	return *obj.obj.Mtu
-
-}
-
-// Mtu returns a int32
-// Maximum Transmission Unit
-func (obj *dataflowFlowProfileEthernet) HasMtu() bool {
-	return obj.obj.Mtu != nil
-}
-
-// SetMtu sets the int32 value in the DataflowFlowProfileEthernet object
-// Maximum Transmission Unit
-func (obj *dataflowFlowProfileEthernet) SetMtu(value int32) DataflowFlowProfileEthernet {
-
-	obj.obj.Mtu = &value
-	return obj
-}
-
-func (obj *dataflowFlowProfileEthernet) validateObj(set_default bool) {
-	if set_default {
-		obj.setDefault()
-	}
-
-}
-
-func (obj *dataflowFlowProfileEthernet) setDefault() {
-	if obj.obj.Mtu == nil {
-		obj.SetMtu(1500)
-	}
-
-}
-
-// ***** DataflowFlowProfileIp *****
-type dataflowFlowProfileIp struct {
-	obj *onexdataflowapi.DataflowFlowProfileIp
-}
-
-func NewDataflowFlowProfileIp() DataflowFlowProfileIp {
-	obj := dataflowFlowProfileIp{obj: &onexdataflowapi.DataflowFlowProfileIp{}}
-	obj.setDefault()
-	return &obj
-}
-
-func (obj *dataflowFlowProfileIp) Msg() *onexdataflowapi.DataflowFlowProfileIp {
-	return obj.obj
-}
-
-func (obj *dataflowFlowProfileIp) SetMsg(msg *onexdataflowapi.DataflowFlowProfileIp) DataflowFlowProfileIp {
-
-	proto.Merge(obj.obj, msg)
-	return obj
-}
-
-func (obj *dataflowFlowProfileIp) ToPbText() (string, error) {
-	vErr := obj.Validate()
-	if vErr != nil {
-		return "", vErr
-	}
-	protoMarshal, err := proto.Marshal(obj.Msg())
-	if err != nil {
-		return "", err
-	}
-	return string(protoMarshal), nil
-}
-
-func (obj *dataflowFlowProfileIp) FromPbText(value string) error {
-	retObj := proto.Unmarshal([]byte(value), obj.Msg())
-	if retObj != nil {
-		return retObj
-	}
-
-	vErr := obj.validateFromText()
-	if vErr != nil {
-		return vErr
-	}
-	return retObj
-}
-
-func (obj *dataflowFlowProfileIp) ToYaml() (string, error) {
-	vErr := obj.Validate()
-	if vErr != nil {
-		return "", vErr
-	}
-	opts := protojson.MarshalOptions{
-		UseProtoNames:   true,
-		AllowPartial:    true,
-		EmitUnpopulated: false,
-	}
-	data, err := opts.Marshal(obj.Msg())
-	if err != nil {
-		return "", err
-	}
-	data, err = yaml.JSONToYAML(data)
-	if err != nil {
-		return "", err
-	}
-	return string(data), nil
-}
-
-func (obj *dataflowFlowProfileIp) FromYaml(value string) error {
-	if value == "" {
-		value = "{}"
-	}
-	data, err := yaml.YAMLToJSON([]byte(value))
-	if err != nil {
-		return err
-	}
-	opts := protojson.UnmarshalOptions{
-		AllowPartial:   true,
-		DiscardUnknown: false,
-	}
-	uError := opts.Unmarshal([]byte(data), obj.Msg())
-	if uError != nil {
-		return fmt.Errorf("unmarshal error %s", strings.Replace(
-			uError.Error(), "\u00a0", " ", -1)[7:])
-	}
-
-	vErr := obj.validateFromText()
-	if vErr != nil {
-		return vErr
-	}
-	return nil
-}
-
-func (obj *dataflowFlowProfileIp) ToJson() (string, error) {
-	vErr := obj.Validate()
-	if vErr != nil {
-		return "", vErr
-	}
-	opts := protojson.MarshalOptions{
-		UseProtoNames:   true,
-		AllowPartial:    true,
-		EmitUnpopulated: false,
-		Indent:          "  ",
-	}
-	data, err := opts.Marshal(obj.Msg())
-	if err != nil {
-		return "", err
-	}
-	return string(data), nil
-}
-
-func (obj *dataflowFlowProfileIp) FromJson(value string) error {
-	opts := protojson.UnmarshalOptions{
-		AllowPartial:   true,
-		DiscardUnknown: false,
-	}
-	if value == "" {
-		value = "{}"
-	}
-	uError := opts.Unmarshal([]byte(value), obj.Msg())
-	if uError != nil {
-		return fmt.Errorf("unmarshal error %s", strings.Replace(
-			uError.Error(), "\u00a0", " ", -1)[7:])
-	}
-
-	err := obj.validateFromText()
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (obj *dataflowFlowProfileIp) validateFromText() error {
-	obj.validateObj(true)
-	return validationResult()
-}
-
-func (obj *dataflowFlowProfileIp) Validate() error {
-	obj.validateObj(false)
-	return validationResult()
-}
-
-func (obj *dataflowFlowProfileIp) String() string {
-	str, err := obj.ToYaml()
-	if err != nil {
-		return err.Error()
-	}
-	return str
-}
-
-// DataflowFlowProfileIp is description is TBD
-type DataflowFlowProfileIp interface {
-	Msg() *onexdataflowapi.DataflowFlowProfileIp
-	SetMsg(*onexdataflowapi.DataflowFlowProfileIp) DataflowFlowProfileIp
-	// ToPbText marshals DataflowFlowProfileIp to protobuf text
-	ToPbText() (string, error)
-	// ToYaml marshals DataflowFlowProfileIp to YAML text
-	ToYaml() (string, error)
-	// ToJson marshals DataflowFlowProfileIp to JSON text
-	ToJson() (string, error)
-	// FromPbText unmarshals DataflowFlowProfileIp from protobuf text
-	FromPbText(value string) error
-	// FromYaml unmarshals DataflowFlowProfileIp from YAML text
-	FromYaml(value string) error
-	// FromJson unmarshals DataflowFlowProfileIp from JSON text
-	FromJson(value string) error
-	// Validate validates DataflowFlowProfileIp
-	Validate() error
-	// A stringer function
-	String() string
-	validateFromText() error
-	validateObj(set_default bool)
-	setDefault()
-	// Dscp returns int32, set in DataflowFlowProfileIp.
-	Dscp() int32
-	// SetDscp assigns int32 provided by user to DataflowFlowProfileIp
-	SetDscp(value int32) DataflowFlowProfileIp
-	// HasDscp checks if Dscp has been set in DataflowFlowProfileIp
-	HasDscp() bool
-}
-
-// Dscp returns a int32
-// differentiated services code point
-func (obj *dataflowFlowProfileIp) Dscp() int32 {
-
-	return *obj.obj.Dscp
-
-}
-
-// Dscp returns a int32
-// differentiated services code point
-func (obj *dataflowFlowProfileIp) HasDscp() bool {
-	return obj.obj.Dscp != nil
-}
-
-// SetDscp sets the int32 value in the DataflowFlowProfileIp object
-// differentiated services code point
-func (obj *dataflowFlowProfileIp) SetDscp(value int32) DataflowFlowProfileIp {
-
-	obj.obj.Dscp = &value
-	return obj
-}
-
-func (obj *dataflowFlowProfileIp) validateObj(set_default bool) {
-	if set_default {
-		obj.setDefault()
-	}
-
-}
-
-func (obj *dataflowFlowProfileIp) setDefault() {
-
-}
-
-// ***** DataflowFlowProfileTcp *****
-type dataflowFlowProfileTcp struct {
-	obj                   *onexdataflowapi.DataflowFlowProfileTcp
-	destinationPortHolder L4PortRange
-	sourcePortHolder      L4PortRange
-}
-
-func NewDataflowFlowProfileTcp() DataflowFlowProfileTcp {
-	obj := dataflowFlowProfileTcp{obj: &onexdataflowapi.DataflowFlowProfileTcp{}}
-	obj.setDefault()
-	return &obj
-}
-
-func (obj *dataflowFlowProfileTcp) Msg() *onexdataflowapi.DataflowFlowProfileTcp {
-	return obj.obj
-}
-
-func (obj *dataflowFlowProfileTcp) SetMsg(msg *onexdataflowapi.DataflowFlowProfileTcp) DataflowFlowProfileTcp {
+func (obj *dataflowFlowProfileRdmaStack) SetMsg(msg *onexdataflowapi.DataflowFlowProfileRdmaStack) DataflowFlowProfileRdmaStack {
 	obj.setNil()
 	proto.Merge(obj.obj, msg)
 	return obj
 }
 
-func (obj *dataflowFlowProfileTcp) ToPbText() (string, error) {
+func (obj *dataflowFlowProfileRdmaStack) ToPbText() (string, error) {
 	vErr := obj.Validate()
 	if vErr != nil {
 		return "", vErr
@@ -10342,7 +9833,7 @@ func (obj *dataflowFlowProfileTcp) ToPbText() (string, error) {
 	return string(protoMarshal), nil
 }
 
-func (obj *dataflowFlowProfileTcp) FromPbText(value string) error {
+func (obj *dataflowFlowProfileRdmaStack) FromPbText(value string) error {
 	retObj := proto.Unmarshal([]byte(value), obj.Msg())
 	if retObj != nil {
 		return retObj
@@ -10355,7 +9846,7 @@ func (obj *dataflowFlowProfileTcp) FromPbText(value string) error {
 	return retObj
 }
 
-func (obj *dataflowFlowProfileTcp) ToYaml() (string, error) {
+func (obj *dataflowFlowProfileRdmaStack) ToYaml() (string, error) {
 	vErr := obj.Validate()
 	if vErr != nil {
 		return "", vErr
@@ -10376,7 +9867,7 @@ func (obj *dataflowFlowProfileTcp) ToYaml() (string, error) {
 	return string(data), nil
 }
 
-func (obj *dataflowFlowProfileTcp) FromYaml(value string) error {
+func (obj *dataflowFlowProfileRdmaStack) FromYaml(value string) error {
 	if value == "" {
 		value = "{}"
 	}
@@ -10401,7 +9892,7 @@ func (obj *dataflowFlowProfileTcp) FromYaml(value string) error {
 	return nil
 }
 
-func (obj *dataflowFlowProfileTcp) ToJson() (string, error) {
+func (obj *dataflowFlowProfileRdmaStack) ToJson() (string, error) {
 	vErr := obj.Validate()
 	if vErr != nil {
 		return "", vErr
@@ -10419,7 +9910,7 @@ func (obj *dataflowFlowProfileTcp) ToJson() (string, error) {
 	return string(data), nil
 }
 
-func (obj *dataflowFlowProfileTcp) FromJson(value string) error {
+func (obj *dataflowFlowProfileRdmaStack) FromJson(value string) error {
 	opts := protojson.UnmarshalOptions{
 		AllowPartial:   true,
 		DiscardUnknown: false,
@@ -10440,17 +9931,17 @@ func (obj *dataflowFlowProfileTcp) FromJson(value string) error {
 	return nil
 }
 
-func (obj *dataflowFlowProfileTcp) validateFromText() error {
+func (obj *dataflowFlowProfileRdmaStack) validateFromText() error {
 	obj.validateObj(true)
 	return validationResult()
 }
 
-func (obj *dataflowFlowProfileTcp) Validate() error {
+func (obj *dataflowFlowProfileRdmaStack) Validate() error {
 	obj.validateObj(false)
 	return validationResult()
 }
 
-func (obj *dataflowFlowProfileTcp) String() string {
+func (obj *dataflowFlowProfileRdmaStack) String() string {
 	str, err := obj.ToYaml()
 	if err != nil {
 		return err.Error()
@@ -10458,457 +9949,156 @@ func (obj *dataflowFlowProfileTcp) String() string {
 	return str
 }
 
-func (obj *dataflowFlowProfileTcp) setNil() {
-	obj.destinationPortHolder = nil
-	obj.sourcePortHolder = nil
+func (obj *dataflowFlowProfileRdmaStack) setNil() {
+	obj.rocev2Holder = nil
 }
 
-// DataflowFlowProfileTcp is description is TBD
-type DataflowFlowProfileTcp interface {
-	Msg() *onexdataflowapi.DataflowFlowProfileTcp
-	SetMsg(*onexdataflowapi.DataflowFlowProfileTcp) DataflowFlowProfileTcp
-	// ToPbText marshals DataflowFlowProfileTcp to protobuf text
+// DataflowFlowProfileRdmaStack is description is TBD
+type DataflowFlowProfileRdmaStack interface {
+	Msg() *onexdataflowapi.DataflowFlowProfileRdmaStack
+	SetMsg(*onexdataflowapi.DataflowFlowProfileRdmaStack) DataflowFlowProfileRdmaStack
+	// ToPbText marshals DataflowFlowProfileRdmaStack to protobuf text
 	ToPbText() (string, error)
-	// ToYaml marshals DataflowFlowProfileTcp to YAML text
+	// ToYaml marshals DataflowFlowProfileRdmaStack to YAML text
 	ToYaml() (string, error)
-	// ToJson marshals DataflowFlowProfileTcp to JSON text
+	// ToJson marshals DataflowFlowProfileRdmaStack to JSON text
 	ToJson() (string, error)
-	// FromPbText unmarshals DataflowFlowProfileTcp from protobuf text
+	// FromPbText unmarshals DataflowFlowProfileRdmaStack from protobuf text
 	FromPbText(value string) error
-	// FromYaml unmarshals DataflowFlowProfileTcp from YAML text
+	// FromYaml unmarshals DataflowFlowProfileRdmaStack from YAML text
 	FromYaml(value string) error
-	// FromJson unmarshals DataflowFlowProfileTcp from JSON text
+	// FromJson unmarshals DataflowFlowProfileRdmaStack from JSON text
 	FromJson(value string) error
-	// Validate validates DataflowFlowProfileTcp
+	// Validate validates DataflowFlowProfileRdmaStack
 	Validate() error
 	// A stringer function
 	String() string
 	validateFromText() error
 	validateObj(set_default bool)
 	setDefault()
-	// CongestionAlgorithm returns DataflowFlowProfileTcpCongestionAlgorithmEnum, set in DataflowFlowProfileTcp
-	CongestionAlgorithm() DataflowFlowProfileTcpCongestionAlgorithmEnum
-	// SetCongestionAlgorithm assigns DataflowFlowProfileTcpCongestionAlgorithmEnum provided by user to DataflowFlowProfileTcp
-	SetCongestionAlgorithm(value DataflowFlowProfileTcpCongestionAlgorithmEnum) DataflowFlowProfileTcp
-	// HasCongestionAlgorithm checks if CongestionAlgorithm has been set in DataflowFlowProfileTcp
-	HasCongestionAlgorithm() bool
-	// Initcwnd returns int32, set in DataflowFlowProfileTcp.
-	Initcwnd() int32
-	// SetInitcwnd assigns int32 provided by user to DataflowFlowProfileTcp
-	SetInitcwnd(value int32) DataflowFlowProfileTcp
-	// HasInitcwnd checks if Initcwnd has been set in DataflowFlowProfileTcp
-	HasInitcwnd() bool
-	// SendBuf returns int32, set in DataflowFlowProfileTcp.
-	SendBuf() int32
-	// SetSendBuf assigns int32 provided by user to DataflowFlowProfileTcp
-	SetSendBuf(value int32) DataflowFlowProfileTcp
-	// HasSendBuf checks if SendBuf has been set in DataflowFlowProfileTcp
-	HasSendBuf() bool
-	// ReceiveBuf returns int32, set in DataflowFlowProfileTcp.
-	ReceiveBuf() int32
-	// SetReceiveBuf assigns int32 provided by user to DataflowFlowProfileTcp
-	SetReceiveBuf(value int32) DataflowFlowProfileTcp
-	// HasReceiveBuf checks if ReceiveBuf has been set in DataflowFlowProfileTcp
-	HasReceiveBuf() bool
-	// DelayedAck returns int32, set in DataflowFlowProfileTcp.
-	DelayedAck() int32
-	// SetDelayedAck assigns int32 provided by user to DataflowFlowProfileTcp
-	SetDelayedAck(value int32) DataflowFlowProfileTcp
-	// HasDelayedAck checks if DelayedAck has been set in DataflowFlowProfileTcp
-	HasDelayedAck() bool
-	// SelectiveAck returns bool, set in DataflowFlowProfileTcp.
-	SelectiveAck() bool
-	// SetSelectiveAck assigns bool provided by user to DataflowFlowProfileTcp
-	SetSelectiveAck(value bool) DataflowFlowProfileTcp
-	// HasSelectiveAck checks if SelectiveAck has been set in DataflowFlowProfileTcp
-	HasSelectiveAck() bool
-	// MinRto returns int32, set in DataflowFlowProfileTcp.
-	MinRto() int32
-	// SetMinRto assigns int32 provided by user to DataflowFlowProfileTcp
-	SetMinRto(value int32) DataflowFlowProfileTcp
-	// HasMinRto checks if MinRto has been set in DataflowFlowProfileTcp
-	HasMinRto() bool
-	// Mss returns int32, set in DataflowFlowProfileTcp.
-	Mss() int32
-	// SetMss assigns int32 provided by user to DataflowFlowProfileTcp
-	SetMss(value int32) DataflowFlowProfileTcp
-	// HasMss checks if Mss has been set in DataflowFlowProfileTcp
-	HasMss() bool
-	// Ecn returns bool, set in DataflowFlowProfileTcp.
-	Ecn() bool
-	// SetEcn assigns bool provided by user to DataflowFlowProfileTcp
-	SetEcn(value bool) DataflowFlowProfileTcp
-	// HasEcn checks if Ecn has been set in DataflowFlowProfileTcp
-	HasEcn() bool
-	// EnableTimestamp returns bool, set in DataflowFlowProfileTcp.
-	EnableTimestamp() bool
-	// SetEnableTimestamp assigns bool provided by user to DataflowFlowProfileTcp
-	SetEnableTimestamp(value bool) DataflowFlowProfileTcp
-	// HasEnableTimestamp checks if EnableTimestamp has been set in DataflowFlowProfileTcp
-	HasEnableTimestamp() bool
-	// DestinationPort returns L4PortRange, set in DataflowFlowProfileTcp.
-	// L4PortRange is layer4 protocol source or destination port values
-	DestinationPort() L4PortRange
-	// SetDestinationPort assigns L4PortRange provided by user to DataflowFlowProfileTcp.
-	// L4PortRange is layer4 protocol source or destination port values
-	SetDestinationPort(value L4PortRange) DataflowFlowProfileTcp
-	// HasDestinationPort checks if DestinationPort has been set in DataflowFlowProfileTcp
-	HasDestinationPort() bool
-	// SourcePort returns L4PortRange, set in DataflowFlowProfileTcp.
-	// L4PortRange is layer4 protocol source or destination port values
-	SourcePort() L4PortRange
-	// SetSourcePort assigns L4PortRange provided by user to DataflowFlowProfileTcp.
-	// L4PortRange is layer4 protocol source or destination port values
-	SetSourcePort(value L4PortRange) DataflowFlowProfileTcp
-	// HasSourcePort checks if SourcePort has been set in DataflowFlowProfileTcp
-	HasSourcePort() bool
+	// Choice returns DataflowFlowProfileRdmaStackChoiceEnum, set in DataflowFlowProfileRdmaStack
+	Choice() DataflowFlowProfileRdmaStackChoiceEnum
+	// SetChoice assigns DataflowFlowProfileRdmaStackChoiceEnum provided by user to DataflowFlowProfileRdmaStack
+	SetChoice(value DataflowFlowProfileRdmaStackChoiceEnum) DataflowFlowProfileRdmaStack
+	// HasChoice checks if Choice has been set in DataflowFlowProfileRdmaStack
+	HasChoice() bool
+	// Rocev2 returns DataflowFlowProfileRdmaStackRoceV2, set in DataflowFlowProfileRdmaStack.
+	// DataflowFlowProfileRdmaStackRoceV2 is description is TBD
+	Rocev2() DataflowFlowProfileRdmaStackRoceV2
+	// SetRocev2 assigns DataflowFlowProfileRdmaStackRoceV2 provided by user to DataflowFlowProfileRdmaStack.
+	// DataflowFlowProfileRdmaStackRoceV2 is description is TBD
+	SetRocev2(value DataflowFlowProfileRdmaStackRoceV2) DataflowFlowProfileRdmaStack
+	// HasRocev2 checks if Rocev2 has been set in DataflowFlowProfileRdmaStack
+	HasRocev2() bool
 	setNil()
 }
 
-type DataflowFlowProfileTcpCongestionAlgorithmEnum string
+type DataflowFlowProfileRdmaStackChoiceEnum string
 
-//  Enum of CongestionAlgorithm on DataflowFlowProfileTcp
-var DataflowFlowProfileTcpCongestionAlgorithm = struct {
-	BBR   DataflowFlowProfileTcpCongestionAlgorithmEnum
-	DCTCP DataflowFlowProfileTcpCongestionAlgorithmEnum
-	CUBIC DataflowFlowProfileTcpCongestionAlgorithmEnum
-	RENO  DataflowFlowProfileTcpCongestionAlgorithmEnum
+//  Enum of Choice on DataflowFlowProfileRdmaStack
+var DataflowFlowProfileRdmaStackChoice = struct {
+	ROCEV2 DataflowFlowProfileRdmaStackChoiceEnum
 }{
-	BBR:   DataflowFlowProfileTcpCongestionAlgorithmEnum("bbr"),
-	DCTCP: DataflowFlowProfileTcpCongestionAlgorithmEnum("dctcp"),
-	CUBIC: DataflowFlowProfileTcpCongestionAlgorithmEnum("cubic"),
-	RENO:  DataflowFlowProfileTcpCongestionAlgorithmEnum("reno"),
+	ROCEV2: DataflowFlowProfileRdmaStackChoiceEnum("rocev2"),
 }
 
-func (obj *dataflowFlowProfileTcp) CongestionAlgorithm() DataflowFlowProfileTcpCongestionAlgorithmEnum {
-	return DataflowFlowProfileTcpCongestionAlgorithmEnum(obj.obj.CongestionAlgorithm.Enum().String())
+func (obj *dataflowFlowProfileRdmaStack) Choice() DataflowFlowProfileRdmaStackChoiceEnum {
+	return DataflowFlowProfileRdmaStackChoiceEnum(obj.obj.Choice.Enum().String())
 }
 
-// CongestionAlgorithm returns a string
-// The TCP congestion algorithm:
-// bbr - Bottleneck Bandwidth and Round-trip propagation time
-// dctcp - Data center TCP
-// cubic - cubic window increase function
-// reno - TCP New Reno
-func (obj *dataflowFlowProfileTcp) HasCongestionAlgorithm() bool {
-	return obj.obj.CongestionAlgorithm != nil
+// Choice returns a string
+// description is TBD
+func (obj *dataflowFlowProfileRdmaStack) HasChoice() bool {
+	return obj.obj.Choice != nil
 }
 
-func (obj *dataflowFlowProfileTcp) SetCongestionAlgorithm(value DataflowFlowProfileTcpCongestionAlgorithmEnum) DataflowFlowProfileTcp {
-	intValue, ok := onexdataflowapi.DataflowFlowProfileTcp_CongestionAlgorithm_Enum_value[string(value)]
+func (obj *dataflowFlowProfileRdmaStack) SetChoice(value DataflowFlowProfileRdmaStackChoiceEnum) DataflowFlowProfileRdmaStack {
+	intValue, ok := onexdataflowapi.DataflowFlowProfileRdmaStack_Choice_Enum_value[string(value)]
 	if !ok {
 		validation = append(validation, fmt.Sprintf(
-			"%s is not a valid choice on DataflowFlowProfileTcpCongestionAlgorithmEnum", string(value)))
+			"%s is not a valid choice on DataflowFlowProfileRdmaStackChoiceEnum", string(value)))
 		return obj
 	}
-	enumValue := onexdataflowapi.DataflowFlowProfileTcp_CongestionAlgorithm_Enum(intValue)
-	obj.obj.CongestionAlgorithm = &enumValue
+	enumValue := onexdataflowapi.DataflowFlowProfileRdmaStack_Choice_Enum(intValue)
+	obj.obj.Choice = &enumValue
+	obj.obj.Rocev2 = nil
+	obj.rocev2Holder = nil
 
-	return obj
-}
-
-// Initcwnd returns a int32
-// initial congestion window
-func (obj *dataflowFlowProfileTcp) Initcwnd() int32 {
-
-	return *obj.obj.Initcwnd
-
-}
-
-// Initcwnd returns a int32
-// initial congestion window
-func (obj *dataflowFlowProfileTcp) HasInitcwnd() bool {
-	return obj.obj.Initcwnd != nil
-}
-
-// SetInitcwnd sets the int32 value in the DataflowFlowProfileTcp object
-// initial congestion window
-func (obj *dataflowFlowProfileTcp) SetInitcwnd(value int32) DataflowFlowProfileTcp {
-
-	obj.obj.Initcwnd = &value
-	return obj
-}
-
-// SendBuf returns a int32
-// send buffer size
-func (obj *dataflowFlowProfileTcp) SendBuf() int32 {
-
-	return *obj.obj.SendBuf
-
-}
-
-// SendBuf returns a int32
-// send buffer size
-func (obj *dataflowFlowProfileTcp) HasSendBuf() bool {
-	return obj.obj.SendBuf != nil
-}
-
-// SetSendBuf sets the int32 value in the DataflowFlowProfileTcp object
-// send buffer size
-func (obj *dataflowFlowProfileTcp) SetSendBuf(value int32) DataflowFlowProfileTcp {
-
-	obj.obj.SendBuf = &value
-	return obj
-}
-
-// ReceiveBuf returns a int32
-// receive buffer size
-func (obj *dataflowFlowProfileTcp) ReceiveBuf() int32 {
-
-	return *obj.obj.ReceiveBuf
-
-}
-
-// ReceiveBuf returns a int32
-// receive buffer size
-func (obj *dataflowFlowProfileTcp) HasReceiveBuf() bool {
-	return obj.obj.ReceiveBuf != nil
-}
-
-// SetReceiveBuf sets the int32 value in the DataflowFlowProfileTcp object
-// receive buffer size
-func (obj *dataflowFlowProfileTcp) SetReceiveBuf(value int32) DataflowFlowProfileTcp {
-
-	obj.obj.ReceiveBuf = &value
-	return obj
-}
-
-// DelayedAck returns a int32
-// delayed acknowledgment
-func (obj *dataflowFlowProfileTcp) DelayedAck() int32 {
-
-	return *obj.obj.DelayedAck
-
-}
-
-// DelayedAck returns a int32
-// delayed acknowledgment
-func (obj *dataflowFlowProfileTcp) HasDelayedAck() bool {
-	return obj.obj.DelayedAck != nil
-}
-
-// SetDelayedAck sets the int32 value in the DataflowFlowProfileTcp object
-// delayed acknowledgment
-func (obj *dataflowFlowProfileTcp) SetDelayedAck(value int32) DataflowFlowProfileTcp {
-
-	obj.obj.DelayedAck = &value
-	return obj
-}
-
-// SelectiveAck returns a bool
-// selective acknowledgment
-func (obj *dataflowFlowProfileTcp) SelectiveAck() bool {
-
-	return *obj.obj.SelectiveAck
-
-}
-
-// SelectiveAck returns a bool
-// selective acknowledgment
-func (obj *dataflowFlowProfileTcp) HasSelectiveAck() bool {
-	return obj.obj.SelectiveAck != nil
-}
-
-// SetSelectiveAck sets the bool value in the DataflowFlowProfileTcp object
-// selective acknowledgment
-func (obj *dataflowFlowProfileTcp) SetSelectiveAck(value bool) DataflowFlowProfileTcp {
-
-	obj.obj.SelectiveAck = &value
-	return obj
-}
-
-// MinRto returns a int32
-// minimum retransmission timeout
-func (obj *dataflowFlowProfileTcp) MinRto() int32 {
-
-	return *obj.obj.MinRto
-
-}
-
-// MinRto returns a int32
-// minimum retransmission timeout
-func (obj *dataflowFlowProfileTcp) HasMinRto() bool {
-	return obj.obj.MinRto != nil
-}
-
-// SetMinRto sets the int32 value in the DataflowFlowProfileTcp object
-// minimum retransmission timeout
-func (obj *dataflowFlowProfileTcp) SetMinRto(value int32) DataflowFlowProfileTcp {
-
-	obj.obj.MinRto = &value
-	return obj
-}
-
-// Mss returns a int32
-// Maximum Segment Size
-func (obj *dataflowFlowProfileTcp) Mss() int32 {
-
-	return *obj.obj.Mss
-
-}
-
-// Mss returns a int32
-// Maximum Segment Size
-func (obj *dataflowFlowProfileTcp) HasMss() bool {
-	return obj.obj.Mss != nil
-}
-
-// SetMss sets the int32 value in the DataflowFlowProfileTcp object
-// Maximum Segment Size
-func (obj *dataflowFlowProfileTcp) SetMss(value int32) DataflowFlowProfileTcp {
-
-	obj.obj.Mss = &value
-	return obj
-}
-
-// Ecn returns a bool
-// early congestion notification
-func (obj *dataflowFlowProfileTcp) Ecn() bool {
-
-	return *obj.obj.Ecn
-
-}
-
-// Ecn returns a bool
-// early congestion notification
-func (obj *dataflowFlowProfileTcp) HasEcn() bool {
-	return obj.obj.Ecn != nil
-}
-
-// SetEcn sets the bool value in the DataflowFlowProfileTcp object
-// early congestion notification
-func (obj *dataflowFlowProfileTcp) SetEcn(value bool) DataflowFlowProfileTcp {
-
-	obj.obj.Ecn = &value
-	return obj
-}
-
-// EnableTimestamp returns a bool
-// enable tcp timestamping
-func (obj *dataflowFlowProfileTcp) EnableTimestamp() bool {
-
-	return *obj.obj.EnableTimestamp
-
-}
-
-// EnableTimestamp returns a bool
-// enable tcp timestamping
-func (obj *dataflowFlowProfileTcp) HasEnableTimestamp() bool {
-	return obj.obj.EnableTimestamp != nil
-}
-
-// SetEnableTimestamp sets the bool value in the DataflowFlowProfileTcp object
-// enable tcp timestamping
-func (obj *dataflowFlowProfileTcp) SetEnableTimestamp(value bool) DataflowFlowProfileTcp {
-
-	obj.obj.EnableTimestamp = &value
-	return obj
-}
-
-// DestinationPort returns a L4PortRange
-// description is TBD
-func (obj *dataflowFlowProfileTcp) DestinationPort() L4PortRange {
-	if obj.obj.DestinationPort == nil {
-		obj.obj.DestinationPort = NewL4PortRange().Msg()
+	if value == DataflowFlowProfileRdmaStackChoice.ROCEV2 {
+		obj.obj.Rocev2 = NewDataflowFlowProfileRdmaStackRoceV2().Msg()
 	}
-	if obj.destinationPortHolder == nil {
-		obj.destinationPortHolder = &l4PortRange{obj: obj.obj.DestinationPort}
-	}
-	return obj.destinationPortHolder
-}
-
-// DestinationPort returns a L4PortRange
-// description is TBD
-func (obj *dataflowFlowProfileTcp) HasDestinationPort() bool {
-	return obj.obj.DestinationPort != nil
-}
-
-// SetDestinationPort sets the L4PortRange value in the DataflowFlowProfileTcp object
-// description is TBD
-func (obj *dataflowFlowProfileTcp) SetDestinationPort(value L4PortRange) DataflowFlowProfileTcp {
-
-	obj.destinationPortHolder = nil
-	obj.obj.DestinationPort = value.Msg()
 
 	return obj
 }
 
-// SourcePort returns a L4PortRange
+// Rocev2 returns a DataflowFlowProfileRdmaStackRoceV2
 // description is TBD
-func (obj *dataflowFlowProfileTcp) SourcePort() L4PortRange {
-	if obj.obj.SourcePort == nil {
-		obj.obj.SourcePort = NewL4PortRange().Msg()
+func (obj *dataflowFlowProfileRdmaStack) Rocev2() DataflowFlowProfileRdmaStackRoceV2 {
+	if obj.obj.Rocev2 == nil {
+		obj.SetChoice(DataflowFlowProfileRdmaStackChoice.ROCEV2)
 	}
-	if obj.sourcePortHolder == nil {
-		obj.sourcePortHolder = &l4PortRange{obj: obj.obj.SourcePort}
+	if obj.rocev2Holder == nil {
+		obj.rocev2Holder = &dataflowFlowProfileRdmaStackRoceV2{obj: obj.obj.Rocev2}
 	}
-	return obj.sourcePortHolder
+	return obj.rocev2Holder
 }
 
-// SourcePort returns a L4PortRange
+// Rocev2 returns a DataflowFlowProfileRdmaStackRoceV2
 // description is TBD
-func (obj *dataflowFlowProfileTcp) HasSourcePort() bool {
-	return obj.obj.SourcePort != nil
+func (obj *dataflowFlowProfileRdmaStack) HasRocev2() bool {
+	return obj.obj.Rocev2 != nil
 }
 
-// SetSourcePort sets the L4PortRange value in the DataflowFlowProfileTcp object
+// SetRocev2 sets the DataflowFlowProfileRdmaStackRoceV2 value in the DataflowFlowProfileRdmaStack object
 // description is TBD
-func (obj *dataflowFlowProfileTcp) SetSourcePort(value L4PortRange) DataflowFlowProfileTcp {
-
-	obj.sourcePortHolder = nil
-	obj.obj.SourcePort = value.Msg()
+func (obj *dataflowFlowProfileRdmaStack) SetRocev2(value DataflowFlowProfileRdmaStackRoceV2) DataflowFlowProfileRdmaStack {
+	obj.SetChoice(DataflowFlowProfileRdmaStackChoice.ROCEV2)
+	obj.rocev2Holder = nil
+	obj.obj.Rocev2 = value.Msg()
 
 	return obj
 }
 
-func (obj *dataflowFlowProfileTcp) validateObj(set_default bool) {
+func (obj *dataflowFlowProfileRdmaStack) validateObj(set_default bool) {
 	if set_default {
 		obj.setDefault()
 	}
 
-	if obj.obj.DestinationPort != nil {
-		obj.DestinationPort().validateObj(set_default)
-	}
-
-	if obj.obj.SourcePort != nil {
-		obj.SourcePort().validateObj(set_default)
+	if obj.obj.Rocev2 != nil {
+		obj.Rocev2().validateObj(set_default)
 	}
 
 }
 
-func (obj *dataflowFlowProfileTcp) setDefault() {
-	if obj.obj.CongestionAlgorithm == nil {
-		obj.SetCongestionAlgorithm(DataflowFlowProfileTcpCongestionAlgorithm.CUBIC)
-
-	}
-	if obj.obj.Mss == nil {
-		obj.SetMss(1500)
-	}
+func (obj *dataflowFlowProfileRdmaStack) setDefault() {
 
 }
 
-// ***** DataflowFlowProfileUdp *****
-type dataflowFlowProfileUdp struct {
-	obj *onexdataflowapi.DataflowFlowProfileUdp
+// ***** DataflowFlowProfileTcpIpStack *****
+type dataflowFlowProfileTcpIpStack struct {
+	obj       *onexdataflowapi.DataflowFlowProfileTcpIpStack
+	ipHolder  DataflowFlowProfileTcpIpStackIp
+	tcpHolder DataflowFlowProfileL4ProtocolTcp
+	udpHolder DataflowFlowProfileL4ProtocolUdp
 }
 
-func NewDataflowFlowProfileUdp() DataflowFlowProfileUdp {
-	obj := dataflowFlowProfileUdp{obj: &onexdataflowapi.DataflowFlowProfileUdp{}}
+func NewDataflowFlowProfileTcpIpStack() DataflowFlowProfileTcpIpStack {
+	obj := dataflowFlowProfileTcpIpStack{obj: &onexdataflowapi.DataflowFlowProfileTcpIpStack{}}
 	obj.setDefault()
 	return &obj
 }
 
-func (obj *dataflowFlowProfileUdp) Msg() *onexdataflowapi.DataflowFlowProfileUdp {
+func (obj *dataflowFlowProfileTcpIpStack) Msg() *onexdataflowapi.DataflowFlowProfileTcpIpStack {
 	return obj.obj
 }
 
-func (obj *dataflowFlowProfileUdp) SetMsg(msg *onexdataflowapi.DataflowFlowProfileUdp) DataflowFlowProfileUdp {
-
+func (obj *dataflowFlowProfileTcpIpStack) SetMsg(msg *onexdataflowapi.DataflowFlowProfileTcpIpStack) DataflowFlowProfileTcpIpStack {
+	obj.setNil()
 	proto.Merge(obj.obj, msg)
 	return obj
 }
 
-func (obj *dataflowFlowProfileUdp) ToPbText() (string, error) {
+func (obj *dataflowFlowProfileTcpIpStack) ToPbText() (string, error) {
 	vErr := obj.Validate()
 	if vErr != nil {
 		return "", vErr
@@ -10920,12 +10110,12 @@ func (obj *dataflowFlowProfileUdp) ToPbText() (string, error) {
 	return string(protoMarshal), nil
 }
 
-func (obj *dataflowFlowProfileUdp) FromPbText(value string) error {
+func (obj *dataflowFlowProfileTcpIpStack) FromPbText(value string) error {
 	retObj := proto.Unmarshal([]byte(value), obj.Msg())
 	if retObj != nil {
 		return retObj
 	}
-
+	obj.setNil()
 	vErr := obj.validateFromText()
 	if vErr != nil {
 		return vErr
@@ -10933,7 +10123,7 @@ func (obj *dataflowFlowProfileUdp) FromPbText(value string) error {
 	return retObj
 }
 
-func (obj *dataflowFlowProfileUdp) ToYaml() (string, error) {
+func (obj *dataflowFlowProfileTcpIpStack) ToYaml() (string, error) {
 	vErr := obj.Validate()
 	if vErr != nil {
 		return "", vErr
@@ -10954,7 +10144,7 @@ func (obj *dataflowFlowProfileUdp) ToYaml() (string, error) {
 	return string(data), nil
 }
 
-func (obj *dataflowFlowProfileUdp) FromYaml(value string) error {
+func (obj *dataflowFlowProfileTcpIpStack) FromYaml(value string) error {
 	if value == "" {
 		value = "{}"
 	}
@@ -10971,7 +10161,7 @@ func (obj *dataflowFlowProfileUdp) FromYaml(value string) error {
 		return fmt.Errorf("unmarshal error %s", strings.Replace(
 			uError.Error(), "\u00a0", " ", -1)[7:])
 	}
-
+	obj.setNil()
 	vErr := obj.validateFromText()
 	if vErr != nil {
 		return vErr
@@ -10979,7 +10169,7 @@ func (obj *dataflowFlowProfileUdp) FromYaml(value string) error {
 	return nil
 }
 
-func (obj *dataflowFlowProfileUdp) ToJson() (string, error) {
+func (obj *dataflowFlowProfileTcpIpStack) ToJson() (string, error) {
 	vErr := obj.Validate()
 	if vErr != nil {
 		return "", vErr
@@ -10997,7 +10187,7 @@ func (obj *dataflowFlowProfileUdp) ToJson() (string, error) {
 	return string(data), nil
 }
 
-func (obj *dataflowFlowProfileUdp) FromJson(value string) error {
+func (obj *dataflowFlowProfileTcpIpStack) FromJson(value string) error {
 	opts := protojson.UnmarshalOptions{
 		AllowPartial:   true,
 		DiscardUnknown: false,
@@ -11010,7 +10200,7 @@ func (obj *dataflowFlowProfileUdp) FromJson(value string) error {
 		return fmt.Errorf("unmarshal error %s", strings.Replace(
 			uError.Error(), "\u00a0", " ", -1)[7:])
 	}
-
+	obj.setNil()
 	err := obj.validateFromText()
 	if err != nil {
 		return err
@@ -11018,17 +10208,17 @@ func (obj *dataflowFlowProfileUdp) FromJson(value string) error {
 	return nil
 }
 
-func (obj *dataflowFlowProfileUdp) validateFromText() error {
+func (obj *dataflowFlowProfileTcpIpStack) validateFromText() error {
 	obj.validateObj(true)
 	return validationResult()
 }
 
-func (obj *dataflowFlowProfileUdp) Validate() error {
+func (obj *dataflowFlowProfileTcpIpStack) Validate() error {
 	obj.validateObj(false)
 	return validationResult()
 }
 
-func (obj *dataflowFlowProfileUdp) String() string {
+func (obj *dataflowFlowProfileTcpIpStack) String() string {
 	str, err := obj.ToYaml()
 	if err != nil {
 		return err.Error()
@@ -11036,39 +10226,218 @@ func (obj *dataflowFlowProfileUdp) String() string {
 	return str
 }
 
-// DataflowFlowProfileUdp is description is TBD
-type DataflowFlowProfileUdp interface {
-	Msg() *onexdataflowapi.DataflowFlowProfileUdp
-	SetMsg(*onexdataflowapi.DataflowFlowProfileUdp) DataflowFlowProfileUdp
-	// ToPbText marshals DataflowFlowProfileUdp to protobuf text
+func (obj *dataflowFlowProfileTcpIpStack) setNil() {
+	obj.ipHolder = nil
+	obj.tcpHolder = nil
+	obj.udpHolder = nil
+}
+
+// DataflowFlowProfileTcpIpStack is description is TBD
+type DataflowFlowProfileTcpIpStack interface {
+	Msg() *onexdataflowapi.DataflowFlowProfileTcpIpStack
+	SetMsg(*onexdataflowapi.DataflowFlowProfileTcpIpStack) DataflowFlowProfileTcpIpStack
+	// ToPbText marshals DataflowFlowProfileTcpIpStack to protobuf text
 	ToPbText() (string, error)
-	// ToYaml marshals DataflowFlowProfileUdp to YAML text
+	// ToYaml marshals DataflowFlowProfileTcpIpStack to YAML text
 	ToYaml() (string, error)
-	// ToJson marshals DataflowFlowProfileUdp to JSON text
+	// ToJson marshals DataflowFlowProfileTcpIpStack to JSON text
 	ToJson() (string, error)
-	// FromPbText unmarshals DataflowFlowProfileUdp from protobuf text
+	// FromPbText unmarshals DataflowFlowProfileTcpIpStack from protobuf text
 	FromPbText(value string) error
-	// FromYaml unmarshals DataflowFlowProfileUdp from YAML text
+	// FromYaml unmarshals DataflowFlowProfileTcpIpStack from YAML text
 	FromYaml(value string) error
-	// FromJson unmarshals DataflowFlowProfileUdp from JSON text
+	// FromJson unmarshals DataflowFlowProfileTcpIpStack from JSON text
 	FromJson(value string) error
-	// Validate validates DataflowFlowProfileUdp
+	// Validate validates DataflowFlowProfileTcpIpStack
 	Validate() error
 	// A stringer function
 	String() string
 	validateFromText() error
 	validateObj(set_default bool)
 	setDefault()
+	// Ip returns DataflowFlowProfileTcpIpStackIp, set in DataflowFlowProfileTcpIpStack.
+	// DataflowFlowProfileTcpIpStackIp is description is TBD
+	Ip() DataflowFlowProfileTcpIpStackIp
+	// SetIp assigns DataflowFlowProfileTcpIpStackIp provided by user to DataflowFlowProfileTcpIpStack.
+	// DataflowFlowProfileTcpIpStackIp is description is TBD
+	SetIp(value DataflowFlowProfileTcpIpStackIp) DataflowFlowProfileTcpIpStack
+	// HasIp checks if Ip has been set in DataflowFlowProfileTcpIpStack
+	HasIp() bool
+	// Choice returns DataflowFlowProfileTcpIpStackChoiceEnum, set in DataflowFlowProfileTcpIpStack
+	Choice() DataflowFlowProfileTcpIpStackChoiceEnum
+	// SetChoice assigns DataflowFlowProfileTcpIpStackChoiceEnum provided by user to DataflowFlowProfileTcpIpStack
+	SetChoice(value DataflowFlowProfileTcpIpStackChoiceEnum) DataflowFlowProfileTcpIpStack
+	// HasChoice checks if Choice has been set in DataflowFlowProfileTcpIpStack
+	HasChoice() bool
+	// Tcp returns DataflowFlowProfileL4ProtocolTcp, set in DataflowFlowProfileTcpIpStack.
+	// DataflowFlowProfileL4ProtocolTcp is description is TBD
+	Tcp() DataflowFlowProfileL4ProtocolTcp
+	// SetTcp assigns DataflowFlowProfileL4ProtocolTcp provided by user to DataflowFlowProfileTcpIpStack.
+	// DataflowFlowProfileL4ProtocolTcp is description is TBD
+	SetTcp(value DataflowFlowProfileL4ProtocolTcp) DataflowFlowProfileTcpIpStack
+	// HasTcp checks if Tcp has been set in DataflowFlowProfileTcpIpStack
+	HasTcp() bool
+	// Udp returns DataflowFlowProfileL4ProtocolUdp, set in DataflowFlowProfileTcpIpStack.
+	// DataflowFlowProfileL4ProtocolUdp is description is TBD
+	Udp() DataflowFlowProfileL4ProtocolUdp
+	// SetUdp assigns DataflowFlowProfileL4ProtocolUdp provided by user to DataflowFlowProfileTcpIpStack.
+	// DataflowFlowProfileL4ProtocolUdp is description is TBD
+	SetUdp(value DataflowFlowProfileL4ProtocolUdp) DataflowFlowProfileTcpIpStack
+	// HasUdp checks if Udp has been set in DataflowFlowProfileTcpIpStack
+	HasUdp() bool
+	setNil()
 }
 
-func (obj *dataflowFlowProfileUdp) validateObj(set_default bool) {
+// Ip returns a DataflowFlowProfileTcpIpStackIp
+// description is TBD
+func (obj *dataflowFlowProfileTcpIpStack) Ip() DataflowFlowProfileTcpIpStackIp {
+	if obj.obj.Ip == nil {
+		obj.obj.Ip = NewDataflowFlowProfileTcpIpStackIp().Msg()
+	}
+	if obj.ipHolder == nil {
+		obj.ipHolder = &dataflowFlowProfileTcpIpStackIp{obj: obj.obj.Ip}
+	}
+	return obj.ipHolder
+}
+
+// Ip returns a DataflowFlowProfileTcpIpStackIp
+// description is TBD
+func (obj *dataflowFlowProfileTcpIpStack) HasIp() bool {
+	return obj.obj.Ip != nil
+}
+
+// SetIp sets the DataflowFlowProfileTcpIpStackIp value in the DataflowFlowProfileTcpIpStack object
+// description is TBD
+func (obj *dataflowFlowProfileTcpIpStack) SetIp(value DataflowFlowProfileTcpIpStackIp) DataflowFlowProfileTcpIpStack {
+
+	obj.ipHolder = nil
+	obj.obj.Ip = value.Msg()
+
+	return obj
+}
+
+type DataflowFlowProfileTcpIpStackChoiceEnum string
+
+//  Enum of Choice on DataflowFlowProfileTcpIpStack
+var DataflowFlowProfileTcpIpStackChoice = struct {
+	TCP DataflowFlowProfileTcpIpStackChoiceEnum
+	UDP DataflowFlowProfileTcpIpStackChoiceEnum
+}{
+	TCP: DataflowFlowProfileTcpIpStackChoiceEnum("tcp"),
+	UDP: DataflowFlowProfileTcpIpStackChoiceEnum("udp"),
+}
+
+func (obj *dataflowFlowProfileTcpIpStack) Choice() DataflowFlowProfileTcpIpStackChoiceEnum {
+	return DataflowFlowProfileTcpIpStackChoiceEnum(obj.obj.Choice.Enum().String())
+}
+
+// Choice returns a string
+// layer4 protocol selection
+func (obj *dataflowFlowProfileTcpIpStack) HasChoice() bool {
+	return obj.obj.Choice != nil
+}
+
+func (obj *dataflowFlowProfileTcpIpStack) SetChoice(value DataflowFlowProfileTcpIpStackChoiceEnum) DataflowFlowProfileTcpIpStack {
+	intValue, ok := onexdataflowapi.DataflowFlowProfileTcpIpStack_Choice_Enum_value[string(value)]
+	if !ok {
+		validation = append(validation, fmt.Sprintf(
+			"%s is not a valid choice on DataflowFlowProfileTcpIpStackChoiceEnum", string(value)))
+		return obj
+	}
+	enumValue := onexdataflowapi.DataflowFlowProfileTcpIpStack_Choice_Enum(intValue)
+	obj.obj.Choice = &enumValue
+	obj.obj.Udp = nil
+	obj.udpHolder = nil
+	obj.obj.Tcp = nil
+	obj.tcpHolder = nil
+
+	if value == DataflowFlowProfileTcpIpStackChoice.TCP {
+		obj.obj.Tcp = NewDataflowFlowProfileL4ProtocolTcp().Msg()
+	}
+
+	if value == DataflowFlowProfileTcpIpStackChoice.UDP {
+		obj.obj.Udp = NewDataflowFlowProfileL4ProtocolUdp().Msg()
+	}
+
+	return obj
+}
+
+// Tcp returns a DataflowFlowProfileL4ProtocolTcp
+// description is TBD
+func (obj *dataflowFlowProfileTcpIpStack) Tcp() DataflowFlowProfileL4ProtocolTcp {
+	if obj.obj.Tcp == nil {
+		obj.SetChoice(DataflowFlowProfileTcpIpStackChoice.TCP)
+	}
+	if obj.tcpHolder == nil {
+		obj.tcpHolder = &dataflowFlowProfileL4ProtocolTcp{obj: obj.obj.Tcp}
+	}
+	return obj.tcpHolder
+}
+
+// Tcp returns a DataflowFlowProfileL4ProtocolTcp
+// description is TBD
+func (obj *dataflowFlowProfileTcpIpStack) HasTcp() bool {
+	return obj.obj.Tcp != nil
+}
+
+// SetTcp sets the DataflowFlowProfileL4ProtocolTcp value in the DataflowFlowProfileTcpIpStack object
+// description is TBD
+func (obj *dataflowFlowProfileTcpIpStack) SetTcp(value DataflowFlowProfileL4ProtocolTcp) DataflowFlowProfileTcpIpStack {
+	obj.SetChoice(DataflowFlowProfileTcpIpStackChoice.TCP)
+	obj.tcpHolder = nil
+	obj.obj.Tcp = value.Msg()
+
+	return obj
+}
+
+// Udp returns a DataflowFlowProfileL4ProtocolUdp
+// description is TBD
+func (obj *dataflowFlowProfileTcpIpStack) Udp() DataflowFlowProfileL4ProtocolUdp {
+	if obj.obj.Udp == nil {
+		obj.SetChoice(DataflowFlowProfileTcpIpStackChoice.UDP)
+	}
+	if obj.udpHolder == nil {
+		obj.udpHolder = &dataflowFlowProfileL4ProtocolUdp{obj: obj.obj.Udp}
+	}
+	return obj.udpHolder
+}
+
+// Udp returns a DataflowFlowProfileL4ProtocolUdp
+// description is TBD
+func (obj *dataflowFlowProfileTcpIpStack) HasUdp() bool {
+	return obj.obj.Udp != nil
+}
+
+// SetUdp sets the DataflowFlowProfileL4ProtocolUdp value in the DataflowFlowProfileTcpIpStack object
+// description is TBD
+func (obj *dataflowFlowProfileTcpIpStack) SetUdp(value DataflowFlowProfileL4ProtocolUdp) DataflowFlowProfileTcpIpStack {
+	obj.SetChoice(DataflowFlowProfileTcpIpStackChoice.UDP)
+	obj.udpHolder = nil
+	obj.obj.Udp = value.Msg()
+
+	return obj
+}
+
+func (obj *dataflowFlowProfileTcpIpStack) validateObj(set_default bool) {
 	if set_default {
 		obj.setDefault()
 	}
 
+	if obj.obj.Ip != nil {
+		obj.Ip().validateObj(set_default)
+	}
+
+	if obj.obj.Tcp != nil {
+		obj.Tcp().validateObj(set_default)
+	}
+
+	if obj.obj.Udp != nil {
+		obj.Udp().validateObj(set_default)
+	}
+
 }
 
-func (obj *dataflowFlowProfileUdp) setDefault() {
+func (obj *dataflowFlowProfileTcpIpStack) setDefault() {
 
 }
 
@@ -11663,6 +11032,1275 @@ func (obj *dataflowSimulatedComputeWorkload) validateObj(set_default bool) {
 }
 
 func (obj *dataflowSimulatedComputeWorkload) setDefault() {
+
+}
+
+// ***** DataflowFlowProfileRdmaStackRoceV2 *****
+type dataflowFlowProfileRdmaStackRoceV2 struct {
+	obj *onexdataflowapi.DataflowFlowProfileRdmaStackRoceV2
+}
+
+func NewDataflowFlowProfileRdmaStackRoceV2() DataflowFlowProfileRdmaStackRoceV2 {
+	obj := dataflowFlowProfileRdmaStackRoceV2{obj: &onexdataflowapi.DataflowFlowProfileRdmaStackRoceV2{}}
+	obj.setDefault()
+	return &obj
+}
+
+func (obj *dataflowFlowProfileRdmaStackRoceV2) Msg() *onexdataflowapi.DataflowFlowProfileRdmaStackRoceV2 {
+	return obj.obj
+}
+
+func (obj *dataflowFlowProfileRdmaStackRoceV2) SetMsg(msg *onexdataflowapi.DataflowFlowProfileRdmaStackRoceV2) DataflowFlowProfileRdmaStackRoceV2 {
+
+	proto.Merge(obj.obj, msg)
+	return obj
+}
+
+func (obj *dataflowFlowProfileRdmaStackRoceV2) ToPbText() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	protoMarshal, err := proto.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(protoMarshal), nil
+}
+
+func (obj *dataflowFlowProfileRdmaStackRoceV2) FromPbText(value string) error {
+	retObj := proto.Unmarshal([]byte(value), obj.Msg())
+	if retObj != nil {
+		return retObj
+	}
+
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return retObj
+}
+
+func (obj *dataflowFlowProfileRdmaStackRoceV2) ToYaml() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	data, err = yaml.JSONToYAML(data)
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *dataflowFlowProfileRdmaStackRoceV2) FromYaml(value string) error {
+	if value == "" {
+		value = "{}"
+	}
+	data, err := yaml.YAMLToJSON([]byte(value))
+	if err != nil {
+		return err
+	}
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	uError := opts.Unmarshal([]byte(data), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return nil
+}
+
+func (obj *dataflowFlowProfileRdmaStackRoceV2) ToJson() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+		Indent:          "  ",
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *dataflowFlowProfileRdmaStackRoceV2) FromJson(value string) error {
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	if value == "" {
+		value = "{}"
+	}
+	uError := opts.Unmarshal([]byte(value), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+
+	err := obj.validateFromText()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (obj *dataflowFlowProfileRdmaStackRoceV2) validateFromText() error {
+	obj.validateObj(true)
+	return validationResult()
+}
+
+func (obj *dataflowFlowProfileRdmaStackRoceV2) Validate() error {
+	obj.validateObj(false)
+	return validationResult()
+}
+
+func (obj *dataflowFlowProfileRdmaStackRoceV2) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
+// DataflowFlowProfileRdmaStackRoceV2 is description is TBD
+type DataflowFlowProfileRdmaStackRoceV2 interface {
+	Msg() *onexdataflowapi.DataflowFlowProfileRdmaStackRoceV2
+	SetMsg(*onexdataflowapi.DataflowFlowProfileRdmaStackRoceV2) DataflowFlowProfileRdmaStackRoceV2
+	// ToPbText marshals DataflowFlowProfileRdmaStackRoceV2 to protobuf text
+	ToPbText() (string, error)
+	// ToYaml marshals DataflowFlowProfileRdmaStackRoceV2 to YAML text
+	ToYaml() (string, error)
+	// ToJson marshals DataflowFlowProfileRdmaStackRoceV2 to JSON text
+	ToJson() (string, error)
+	// FromPbText unmarshals DataflowFlowProfileRdmaStackRoceV2 from protobuf text
+	FromPbText(value string) error
+	// FromYaml unmarshals DataflowFlowProfileRdmaStackRoceV2 from YAML text
+	FromYaml(value string) error
+	// FromJson unmarshals DataflowFlowProfileRdmaStackRoceV2 from JSON text
+	FromJson(value string) error
+	// Validate validates DataflowFlowProfileRdmaStackRoceV2
+	Validate() error
+	// A stringer function
+	String() string
+	validateFromText() error
+	validateObj(set_default bool)
+	setDefault()
+	// Verb returns DataflowFlowProfileRdmaStackRoceV2VerbEnum, set in DataflowFlowProfileRdmaStackRoceV2
+	Verb() DataflowFlowProfileRdmaStackRoceV2VerbEnum
+	// SetVerb assigns DataflowFlowProfileRdmaStackRoceV2VerbEnum provided by user to DataflowFlowProfileRdmaStackRoceV2
+	SetVerb(value DataflowFlowProfileRdmaStackRoceV2VerbEnum) DataflowFlowProfileRdmaStackRoceV2
+	// HasVerb checks if Verb has been set in DataflowFlowProfileRdmaStackRoceV2
+	HasVerb() bool
+	// Bidirectional returns bool, set in DataflowFlowProfileRdmaStackRoceV2.
+	Bidirectional() bool
+	// SetBidirectional assigns bool provided by user to DataflowFlowProfileRdmaStackRoceV2
+	SetBidirectional(value bool) DataflowFlowProfileRdmaStackRoceV2
+	// HasBidirectional checks if Bidirectional has been set in DataflowFlowProfileRdmaStackRoceV2
+	HasBidirectional() bool
+	// Iterations returns int32, set in DataflowFlowProfileRdmaStackRoceV2.
+	Iterations() int32
+	// SetIterations assigns int32 provided by user to DataflowFlowProfileRdmaStackRoceV2
+	SetIterations(value int32) DataflowFlowProfileRdmaStackRoceV2
+	// HasIterations checks if Iterations has been set in DataflowFlowProfileRdmaStackRoceV2
+	HasIterations() bool
+}
+
+type DataflowFlowProfileRdmaStackRoceV2VerbEnum string
+
+//  Enum of Verb on DataflowFlowProfileRdmaStackRoceV2
+var DataflowFlowProfileRdmaStackRoceV2Verb = struct {
+	WRITE DataflowFlowProfileRdmaStackRoceV2VerbEnum
+	READ  DataflowFlowProfileRdmaStackRoceV2VerbEnum
+}{
+	WRITE: DataflowFlowProfileRdmaStackRoceV2VerbEnum("write"),
+	READ:  DataflowFlowProfileRdmaStackRoceV2VerbEnum("read"),
+}
+
+func (obj *dataflowFlowProfileRdmaStackRoceV2) Verb() DataflowFlowProfileRdmaStackRoceV2VerbEnum {
+	return DataflowFlowProfileRdmaStackRoceV2VerbEnum(obj.obj.Verb.Enum().String())
+}
+
+// Verb returns a string
+// read or write command
+func (obj *dataflowFlowProfileRdmaStackRoceV2) HasVerb() bool {
+	return obj.obj.Verb != nil
+}
+
+func (obj *dataflowFlowProfileRdmaStackRoceV2) SetVerb(value DataflowFlowProfileRdmaStackRoceV2VerbEnum) DataflowFlowProfileRdmaStackRoceV2 {
+	intValue, ok := onexdataflowapi.DataflowFlowProfileRdmaStackRoceV2_Verb_Enum_value[string(value)]
+	if !ok {
+		validation = append(validation, fmt.Sprintf(
+			"%s is not a valid choice on DataflowFlowProfileRdmaStackRoceV2VerbEnum", string(value)))
+		return obj
+	}
+	enumValue := onexdataflowapi.DataflowFlowProfileRdmaStackRoceV2_Verb_Enum(intValue)
+	obj.obj.Verb = &enumValue
+
+	return obj
+}
+
+// Bidirectional returns a bool
+// whether data is sent both ways
+func (obj *dataflowFlowProfileRdmaStackRoceV2) Bidirectional() bool {
+
+	return *obj.obj.Bidirectional
+
+}
+
+// Bidirectional returns a bool
+// whether data is sent both ways
+func (obj *dataflowFlowProfileRdmaStackRoceV2) HasBidirectional() bool {
+	return obj.obj.Bidirectional != nil
+}
+
+// SetBidirectional sets the bool value in the DataflowFlowProfileRdmaStackRoceV2 object
+// whether data is sent both ways
+func (obj *dataflowFlowProfileRdmaStackRoceV2) SetBidirectional(value bool) DataflowFlowProfileRdmaStackRoceV2 {
+
+	obj.obj.Bidirectional = &value
+	return obj
+}
+
+// Iterations returns a int32
+// how many times to send the message
+func (obj *dataflowFlowProfileRdmaStackRoceV2) Iterations() int32 {
+
+	return *obj.obj.Iterations
+
+}
+
+// Iterations returns a int32
+// how many times to send the message
+func (obj *dataflowFlowProfileRdmaStackRoceV2) HasIterations() bool {
+	return obj.obj.Iterations != nil
+}
+
+// SetIterations sets the int32 value in the DataflowFlowProfileRdmaStackRoceV2 object
+// how many times to send the message
+func (obj *dataflowFlowProfileRdmaStackRoceV2) SetIterations(value int32) DataflowFlowProfileRdmaStackRoceV2 {
+
+	obj.obj.Iterations = &value
+	return obj
+}
+
+func (obj *dataflowFlowProfileRdmaStackRoceV2) validateObj(set_default bool) {
+	if set_default {
+		obj.setDefault()
+	}
+
+}
+
+func (obj *dataflowFlowProfileRdmaStackRoceV2) setDefault() {
+	if obj.obj.Verb == nil {
+		obj.SetVerb(DataflowFlowProfileRdmaStackRoceV2Verb.WRITE)
+
+	}
+	if obj.obj.Bidirectional == nil {
+		obj.SetBidirectional(false)
+	}
+	if obj.obj.Iterations == nil {
+		obj.SetIterations(1)
+	}
+
+}
+
+// ***** DataflowFlowProfileTcpIpStackIp *****
+type dataflowFlowProfileTcpIpStackIp struct {
+	obj *onexdataflowapi.DataflowFlowProfileTcpIpStackIp
+}
+
+func NewDataflowFlowProfileTcpIpStackIp() DataflowFlowProfileTcpIpStackIp {
+	obj := dataflowFlowProfileTcpIpStackIp{obj: &onexdataflowapi.DataflowFlowProfileTcpIpStackIp{}}
+	obj.setDefault()
+	return &obj
+}
+
+func (obj *dataflowFlowProfileTcpIpStackIp) Msg() *onexdataflowapi.DataflowFlowProfileTcpIpStackIp {
+	return obj.obj
+}
+
+func (obj *dataflowFlowProfileTcpIpStackIp) SetMsg(msg *onexdataflowapi.DataflowFlowProfileTcpIpStackIp) DataflowFlowProfileTcpIpStackIp {
+
+	proto.Merge(obj.obj, msg)
+	return obj
+}
+
+func (obj *dataflowFlowProfileTcpIpStackIp) ToPbText() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	protoMarshal, err := proto.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(protoMarshal), nil
+}
+
+func (obj *dataflowFlowProfileTcpIpStackIp) FromPbText(value string) error {
+	retObj := proto.Unmarshal([]byte(value), obj.Msg())
+	if retObj != nil {
+		return retObj
+	}
+
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return retObj
+}
+
+func (obj *dataflowFlowProfileTcpIpStackIp) ToYaml() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	data, err = yaml.JSONToYAML(data)
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *dataflowFlowProfileTcpIpStackIp) FromYaml(value string) error {
+	if value == "" {
+		value = "{}"
+	}
+	data, err := yaml.YAMLToJSON([]byte(value))
+	if err != nil {
+		return err
+	}
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	uError := opts.Unmarshal([]byte(data), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return nil
+}
+
+func (obj *dataflowFlowProfileTcpIpStackIp) ToJson() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+		Indent:          "  ",
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *dataflowFlowProfileTcpIpStackIp) FromJson(value string) error {
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	if value == "" {
+		value = "{}"
+	}
+	uError := opts.Unmarshal([]byte(value), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+
+	err := obj.validateFromText()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (obj *dataflowFlowProfileTcpIpStackIp) validateFromText() error {
+	obj.validateObj(true)
+	return validationResult()
+}
+
+func (obj *dataflowFlowProfileTcpIpStackIp) Validate() error {
+	obj.validateObj(false)
+	return validationResult()
+}
+
+func (obj *dataflowFlowProfileTcpIpStackIp) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
+// DataflowFlowProfileTcpIpStackIp is description is TBD
+type DataflowFlowProfileTcpIpStackIp interface {
+	Msg() *onexdataflowapi.DataflowFlowProfileTcpIpStackIp
+	SetMsg(*onexdataflowapi.DataflowFlowProfileTcpIpStackIp) DataflowFlowProfileTcpIpStackIp
+	// ToPbText marshals DataflowFlowProfileTcpIpStackIp to protobuf text
+	ToPbText() (string, error)
+	// ToYaml marshals DataflowFlowProfileTcpIpStackIp to YAML text
+	ToYaml() (string, error)
+	// ToJson marshals DataflowFlowProfileTcpIpStackIp to JSON text
+	ToJson() (string, error)
+	// FromPbText unmarshals DataflowFlowProfileTcpIpStackIp from protobuf text
+	FromPbText(value string) error
+	// FromYaml unmarshals DataflowFlowProfileTcpIpStackIp from YAML text
+	FromYaml(value string) error
+	// FromJson unmarshals DataflowFlowProfileTcpIpStackIp from JSON text
+	FromJson(value string) error
+	// Validate validates DataflowFlowProfileTcpIpStackIp
+	Validate() error
+	// A stringer function
+	String() string
+	validateFromText() error
+	validateObj(set_default bool)
+	setDefault()
+	// Dscp returns int32, set in DataflowFlowProfileTcpIpStackIp.
+	Dscp() int32
+	// SetDscp assigns int32 provided by user to DataflowFlowProfileTcpIpStackIp
+	SetDscp(value int32) DataflowFlowProfileTcpIpStackIp
+	// HasDscp checks if Dscp has been set in DataflowFlowProfileTcpIpStackIp
+	HasDscp() bool
+}
+
+// Dscp returns a int32
+// differentiated services code point
+func (obj *dataflowFlowProfileTcpIpStackIp) Dscp() int32 {
+
+	return *obj.obj.Dscp
+
+}
+
+// Dscp returns a int32
+// differentiated services code point
+func (obj *dataflowFlowProfileTcpIpStackIp) HasDscp() bool {
+	return obj.obj.Dscp != nil
+}
+
+// SetDscp sets the int32 value in the DataflowFlowProfileTcpIpStackIp object
+// differentiated services code point
+func (obj *dataflowFlowProfileTcpIpStackIp) SetDscp(value int32) DataflowFlowProfileTcpIpStackIp {
+
+	obj.obj.Dscp = &value
+	return obj
+}
+
+func (obj *dataflowFlowProfileTcpIpStackIp) validateObj(set_default bool) {
+	if set_default {
+		obj.setDefault()
+	}
+
+}
+
+func (obj *dataflowFlowProfileTcpIpStackIp) setDefault() {
+
+}
+
+// ***** DataflowFlowProfileL4ProtocolTcp *****
+type dataflowFlowProfileL4ProtocolTcp struct {
+	obj                   *onexdataflowapi.DataflowFlowProfileL4ProtocolTcp
+	destinationPortHolder L4PortRange
+	sourcePortHolder      L4PortRange
+}
+
+func NewDataflowFlowProfileL4ProtocolTcp() DataflowFlowProfileL4ProtocolTcp {
+	obj := dataflowFlowProfileL4ProtocolTcp{obj: &onexdataflowapi.DataflowFlowProfileL4ProtocolTcp{}}
+	obj.setDefault()
+	return &obj
+}
+
+func (obj *dataflowFlowProfileL4ProtocolTcp) Msg() *onexdataflowapi.DataflowFlowProfileL4ProtocolTcp {
+	return obj.obj
+}
+
+func (obj *dataflowFlowProfileL4ProtocolTcp) SetMsg(msg *onexdataflowapi.DataflowFlowProfileL4ProtocolTcp) DataflowFlowProfileL4ProtocolTcp {
+	obj.setNil()
+	proto.Merge(obj.obj, msg)
+	return obj
+}
+
+func (obj *dataflowFlowProfileL4ProtocolTcp) ToPbText() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	protoMarshal, err := proto.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(protoMarshal), nil
+}
+
+func (obj *dataflowFlowProfileL4ProtocolTcp) FromPbText(value string) error {
+	retObj := proto.Unmarshal([]byte(value), obj.Msg())
+	if retObj != nil {
+		return retObj
+	}
+	obj.setNil()
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return retObj
+}
+
+func (obj *dataflowFlowProfileL4ProtocolTcp) ToYaml() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	data, err = yaml.JSONToYAML(data)
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *dataflowFlowProfileL4ProtocolTcp) FromYaml(value string) error {
+	if value == "" {
+		value = "{}"
+	}
+	data, err := yaml.YAMLToJSON([]byte(value))
+	if err != nil {
+		return err
+	}
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	uError := opts.Unmarshal([]byte(data), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+	obj.setNil()
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return nil
+}
+
+func (obj *dataflowFlowProfileL4ProtocolTcp) ToJson() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+		Indent:          "  ",
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *dataflowFlowProfileL4ProtocolTcp) FromJson(value string) error {
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	if value == "" {
+		value = "{}"
+	}
+	uError := opts.Unmarshal([]byte(value), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+	obj.setNil()
+	err := obj.validateFromText()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (obj *dataflowFlowProfileL4ProtocolTcp) validateFromText() error {
+	obj.validateObj(true)
+	return validationResult()
+}
+
+func (obj *dataflowFlowProfileL4ProtocolTcp) Validate() error {
+	obj.validateObj(false)
+	return validationResult()
+}
+
+func (obj *dataflowFlowProfileL4ProtocolTcp) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
+func (obj *dataflowFlowProfileL4ProtocolTcp) setNil() {
+	obj.destinationPortHolder = nil
+	obj.sourcePortHolder = nil
+}
+
+// DataflowFlowProfileL4ProtocolTcp is description is TBD
+type DataflowFlowProfileL4ProtocolTcp interface {
+	Msg() *onexdataflowapi.DataflowFlowProfileL4ProtocolTcp
+	SetMsg(*onexdataflowapi.DataflowFlowProfileL4ProtocolTcp) DataflowFlowProfileL4ProtocolTcp
+	// ToPbText marshals DataflowFlowProfileL4ProtocolTcp to protobuf text
+	ToPbText() (string, error)
+	// ToYaml marshals DataflowFlowProfileL4ProtocolTcp to YAML text
+	ToYaml() (string, error)
+	// ToJson marshals DataflowFlowProfileL4ProtocolTcp to JSON text
+	ToJson() (string, error)
+	// FromPbText unmarshals DataflowFlowProfileL4ProtocolTcp from protobuf text
+	FromPbText(value string) error
+	// FromYaml unmarshals DataflowFlowProfileL4ProtocolTcp from YAML text
+	FromYaml(value string) error
+	// FromJson unmarshals DataflowFlowProfileL4ProtocolTcp from JSON text
+	FromJson(value string) error
+	// Validate validates DataflowFlowProfileL4ProtocolTcp
+	Validate() error
+	// A stringer function
+	String() string
+	validateFromText() error
+	validateObj(set_default bool)
+	setDefault()
+	// CongestionAlgorithm returns DataflowFlowProfileL4ProtocolTcpCongestionAlgorithmEnum, set in DataflowFlowProfileL4ProtocolTcp
+	CongestionAlgorithm() DataflowFlowProfileL4ProtocolTcpCongestionAlgorithmEnum
+	// SetCongestionAlgorithm assigns DataflowFlowProfileL4ProtocolTcpCongestionAlgorithmEnum provided by user to DataflowFlowProfileL4ProtocolTcp
+	SetCongestionAlgorithm(value DataflowFlowProfileL4ProtocolTcpCongestionAlgorithmEnum) DataflowFlowProfileL4ProtocolTcp
+	// HasCongestionAlgorithm checks if CongestionAlgorithm has been set in DataflowFlowProfileL4ProtocolTcp
+	HasCongestionAlgorithm() bool
+	// Initcwnd returns int32, set in DataflowFlowProfileL4ProtocolTcp.
+	Initcwnd() int32
+	// SetInitcwnd assigns int32 provided by user to DataflowFlowProfileL4ProtocolTcp
+	SetInitcwnd(value int32) DataflowFlowProfileL4ProtocolTcp
+	// HasInitcwnd checks if Initcwnd has been set in DataflowFlowProfileL4ProtocolTcp
+	HasInitcwnd() bool
+	// SendBuf returns int32, set in DataflowFlowProfileL4ProtocolTcp.
+	SendBuf() int32
+	// SetSendBuf assigns int32 provided by user to DataflowFlowProfileL4ProtocolTcp
+	SetSendBuf(value int32) DataflowFlowProfileL4ProtocolTcp
+	// HasSendBuf checks if SendBuf has been set in DataflowFlowProfileL4ProtocolTcp
+	HasSendBuf() bool
+	// ReceiveBuf returns int32, set in DataflowFlowProfileL4ProtocolTcp.
+	ReceiveBuf() int32
+	// SetReceiveBuf assigns int32 provided by user to DataflowFlowProfileL4ProtocolTcp
+	SetReceiveBuf(value int32) DataflowFlowProfileL4ProtocolTcp
+	// HasReceiveBuf checks if ReceiveBuf has been set in DataflowFlowProfileL4ProtocolTcp
+	HasReceiveBuf() bool
+	// DelayedAck returns int32, set in DataflowFlowProfileL4ProtocolTcp.
+	DelayedAck() int32
+	// SetDelayedAck assigns int32 provided by user to DataflowFlowProfileL4ProtocolTcp
+	SetDelayedAck(value int32) DataflowFlowProfileL4ProtocolTcp
+	// HasDelayedAck checks if DelayedAck has been set in DataflowFlowProfileL4ProtocolTcp
+	HasDelayedAck() bool
+	// SelectiveAck returns bool, set in DataflowFlowProfileL4ProtocolTcp.
+	SelectiveAck() bool
+	// SetSelectiveAck assigns bool provided by user to DataflowFlowProfileL4ProtocolTcp
+	SetSelectiveAck(value bool) DataflowFlowProfileL4ProtocolTcp
+	// HasSelectiveAck checks if SelectiveAck has been set in DataflowFlowProfileL4ProtocolTcp
+	HasSelectiveAck() bool
+	// MinRto returns int32, set in DataflowFlowProfileL4ProtocolTcp.
+	MinRto() int32
+	// SetMinRto assigns int32 provided by user to DataflowFlowProfileL4ProtocolTcp
+	SetMinRto(value int32) DataflowFlowProfileL4ProtocolTcp
+	// HasMinRto checks if MinRto has been set in DataflowFlowProfileL4ProtocolTcp
+	HasMinRto() bool
+	// Mss returns int32, set in DataflowFlowProfileL4ProtocolTcp.
+	Mss() int32
+	// SetMss assigns int32 provided by user to DataflowFlowProfileL4ProtocolTcp
+	SetMss(value int32) DataflowFlowProfileL4ProtocolTcp
+	// HasMss checks if Mss has been set in DataflowFlowProfileL4ProtocolTcp
+	HasMss() bool
+	// Ecn returns bool, set in DataflowFlowProfileL4ProtocolTcp.
+	Ecn() bool
+	// SetEcn assigns bool provided by user to DataflowFlowProfileL4ProtocolTcp
+	SetEcn(value bool) DataflowFlowProfileL4ProtocolTcp
+	// HasEcn checks if Ecn has been set in DataflowFlowProfileL4ProtocolTcp
+	HasEcn() bool
+	// EnableTimestamp returns bool, set in DataflowFlowProfileL4ProtocolTcp.
+	EnableTimestamp() bool
+	// SetEnableTimestamp assigns bool provided by user to DataflowFlowProfileL4ProtocolTcp
+	SetEnableTimestamp(value bool) DataflowFlowProfileL4ProtocolTcp
+	// HasEnableTimestamp checks if EnableTimestamp has been set in DataflowFlowProfileL4ProtocolTcp
+	HasEnableTimestamp() bool
+	// DestinationPort returns L4PortRange, set in DataflowFlowProfileL4ProtocolTcp.
+	// L4PortRange is layer4 protocol source or destination port values
+	DestinationPort() L4PortRange
+	// SetDestinationPort assigns L4PortRange provided by user to DataflowFlowProfileL4ProtocolTcp.
+	// L4PortRange is layer4 protocol source or destination port values
+	SetDestinationPort(value L4PortRange) DataflowFlowProfileL4ProtocolTcp
+	// HasDestinationPort checks if DestinationPort has been set in DataflowFlowProfileL4ProtocolTcp
+	HasDestinationPort() bool
+	// SourcePort returns L4PortRange, set in DataflowFlowProfileL4ProtocolTcp.
+	// L4PortRange is layer4 protocol source or destination port values
+	SourcePort() L4PortRange
+	// SetSourcePort assigns L4PortRange provided by user to DataflowFlowProfileL4ProtocolTcp.
+	// L4PortRange is layer4 protocol source or destination port values
+	SetSourcePort(value L4PortRange) DataflowFlowProfileL4ProtocolTcp
+	// HasSourcePort checks if SourcePort has been set in DataflowFlowProfileL4ProtocolTcp
+	HasSourcePort() bool
+	setNil()
+}
+
+type DataflowFlowProfileL4ProtocolTcpCongestionAlgorithmEnum string
+
+//  Enum of CongestionAlgorithm on DataflowFlowProfileL4ProtocolTcp
+var DataflowFlowProfileL4ProtocolTcpCongestionAlgorithm = struct {
+	BBR   DataflowFlowProfileL4ProtocolTcpCongestionAlgorithmEnum
+	DCTCP DataflowFlowProfileL4ProtocolTcpCongestionAlgorithmEnum
+	CUBIC DataflowFlowProfileL4ProtocolTcpCongestionAlgorithmEnum
+	RENO  DataflowFlowProfileL4ProtocolTcpCongestionAlgorithmEnum
+}{
+	BBR:   DataflowFlowProfileL4ProtocolTcpCongestionAlgorithmEnum("bbr"),
+	DCTCP: DataflowFlowProfileL4ProtocolTcpCongestionAlgorithmEnum("dctcp"),
+	CUBIC: DataflowFlowProfileL4ProtocolTcpCongestionAlgorithmEnum("cubic"),
+	RENO:  DataflowFlowProfileL4ProtocolTcpCongestionAlgorithmEnum("reno"),
+}
+
+func (obj *dataflowFlowProfileL4ProtocolTcp) CongestionAlgorithm() DataflowFlowProfileL4ProtocolTcpCongestionAlgorithmEnum {
+	return DataflowFlowProfileL4ProtocolTcpCongestionAlgorithmEnum(obj.obj.CongestionAlgorithm.Enum().String())
+}
+
+// CongestionAlgorithm returns a string
+// The TCP congestion algorithm:
+// bbr - Bottleneck Bandwidth and Round-trip propagation time
+// dctcp - Data center TCP
+// cubic - cubic window increase function
+// reno - TCP New Reno
+func (obj *dataflowFlowProfileL4ProtocolTcp) HasCongestionAlgorithm() bool {
+	return obj.obj.CongestionAlgorithm != nil
+}
+
+func (obj *dataflowFlowProfileL4ProtocolTcp) SetCongestionAlgorithm(value DataflowFlowProfileL4ProtocolTcpCongestionAlgorithmEnum) DataflowFlowProfileL4ProtocolTcp {
+	intValue, ok := onexdataflowapi.DataflowFlowProfileL4ProtocolTcp_CongestionAlgorithm_Enum_value[string(value)]
+	if !ok {
+		validation = append(validation, fmt.Sprintf(
+			"%s is not a valid choice on DataflowFlowProfileL4ProtocolTcpCongestionAlgorithmEnum", string(value)))
+		return obj
+	}
+	enumValue := onexdataflowapi.DataflowFlowProfileL4ProtocolTcp_CongestionAlgorithm_Enum(intValue)
+	obj.obj.CongestionAlgorithm = &enumValue
+
+	return obj
+}
+
+// Initcwnd returns a int32
+// initial congestion window
+func (obj *dataflowFlowProfileL4ProtocolTcp) Initcwnd() int32 {
+
+	return *obj.obj.Initcwnd
+
+}
+
+// Initcwnd returns a int32
+// initial congestion window
+func (obj *dataflowFlowProfileL4ProtocolTcp) HasInitcwnd() bool {
+	return obj.obj.Initcwnd != nil
+}
+
+// SetInitcwnd sets the int32 value in the DataflowFlowProfileL4ProtocolTcp object
+// initial congestion window
+func (obj *dataflowFlowProfileL4ProtocolTcp) SetInitcwnd(value int32) DataflowFlowProfileL4ProtocolTcp {
+
+	obj.obj.Initcwnd = &value
+	return obj
+}
+
+// SendBuf returns a int32
+// send buffer size
+func (obj *dataflowFlowProfileL4ProtocolTcp) SendBuf() int32 {
+
+	return *obj.obj.SendBuf
+
+}
+
+// SendBuf returns a int32
+// send buffer size
+func (obj *dataflowFlowProfileL4ProtocolTcp) HasSendBuf() bool {
+	return obj.obj.SendBuf != nil
+}
+
+// SetSendBuf sets the int32 value in the DataflowFlowProfileL4ProtocolTcp object
+// send buffer size
+func (obj *dataflowFlowProfileL4ProtocolTcp) SetSendBuf(value int32) DataflowFlowProfileL4ProtocolTcp {
+
+	obj.obj.SendBuf = &value
+	return obj
+}
+
+// ReceiveBuf returns a int32
+// receive buffer size
+func (obj *dataflowFlowProfileL4ProtocolTcp) ReceiveBuf() int32 {
+
+	return *obj.obj.ReceiveBuf
+
+}
+
+// ReceiveBuf returns a int32
+// receive buffer size
+func (obj *dataflowFlowProfileL4ProtocolTcp) HasReceiveBuf() bool {
+	return obj.obj.ReceiveBuf != nil
+}
+
+// SetReceiveBuf sets the int32 value in the DataflowFlowProfileL4ProtocolTcp object
+// receive buffer size
+func (obj *dataflowFlowProfileL4ProtocolTcp) SetReceiveBuf(value int32) DataflowFlowProfileL4ProtocolTcp {
+
+	obj.obj.ReceiveBuf = &value
+	return obj
+}
+
+// DelayedAck returns a int32
+// delayed acknowledgment
+func (obj *dataflowFlowProfileL4ProtocolTcp) DelayedAck() int32 {
+
+	return *obj.obj.DelayedAck
+
+}
+
+// DelayedAck returns a int32
+// delayed acknowledgment
+func (obj *dataflowFlowProfileL4ProtocolTcp) HasDelayedAck() bool {
+	return obj.obj.DelayedAck != nil
+}
+
+// SetDelayedAck sets the int32 value in the DataflowFlowProfileL4ProtocolTcp object
+// delayed acknowledgment
+func (obj *dataflowFlowProfileL4ProtocolTcp) SetDelayedAck(value int32) DataflowFlowProfileL4ProtocolTcp {
+
+	obj.obj.DelayedAck = &value
+	return obj
+}
+
+// SelectiveAck returns a bool
+// selective acknowledgment
+func (obj *dataflowFlowProfileL4ProtocolTcp) SelectiveAck() bool {
+
+	return *obj.obj.SelectiveAck
+
+}
+
+// SelectiveAck returns a bool
+// selective acknowledgment
+func (obj *dataflowFlowProfileL4ProtocolTcp) HasSelectiveAck() bool {
+	return obj.obj.SelectiveAck != nil
+}
+
+// SetSelectiveAck sets the bool value in the DataflowFlowProfileL4ProtocolTcp object
+// selective acknowledgment
+func (obj *dataflowFlowProfileL4ProtocolTcp) SetSelectiveAck(value bool) DataflowFlowProfileL4ProtocolTcp {
+
+	obj.obj.SelectiveAck = &value
+	return obj
+}
+
+// MinRto returns a int32
+// minimum retransmission timeout
+func (obj *dataflowFlowProfileL4ProtocolTcp) MinRto() int32 {
+
+	return *obj.obj.MinRto
+
+}
+
+// MinRto returns a int32
+// minimum retransmission timeout
+func (obj *dataflowFlowProfileL4ProtocolTcp) HasMinRto() bool {
+	return obj.obj.MinRto != nil
+}
+
+// SetMinRto sets the int32 value in the DataflowFlowProfileL4ProtocolTcp object
+// minimum retransmission timeout
+func (obj *dataflowFlowProfileL4ProtocolTcp) SetMinRto(value int32) DataflowFlowProfileL4ProtocolTcp {
+
+	obj.obj.MinRto = &value
+	return obj
+}
+
+// Mss returns a int32
+// Maximum Segment Size
+func (obj *dataflowFlowProfileL4ProtocolTcp) Mss() int32 {
+
+	return *obj.obj.Mss
+
+}
+
+// Mss returns a int32
+// Maximum Segment Size
+func (obj *dataflowFlowProfileL4ProtocolTcp) HasMss() bool {
+	return obj.obj.Mss != nil
+}
+
+// SetMss sets the int32 value in the DataflowFlowProfileL4ProtocolTcp object
+// Maximum Segment Size
+func (obj *dataflowFlowProfileL4ProtocolTcp) SetMss(value int32) DataflowFlowProfileL4ProtocolTcp {
+
+	obj.obj.Mss = &value
+	return obj
+}
+
+// Ecn returns a bool
+// early congestion notification
+func (obj *dataflowFlowProfileL4ProtocolTcp) Ecn() bool {
+
+	return *obj.obj.Ecn
+
+}
+
+// Ecn returns a bool
+// early congestion notification
+func (obj *dataflowFlowProfileL4ProtocolTcp) HasEcn() bool {
+	return obj.obj.Ecn != nil
+}
+
+// SetEcn sets the bool value in the DataflowFlowProfileL4ProtocolTcp object
+// early congestion notification
+func (obj *dataflowFlowProfileL4ProtocolTcp) SetEcn(value bool) DataflowFlowProfileL4ProtocolTcp {
+
+	obj.obj.Ecn = &value
+	return obj
+}
+
+// EnableTimestamp returns a bool
+// enable tcp timestamping
+func (obj *dataflowFlowProfileL4ProtocolTcp) EnableTimestamp() bool {
+
+	return *obj.obj.EnableTimestamp
+
+}
+
+// EnableTimestamp returns a bool
+// enable tcp timestamping
+func (obj *dataflowFlowProfileL4ProtocolTcp) HasEnableTimestamp() bool {
+	return obj.obj.EnableTimestamp != nil
+}
+
+// SetEnableTimestamp sets the bool value in the DataflowFlowProfileL4ProtocolTcp object
+// enable tcp timestamping
+func (obj *dataflowFlowProfileL4ProtocolTcp) SetEnableTimestamp(value bool) DataflowFlowProfileL4ProtocolTcp {
+
+	obj.obj.EnableTimestamp = &value
+	return obj
+}
+
+// DestinationPort returns a L4PortRange
+// description is TBD
+func (obj *dataflowFlowProfileL4ProtocolTcp) DestinationPort() L4PortRange {
+	if obj.obj.DestinationPort == nil {
+		obj.obj.DestinationPort = NewL4PortRange().Msg()
+	}
+	if obj.destinationPortHolder == nil {
+		obj.destinationPortHolder = &l4PortRange{obj: obj.obj.DestinationPort}
+	}
+	return obj.destinationPortHolder
+}
+
+// DestinationPort returns a L4PortRange
+// description is TBD
+func (obj *dataflowFlowProfileL4ProtocolTcp) HasDestinationPort() bool {
+	return obj.obj.DestinationPort != nil
+}
+
+// SetDestinationPort sets the L4PortRange value in the DataflowFlowProfileL4ProtocolTcp object
+// description is TBD
+func (obj *dataflowFlowProfileL4ProtocolTcp) SetDestinationPort(value L4PortRange) DataflowFlowProfileL4ProtocolTcp {
+
+	obj.destinationPortHolder = nil
+	obj.obj.DestinationPort = value.Msg()
+
+	return obj
+}
+
+// SourcePort returns a L4PortRange
+// description is TBD
+func (obj *dataflowFlowProfileL4ProtocolTcp) SourcePort() L4PortRange {
+	if obj.obj.SourcePort == nil {
+		obj.obj.SourcePort = NewL4PortRange().Msg()
+	}
+	if obj.sourcePortHolder == nil {
+		obj.sourcePortHolder = &l4PortRange{obj: obj.obj.SourcePort}
+	}
+	return obj.sourcePortHolder
+}
+
+// SourcePort returns a L4PortRange
+// description is TBD
+func (obj *dataflowFlowProfileL4ProtocolTcp) HasSourcePort() bool {
+	return obj.obj.SourcePort != nil
+}
+
+// SetSourcePort sets the L4PortRange value in the DataflowFlowProfileL4ProtocolTcp object
+// description is TBD
+func (obj *dataflowFlowProfileL4ProtocolTcp) SetSourcePort(value L4PortRange) DataflowFlowProfileL4ProtocolTcp {
+
+	obj.sourcePortHolder = nil
+	obj.obj.SourcePort = value.Msg()
+
+	return obj
+}
+
+func (obj *dataflowFlowProfileL4ProtocolTcp) validateObj(set_default bool) {
+	if set_default {
+		obj.setDefault()
+	}
+
+	if obj.obj.DestinationPort != nil {
+		obj.DestinationPort().validateObj(set_default)
+	}
+
+	if obj.obj.SourcePort != nil {
+		obj.SourcePort().validateObj(set_default)
+	}
+
+}
+
+func (obj *dataflowFlowProfileL4ProtocolTcp) setDefault() {
+	if obj.obj.CongestionAlgorithm == nil {
+		obj.SetCongestionAlgorithm(DataflowFlowProfileL4ProtocolTcpCongestionAlgorithm.CUBIC)
+
+	}
+	if obj.obj.Mss == nil {
+		obj.SetMss(1500)
+	}
+
+}
+
+// ***** DataflowFlowProfileL4ProtocolUdp *****
+type dataflowFlowProfileL4ProtocolUdp struct {
+	obj *onexdataflowapi.DataflowFlowProfileL4ProtocolUdp
+}
+
+func NewDataflowFlowProfileL4ProtocolUdp() DataflowFlowProfileL4ProtocolUdp {
+	obj := dataflowFlowProfileL4ProtocolUdp{obj: &onexdataflowapi.DataflowFlowProfileL4ProtocolUdp{}}
+	obj.setDefault()
+	return &obj
+}
+
+func (obj *dataflowFlowProfileL4ProtocolUdp) Msg() *onexdataflowapi.DataflowFlowProfileL4ProtocolUdp {
+	return obj.obj
+}
+
+func (obj *dataflowFlowProfileL4ProtocolUdp) SetMsg(msg *onexdataflowapi.DataflowFlowProfileL4ProtocolUdp) DataflowFlowProfileL4ProtocolUdp {
+
+	proto.Merge(obj.obj, msg)
+	return obj
+}
+
+func (obj *dataflowFlowProfileL4ProtocolUdp) ToPbText() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	protoMarshal, err := proto.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(protoMarshal), nil
+}
+
+func (obj *dataflowFlowProfileL4ProtocolUdp) FromPbText(value string) error {
+	retObj := proto.Unmarshal([]byte(value), obj.Msg())
+	if retObj != nil {
+		return retObj
+	}
+
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return retObj
+}
+
+func (obj *dataflowFlowProfileL4ProtocolUdp) ToYaml() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	data, err = yaml.JSONToYAML(data)
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *dataflowFlowProfileL4ProtocolUdp) FromYaml(value string) error {
+	if value == "" {
+		value = "{}"
+	}
+	data, err := yaml.YAMLToJSON([]byte(value))
+	if err != nil {
+		return err
+	}
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	uError := opts.Unmarshal([]byte(data), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+
+	vErr := obj.validateFromText()
+	if vErr != nil {
+		return vErr
+	}
+	return nil
+}
+
+func (obj *dataflowFlowProfileL4ProtocolUdp) ToJson() (string, error) {
+	vErr := obj.Validate()
+	if vErr != nil {
+		return "", vErr
+	}
+	opts := protojson.MarshalOptions{
+		UseProtoNames:   true,
+		AllowPartial:    true,
+		EmitUnpopulated: false,
+		Indent:          "  ",
+	}
+	data, err := opts.Marshal(obj.Msg())
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (obj *dataflowFlowProfileL4ProtocolUdp) FromJson(value string) error {
+	opts := protojson.UnmarshalOptions{
+		AllowPartial:   true,
+		DiscardUnknown: false,
+	}
+	if value == "" {
+		value = "{}"
+	}
+	uError := opts.Unmarshal([]byte(value), obj.Msg())
+	if uError != nil {
+		return fmt.Errorf("unmarshal error %s", strings.Replace(
+			uError.Error(), "\u00a0", " ", -1)[7:])
+	}
+
+	err := obj.validateFromText()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (obj *dataflowFlowProfileL4ProtocolUdp) validateFromText() error {
+	obj.validateObj(true)
+	return validationResult()
+}
+
+func (obj *dataflowFlowProfileL4ProtocolUdp) Validate() error {
+	obj.validateObj(false)
+	return validationResult()
+}
+
+func (obj *dataflowFlowProfileL4ProtocolUdp) String() string {
+	str, err := obj.ToYaml()
+	if err != nil {
+		return err.Error()
+	}
+	return str
+}
+
+// DataflowFlowProfileL4ProtocolUdp is description is TBD
+type DataflowFlowProfileL4ProtocolUdp interface {
+	Msg() *onexdataflowapi.DataflowFlowProfileL4ProtocolUdp
+	SetMsg(*onexdataflowapi.DataflowFlowProfileL4ProtocolUdp) DataflowFlowProfileL4ProtocolUdp
+	// ToPbText marshals DataflowFlowProfileL4ProtocolUdp to protobuf text
+	ToPbText() (string, error)
+	// ToYaml marshals DataflowFlowProfileL4ProtocolUdp to YAML text
+	ToYaml() (string, error)
+	// ToJson marshals DataflowFlowProfileL4ProtocolUdp to JSON text
+	ToJson() (string, error)
+	// FromPbText unmarshals DataflowFlowProfileL4ProtocolUdp from protobuf text
+	FromPbText(value string) error
+	// FromYaml unmarshals DataflowFlowProfileL4ProtocolUdp from YAML text
+	FromYaml(value string) error
+	// FromJson unmarshals DataflowFlowProfileL4ProtocolUdp from JSON text
+	FromJson(value string) error
+	// Validate validates DataflowFlowProfileL4ProtocolUdp
+	Validate() error
+	// A stringer function
+	String() string
+	validateFromText() error
+	validateObj(set_default bool)
+	setDefault()
+}
+
+func (obj *dataflowFlowProfileL4ProtocolUdp) validateObj(set_default bool) {
+	if set_default {
+		obj.setDefault()
+	}
+
+}
+
+func (obj *dataflowFlowProfileL4ProtocolUdp) setDefault() {
 
 }
 
