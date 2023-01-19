@@ -6889,12 +6889,18 @@ type DataflowFlowProfile interface {
 	DataSize() int32
 	// SetDataSize assigns int32 provided by user to DataflowFlowProfile
 	SetDataSize(value int32) DataflowFlowProfile
-	// Mtu returns int32, set in DataflowFlowProfile.
-	Mtu() int32
-	// SetMtu assigns int32 provided by user to DataflowFlowProfile
-	SetMtu(value int32) DataflowFlowProfile
-	// HasMtu checks if Mtu has been set in DataflowFlowProfile
-	HasMtu() bool
+	// Bidirectional returns bool, set in DataflowFlowProfile.
+	Bidirectional() bool
+	// SetBidirectional assigns bool provided by user to DataflowFlowProfile
+	SetBidirectional(value bool) DataflowFlowProfile
+	// HasBidirectional checks if Bidirectional has been set in DataflowFlowProfile
+	HasBidirectional() bool
+	// Iterations returns int32, set in DataflowFlowProfile.
+	Iterations() int32
+	// SetIterations assigns int32 provided by user to DataflowFlowProfile
+	SetIterations(value int32) DataflowFlowProfile
+	// HasIterations checks if Iterations has been set in DataflowFlowProfile
+	HasIterations() bool
 	// Choice returns DataflowFlowProfileChoiceEnum, set in DataflowFlowProfile
 	Choice() DataflowFlowProfileChoiceEnum
 	// SetChoice assigns DataflowFlowProfileChoiceEnum provided by user to DataflowFlowProfile
@@ -6950,25 +6956,47 @@ func (obj *dataflowFlowProfile) SetDataSize(value int32) DataflowFlowProfile {
 	return obj
 }
 
-// Mtu returns a int32
-// Maximum Transmission Unit
-func (obj *dataflowFlowProfile) Mtu() int32 {
+// Bidirectional returns a bool
+// whether data is sent both ways
+func (obj *dataflowFlowProfile) Bidirectional() bool {
 
-	return *obj.obj.Mtu
+	return *obj.obj.Bidirectional
 
 }
 
-// Mtu returns a int32
-// Maximum Transmission Unit
-func (obj *dataflowFlowProfile) HasMtu() bool {
-	return obj.obj.Mtu != nil
+// Bidirectional returns a bool
+// whether data is sent both ways
+func (obj *dataflowFlowProfile) HasBidirectional() bool {
+	return obj.obj.Bidirectional != nil
 }
 
-// SetMtu sets the int32 value in the DataflowFlowProfile object
-// Maximum Transmission Unit
-func (obj *dataflowFlowProfile) SetMtu(value int32) DataflowFlowProfile {
+// SetBidirectional sets the bool value in the DataflowFlowProfile object
+// whether data is sent both ways
+func (obj *dataflowFlowProfile) SetBidirectional(value bool) DataflowFlowProfile {
 
-	obj.obj.Mtu = &value
+	obj.obj.Bidirectional = &value
+	return obj
+}
+
+// Iterations returns a int32
+// how many times to send the message
+func (obj *dataflowFlowProfile) Iterations() int32 {
+
+	return *obj.obj.Iterations
+
+}
+
+// Iterations returns a int32
+// how many times to send the message
+func (obj *dataflowFlowProfile) HasIterations() bool {
+	return obj.obj.Iterations != nil
+}
+
+// SetIterations sets the int32 value in the DataflowFlowProfile object
+// how many times to send the message
+func (obj *dataflowFlowProfile) SetIterations(value int32) DataflowFlowProfile {
+
+	obj.obj.Iterations = &value
 	return obj
 }
 
@@ -7095,8 +7123,11 @@ func (obj *dataflowFlowProfile) validateObj(set_default bool) {
 }
 
 func (obj *dataflowFlowProfile) setDefault() {
-	if obj.obj.Mtu == nil {
-		obj.SetMtu(1500)
+	if obj.obj.Bidirectional == nil {
+		obj.SetBidirectional(false)
+	}
+	if obj.obj.Iterations == nil {
+		obj.SetIterations(1)
 	}
 
 }
@@ -11213,18 +11244,6 @@ type DataflowFlowProfileRdmaStackRoceV2 interface {
 	SetVerb(value DataflowFlowProfileRdmaStackRoceV2VerbEnum) DataflowFlowProfileRdmaStackRoceV2
 	// HasVerb checks if Verb has been set in DataflowFlowProfileRdmaStackRoceV2
 	HasVerb() bool
-	// Bidirectional returns bool, set in DataflowFlowProfileRdmaStackRoceV2.
-	Bidirectional() bool
-	// SetBidirectional assigns bool provided by user to DataflowFlowProfileRdmaStackRoceV2
-	SetBidirectional(value bool) DataflowFlowProfileRdmaStackRoceV2
-	// HasBidirectional checks if Bidirectional has been set in DataflowFlowProfileRdmaStackRoceV2
-	HasBidirectional() bool
-	// Iterations returns int32, set in DataflowFlowProfileRdmaStackRoceV2.
-	Iterations() int32
-	// SetIterations assigns int32 provided by user to DataflowFlowProfileRdmaStackRoceV2
-	SetIterations(value int32) DataflowFlowProfileRdmaStackRoceV2
-	// HasIterations checks if Iterations has been set in DataflowFlowProfileRdmaStackRoceV2
-	HasIterations() bool
 }
 
 type DataflowFlowProfileRdmaStackRoceV2VerbEnum string
@@ -11261,50 +11280,6 @@ func (obj *dataflowFlowProfileRdmaStackRoceV2) SetVerb(value DataflowFlowProfile
 	return obj
 }
 
-// Bidirectional returns a bool
-// whether data is sent both ways
-func (obj *dataflowFlowProfileRdmaStackRoceV2) Bidirectional() bool {
-
-	return *obj.obj.Bidirectional
-
-}
-
-// Bidirectional returns a bool
-// whether data is sent both ways
-func (obj *dataflowFlowProfileRdmaStackRoceV2) HasBidirectional() bool {
-	return obj.obj.Bidirectional != nil
-}
-
-// SetBidirectional sets the bool value in the DataflowFlowProfileRdmaStackRoceV2 object
-// whether data is sent both ways
-func (obj *dataflowFlowProfileRdmaStackRoceV2) SetBidirectional(value bool) DataflowFlowProfileRdmaStackRoceV2 {
-
-	obj.obj.Bidirectional = &value
-	return obj
-}
-
-// Iterations returns a int32
-// how many times to send the message
-func (obj *dataflowFlowProfileRdmaStackRoceV2) Iterations() int32 {
-
-	return *obj.obj.Iterations
-
-}
-
-// Iterations returns a int32
-// how many times to send the message
-func (obj *dataflowFlowProfileRdmaStackRoceV2) HasIterations() bool {
-	return obj.obj.Iterations != nil
-}
-
-// SetIterations sets the int32 value in the DataflowFlowProfileRdmaStackRoceV2 object
-// how many times to send the message
-func (obj *dataflowFlowProfileRdmaStackRoceV2) SetIterations(value int32) DataflowFlowProfileRdmaStackRoceV2 {
-
-	obj.obj.Iterations = &value
-	return obj
-}
-
 func (obj *dataflowFlowProfileRdmaStackRoceV2) validateObj(set_default bool) {
 	if set_default {
 		obj.setDefault()
@@ -11316,12 +11291,6 @@ func (obj *dataflowFlowProfileRdmaStackRoceV2) setDefault() {
 	if obj.obj.Verb == nil {
 		obj.SetVerb(DataflowFlowProfileRdmaStackRoceV2Verb.WRITE)
 
-	}
-	if obj.obj.Bidirectional == nil {
-		obj.SetBidirectional(false)
-	}
-	if obj.obj.Iterations == nil {
-		obj.SetIterations(1)
 	}
 
 }
